@@ -11,8 +11,8 @@ import (
 type CustomerUsecase interface {
 	GetAll() ([]entities.Customer, error)
 	GetByID(idCustomer int) (*entities.Customer, error)
-	Create(username string, email string, password string, alamat string, kota string, noTelp string) (*entities.Customer, error)
-	Update(idCustomer int, username string, email string, password string, alamat string, kota string, noTelp string) (*entities.Customer, error)
+	Create(id_role int, username string, email string, password string, alamat string, kota string, noTelp string) (*entities.Customer, error)
+	Update(idCustomer int, id_role int, username string, email string, password string, alamat string, kota string, noTelp string) (*entities.Customer, error)
 	Delete(idCustomer int) error
 }
 
@@ -39,7 +39,7 @@ func (u *customerUsecase) GetByID(idCustomer int) (*entities.Customer, error) {
 	return c, nil
 }
 
-func (u *customerUsecase) Create(username string, email string, password string, alamat string, kota string, noTelp string) (*entities.Customer, error) {
+func (u *customerUsecase) Create(id_role int, username string, email string, password string, alamat string, kota string, noTelp string) (*entities.Customer, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -47,6 +47,7 @@ func (u *customerUsecase) Create(username string, email string, password string,
 
 	// Buat entity customer baru dengan password yang sudah di-hash
 	customer := &entities.Customer{
+		IdRole:   id_role,
 		Username: username,
 		Email:    email,
 		Password: string(hashedPassword),
@@ -65,7 +66,7 @@ func (u *customerUsecase) Create(username string, email string, password string,
 	return customer, nil
 }
 
-func (u *customerUsecase) Update(idCustomer int, username string, email string, password string, alamat string, kota string, noTelp string) (*entities.Customer, error) {
+func (u *customerUsecase) Update(idCustomer int, id_role int, username string, email string, password string, alamat string, kota string, noTelp string) (*entities.Customer, error) {
 	existing, err := u.repo.FindByID(idCustomer)
 	if err != nil {
 		return nil, err
@@ -75,6 +76,7 @@ func (u *customerUsecase) Update(idCustomer int, username string, email string, 
 	}
 
 	// Update field-field yang ada
+	existing.IdRole = id_role
 	existing.Username = username
 	existing.Email = email
 	existing.Alamat = alamat

@@ -43,6 +43,7 @@ func (c *CustomerController) GetByID(w http.ResponseWriter, r *http.Request, id 
 
 func (c *CustomerController) Create(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
+		IdRole   int    `json:"id_role"`
 		Username string `json:"username"`
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -55,6 +56,7 @@ func (c *CustomerController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	created, err := c.UC.Create(
+		payload.IdRole,
 		strings.TrimSpace(payload.Username),
 		strings.TrimSpace(payload.Email),
 		strings.TrimSpace(payload.Password),
@@ -71,6 +73,7 @@ func (c *CustomerController) Create(w http.ResponseWriter, r *http.Request) {
 
 func (c *CustomerController) Update(w http.ResponseWriter, r *http.Request, idCustomer int) {
 	var payload struct {
+		IdRole   int    `json:"id_role"`
 		Username string `json:"username"`
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -84,6 +87,7 @@ func (c *CustomerController) Update(w http.ResponseWriter, r *http.Request, idCu
 	}
 	updated, err := c.UC.Update(
 		idCustomer,
+		payload.IdRole,
 		strings.TrimSpace(payload.Username),
 		strings.TrimSpace(payload.Email),
 		strings.TrimSpace(payload.Password),

@@ -16,7 +16,7 @@ type Karyawan struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 
 	// buat ambil get data role ditable role
-	Role Role `gorm:"foreignKey:IdRole;references:ID"`
+	Role Role `gorm:"foreignKey:IdRole;references:IDRole"`
 }
 
 func (Karyawan) TableName() string {
