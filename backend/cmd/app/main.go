@@ -1,12 +1,12 @@
 package main
 
 import (
-	"aplikasi-distro-zone-lsp-website/backend/internal/domain/entities"
-	"aplikasi-distro-zone-lsp-website/backend/internal/domain/usecase"
-	"aplikasi-distro-zone-lsp-website/backend/internal/infrastructure/database"
-	repo "aplikasi-distro-zone-lsp-website/backend/internal/infrastructure/repository"
-	"aplikasi-distro-zone-lsp-website/backend/internal/interface/controller"
-	"aplikasi-distro-zone-lsp-website/backend/internal/server"
+	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
+	"aplikasi-distro-zone-lsp-website/internal/domain/usecase"
+	"aplikasi-distro-zone-lsp-website/internal/infrastructure/database"
+	repo "aplikasi-distro-zone-lsp-website/internal/infrastructure/repository"
+	"aplikasi-distro-zone-lsp-website/internal/interface/controller"
+	"aplikasi-distro-zone-lsp-website/internal/server"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,17 +20,13 @@ func main() {
 	}
 
 	// auto generate jika belum ada table didatabase
-	db.AutoMigrate(&entities.Category{}, &entities.Merk{})
+	db.AutoMigrate(&entities.Role{})
 
-	categoryRepo := repo.NewCategoryPGRepository(db)
-	categoryUc := usecase.NewCategoryUsecase(categoryRepo)
-	categoryCtrl := controller.NewCategoryController(categoryUc)
-	merkRepo := repo.NewMerkPGRepository(db)
-	merkUc := usecase.NewMerkUsecase(merkRepo)
-	merkCtrl := controller.NewMerkController(merkUc)
+	roleRepo := repo.NewRolePGRepository(db)
+	roleUc := usecase.NewRoleUsecase(roleRepo)
+	roleCtrl := controller.NewRoleController(roleUc)
 
-	server.RegisterCategoryRoutes(categoryCtrl)
-	server.RegisterMerkRoutes(merkCtrl)
+	server.RegisterRoleRoutes(roleCtrl)
 
 	port := os.Getenv("PORT")
 	if port == "" {
