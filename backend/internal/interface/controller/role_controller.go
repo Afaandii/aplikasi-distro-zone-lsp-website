@@ -3,7 +3,9 @@ package controller
 import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/usecase"
 	helper "aplikasi-distro-zone-lsp-website/internal/interface/helper"
+	helperPkg "aplikasi-distro-zone-lsp-website/pkg/helper"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 )
@@ -28,7 +30,8 @@ func (m *RoleController) GetAll(w http.ResponseWriter, r *http.Request) {
 func (m *RoleController) GetByID(w http.ResponseWriter, r *http.Request, id int) {
 	role, err := m.UC.GetByID(id)
 	if err != nil {
-		if err == usecase.ErrorNotFound {
+		var notFoundErr *helperPkg.NotFoundError
+		if errors.As(err, &notFoundErr) {
 			helper.WriteJSON(w, http.StatusNotFound, map[string]string{"error": "role not found"})
 			return
 		}
@@ -66,7 +69,8 @@ func (m *RoleController) Update(w http.ResponseWriter, r *http.Request, idRole i
 	}
 	updated, err := m.UC.Update(idRole, strings.TrimSpace(payload.NamaRole), strings.TrimSpace(payload.Keterangan))
 	if err != nil {
-		if err == usecase.ErrorNotFound {
+		var notFoundErr *helperPkg.NotFoundError
+		if errors.As(err, &notFoundErr) {
 			helper.WriteJSON(w, http.StatusNotFound, map[string]string{"error": "role not found"})
 			return
 		}
@@ -79,7 +83,8 @@ func (m *RoleController) Update(w http.ResponseWriter, r *http.Request, idRole i
 func (m *RoleController) Delete(w http.ResponseWriter, r *http.Request, idRole int) {
 	err := m.UC.Delete(idRole)
 	if err != nil {
-		if err == usecase.ErrorNotFound {
+		var notFoundErr *helperPkg.NotFoundError
+		if errors.As(err, &notFoundErr) {
 			helper.WriteJSON(w, http.StatusNotFound, map[string]string{"error": "role not found"})
 			return
 		}
