@@ -3,11 +3,7 @@ package usecase
 import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	"aplikasi-distro-zone-lsp-website/internal/domain/repository"
-	"errors"
-)
-
-var (
-	ErrorNotFound = errors.New("role not found")
+	"aplikasi-distro-zone-lsp-website/pkg/helper"
 )
 
 type RoleUsecase interface {
@@ -36,7 +32,7 @@ func (u *roleUsecase) GetByID(idRole int) (*entities.Role, error) {
 		return nil, err
 	}
 	if r == nil {
-		return nil, ErrorNotFound
+		return nil, helper.RoleNotFoundError(idRole)
 	}
 	return r, nil
 }
@@ -56,7 +52,7 @@ func (u *roleUsecase) Update(idRole int, nama_role string, keterangan string) (*
 		return nil, err
 	}
 	if existing == nil {
-		return nil, ErrorNotFound
+		return nil, helper.RoleNotFoundError(idRole)
 	}
 	existing.NamaRole = nama_role
 	existing.Keterangan = keterangan
@@ -73,7 +69,7 @@ func (u *roleUsecase) Delete(idRole int) error {
 		return err
 	}
 	if existing == nil {
-		return ErrorNotFound
+		return helper.RoleNotFoundError(idRole)
 	}
 	return u.repo.Delete(idRole)
 }
