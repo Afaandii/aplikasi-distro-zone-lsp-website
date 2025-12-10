@@ -21,12 +21,17 @@ func main() {
 
 	// auto generate jika belum ada table didatabase
 	db.AutoMigrate(&entities.Role{})
+	db.AutoMigrate(&entities.Customer{})
 
 	roleRepo := repo.NewRolePGRepository(db)
 	roleUc := usecase.NewRoleUsecase(roleRepo)
 	roleCtrl := controller.NewRoleController(roleUc)
+	customerRepo := repo.NewCustomerPGRepository(db)
+	customerUc := usecase.NewCustomerUsecase(customerRepo)
+	customerCtrl := controller.NewCustomerController(customerUc)
 
 	server.RegisterRoleRoutes(roleCtrl)
+	server.RegisterCutomerRoutes(customerCtrl)
 
 	port := os.Getenv("PORT")
 	if port == "" {

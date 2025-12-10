@@ -14,7 +14,7 @@ type Customer struct {
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 
-	Role Role `gorm:"foreignKey:IdRole;references:ID"`
+	Role Role `gorm:"foreignKey:IdRole;references:IDRole"`
 }
 
 // penamaan database disesuaikan sendiri ga dibuatin gorm
