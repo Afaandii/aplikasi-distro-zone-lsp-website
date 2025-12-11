@@ -27,8 +27,8 @@ func (rl *RoleController) GetAll(w http.ResponseWriter, r *http.Request) {
 	helper.WriteJSON(w, http.StatusOK, role)
 }
 
-func (rl *RoleController) GetByID(w http.ResponseWriter, r *http.Request, id int) {
-	role, err := rl.UC.GetByID(id)
+func (rl *RoleController) GetByID(w http.ResponseWriter, r *http.Request, idRole int) {
+	role, err := rl.UC.GetByID(idRole)
 	if err != nil {
 		var notFoundErr *helperPkg.NotFoundError
 		if errors.As(err, &notFoundErr) {
