@@ -8,7 +8,6 @@ import (
 )
 
 func RegisterCutomerRoutes(c *controller.CustomerController) {
-	// ini untuk get data dan insert categories
 	http.HandleFunc("/customer", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -20,7 +19,6 @@ func RegisterCutomerRoutes(c *controller.CustomerController) {
 		}
 	})
 
-	// method untuk get by id, update dan delete
 	http.HandleFunc("/customer/", func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 		if len(parts) != 2 {

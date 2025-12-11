@@ -107,8 +107,8 @@ func (c *CustomerController) Update(w http.ResponseWriter, r *http.Request, idCu
 	helper.WriteJSON(w, http.StatusOK, updated)
 }
 
-func (m *CustomerController) Delete(w http.ResponseWriter, r *http.Request, idCustomer int) {
-	err := m.UC.Delete(idCustomer)
+func (c *CustomerController) Delete(w http.ResponseWriter, r *http.Request, idCustomer int) {
+	err := c.UC.Delete(idCustomer)
 	if err != nil {
 		var notFoundErr *helperPkg.NotFoundError
 		if errors.As(err, &notFoundErr) {

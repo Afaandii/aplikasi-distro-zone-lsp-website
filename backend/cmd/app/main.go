@@ -7,6 +7,7 @@ import (
 	repo "aplikasi-distro-zone-lsp-website/internal/infrastructure/repository"
 	"aplikasi-distro-zone-lsp-website/internal/interface/controller"
 	"aplikasi-distro-zone-lsp-website/internal/server"
+	"aplikasi-distro-zone-lsp-website/pkg/supabase"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,6 +23,8 @@ func main() {
 	// auto generate jika belum ada table didatabase
 	db.AutoMigrate(&entities.Role{})
 	db.AutoMigrate(&entities.Customer{})
+	db.AutoMigrate(&entities.Karyawan{})
+	supabase.InitStorage()
 
 	roleRepo := repo.NewRolePGRepository(db)
 	roleUc := usecase.NewRoleUsecase(roleRepo)
@@ -29,9 +32,13 @@ func main() {
 	customerRepo := repo.NewCustomerPGRepository(db)
 	customerUc := usecase.NewCustomerUsecase(customerRepo)
 	customerCtrl := controller.NewCustomerController(customerUc)
+	karyawanRepo := repo.NewKaryawanPGRepository(db)
+	karyawanUc := usecase.NewkaryawanUsecase(karyawanRepo)
+	karyawanCtrl := controller.NewKaryawanController(karyawanUc)
 
 	server.RegisterRoleRoutes(roleCtrl)
 	server.RegisterCutomerRoutes(customerCtrl)
+	server.RegisterKaryawanRoutes(karyawanCtrl)
 
 	port := os.Getenv("PORT")
 	if port == "" {

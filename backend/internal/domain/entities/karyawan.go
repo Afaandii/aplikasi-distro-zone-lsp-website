@@ -11,7 +11,7 @@ type Karyawan struct {
 	Alamat       string    `json:"alamat" gorm:"type:varchar(255)"`
 	NoTelp       string    `json:"no_telp" gorm:"type:varchar(255)"`
 	Nik          string    `json:"nik" gorm:"type:varchar(255)"`
-	FotoKaryawan string    `json:"foto_karyawan" gorm:"type:text[];nullable"`
+	FotoKaryawan string    `json:"foto_karyawan" gorm:"type:text;nullable"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 
