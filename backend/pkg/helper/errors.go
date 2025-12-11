@@ -31,4 +31,8 @@ var (
 	RoleNotFoundError     = func(id interface{}) error { return NewNotFoundError("Role", id) }
 	CustomerNotFoundError = func(id interface{}) error { return NewNotFoundError("Customer", id) }
 	KaryawanNotFoundError = func(id interface{}) error { return NewNotFoundError("Karyawan", id) }
+	MerkNotFoundError     = func(id interface{}) error { return NewNotFoundError("merk", id) }
+	TipeNotFoundError     = func(id interface{}) error { return NewNotFoundError("tipe", id) }
+	UkuranNotFoundError   = func(id interface{}) error { return NewNotFoundError("ukuran", id) }
+	WarnaNotFoundError    = func(id interface{}) error { return NewNotFoundError("warna", id) }
 )
