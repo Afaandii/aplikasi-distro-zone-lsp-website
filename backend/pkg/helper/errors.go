@@ -30,4 +30,5 @@ func NewNotFoundError(entity string, id interface{}) error {
 var (
 	RoleNotFoundError     = func(id interface{}) error { return NewNotFoundError("Role", id) }
 	CustomerNotFoundError = func(id interface{}) error { return NewNotFoundError("Customer", id) }
+	KaryawanNotFoundError = func(id interface{}) error { return NewNotFoundError("Karyawan", id) }
 )
