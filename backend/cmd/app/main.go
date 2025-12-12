@@ -22,14 +22,15 @@ func main() {
 
 	// auto generate jika belum ada table didatabase
 	db.AutoMigrate(&entities.Role{})
-	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Customer{})
 	db.AutoMigrate(&entities.Karyawan{})
-	db.AutoMigrate(&entities.Produk{})
 	db.AutoMigrate(&entities.Merk{})
 	db.AutoMigrate(&entities.Tipe{})
 	db.AutoMigrate(&entities.Ukuran{})
 	db.AutoMigrate(&entities.Warna{})
+	db.AutoMigrate(&entities.User{})
+	db.AutoMigrate(&entities.Produk{})
+	db.AutoMigrate(&entities.FotoProduk{})
 	supabase.InitStorage()
 
 	roleRepo := repo.NewRolePGRepository(db)
@@ -59,6 +60,9 @@ func main() {
 	produkrepo := repo.NewProdukPGRepository(db)
 	produkUc := usecase.NewProdukUsecase(produkrepo)
 	produkCtrl := controller.NewProdukController(produkUc)
+	fotoProdukRepo := repo.NewFotoProdukPGRepository(db)
+	fotoProdukUc := usecase.NewFotoProdukUsecase(fotoProdukRepo)
+	fotoProdukCtrl := controller.NewFotoProdukController(fotoProdukUc)
 
 	server.RegisterRoleRoutes(roleCtrl)
 	server.RegisterUserRoutes(userCtrl)
@@ -69,6 +73,7 @@ func main() {
 	server.RegisterUkuranRoutes(ukuranCtrl)
 	server.RegisterWarnaRoutes(warnaCtrl)
 	server.RegisterProdukRoutes(produkCtrl)
+	server.RegisterFotoProdukRoutes(fotoProdukCtrl)
 
 	port := os.Getenv("PORT")
 	if port == "" {

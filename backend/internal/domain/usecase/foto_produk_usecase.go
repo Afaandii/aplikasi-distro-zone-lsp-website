@@ -38,7 +38,7 @@ func (u *fotoProdukUsecase) GetByID(idFotoProduk int) (*entities.FotoProduk, err
 }
 
 func (u *fotoProdukUsecase) Create(id_produk int, url_foto string) (*entities.FotoProduk, error) {
-	fp := &entities.FotoProduk{IdProduk: id_produk, UrlFoto: url_foto}
+	fp := &entities.FotoProduk{IDProduk: id_produk, UrlFoto: url_foto}
 	err := u.repo.Create(fp)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (u *fotoProdukUsecase) Update(idFotoProduk int, id_produk int, url_foto str
 	if existing == nil {
 		return nil, helper.ProdukImageNotFoundError(idFotoProduk)
 	}
-	existing.IdProduk = id_produk
+	existing.IDProduk = id_produk
 	existing.UrlFoto = url_foto
 	err = u.repo.Update(existing)
 	if err != nil {
