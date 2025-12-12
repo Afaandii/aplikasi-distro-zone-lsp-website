@@ -10,7 +10,7 @@ type Tipe struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 
 	// hasmany ke produk
-	Produk []Produk `gorm:"foreignKey:IdTipe;references:IDTipe"`
+	Produk []Produk `gorm:"foreignKey:IdTipe;references:IDTipe;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
 }
 
 func (Tipe) TableName() string {

@@ -17,7 +17,7 @@ type User struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 
 	// Relasi
-	Role Role `gorm:"foreignKey:IdRole;references:IDRole"`
+	Role Role `gorm:"foreignKey:IdRole;references:IDRole;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
 }
 
 func (User) TableName() string {

@@ -25,6 +25,7 @@ func main() {
 	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Customer{})
 	db.AutoMigrate(&entities.Karyawan{})
+	db.AutoMigrate(&entities.Produk{})
 	db.AutoMigrate(&entities.Merk{})
 	db.AutoMigrate(&entities.Tipe{})
 	db.AutoMigrate(&entities.Ukuran{})
@@ -55,6 +56,9 @@ func main() {
 	warnaRepo := repo.NewWarnaPGRepository(db)
 	warnaUc := usecase.NewWarnaUsecase(warnaRepo)
 	warnaCtrl := controller.NewWarnaController(warnaUc)
+	produkrepo := repo.NewProdukPGRepository(db)
+	produkUc := usecase.NewProdukUsecase(produkrepo)
+	produkCtrl := controller.NewProdukController(produkUc)
 
 	server.RegisterRoleRoutes(roleCtrl)
 	server.RegisterUserRoutes(userCtrl)
@@ -64,6 +68,7 @@ func main() {
 	server.RegisterTipeRoutes(tipeCtrl)
 	server.RegisterUkuranRoutes(ukuranCtrl)
 	server.RegisterWarnaRoutes(warnaCtrl)
+	server.RegisterProdukRoutes(produkCtrl)
 
 	port := os.Getenv("PORT")
 	if port == "" {
