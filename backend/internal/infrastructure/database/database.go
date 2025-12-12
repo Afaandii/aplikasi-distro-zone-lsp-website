@@ -26,7 +26,7 @@ func ConnPostgre() (*gorm.DB, error) {
 		host, port, user, pass, dbName,
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: false})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true})
 	if err != nil {
 		return nil, fmt.Errorf("open connection error: %w", err)
 	}
