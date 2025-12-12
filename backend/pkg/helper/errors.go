@@ -28,14 +28,16 @@ func NewNotFoundError(entity string, id interface{}) error {
 
 // Predefined errors for common entities
 var (
-	RoleNotFoundError        = func(id interface{}) error { return NewNotFoundError("Role", id) }
-	UserNotFoundError        = func(id interface{}) error { return NewNotFoundError("user", id) }
-	CustomerNotFoundError    = func(id interface{}) error { return NewNotFoundError("Customer", id) }
-	KaryawanNotFoundError    = func(id interface{}) error { return NewNotFoundError("Karyawan", id) }
-	MerkNotFoundError        = func(id interface{}) error { return NewNotFoundError("merk", id) }
-	TipeNotFoundError        = func(id interface{}) error { return NewNotFoundError("tipe", id) }
-	UkuranNotFoundError      = func(id interface{}) error { return NewNotFoundError("ukuran", id) }
-	WarnaNotFoundError       = func(id interface{}) error { return NewNotFoundError("warna", id) }
-	ProdukNotFoundError      = func(id interface{}) error { return NewNotFoundError("produk", id) }
-	ProdukImageNotFoundError = func(id interface{}) error { return NewNotFoundError("produk image", id) }
+	RoleNotFoundError            = func(id interface{}) error { return NewNotFoundError("Role", id) }
+	UserNotFoundError            = func(id interface{}) error { return NewNotFoundError("user", id) }
+	CustomerNotFoundError        = func(id interface{}) error { return NewNotFoundError("Customer", id) }
+	KaryawanNotFoundError        = func(id interface{}) error { return NewNotFoundError("Karyawan", id) }
+	MerkNotFoundError            = func(id interface{}) error { return NewNotFoundError("merk", id) }
+	TipeNotFoundError            = func(id interface{}) error { return NewNotFoundError("tipe", id) }
+	UkuranNotFoundError          = func(id interface{}) error { return NewNotFoundError("ukuran", id) }
+	WarnaNotFoundError           = func(id interface{}) error { return NewNotFoundError("warna", id) }
+	ProdukNotFoundError          = func(id interface{}) error { return NewNotFoundError("produk", id) }
+	ProdukImageNotFoundError     = func(id interface{}) error { return NewNotFoundError("produk image", id) }
+	JamOperasionalNotFoundError  = func(id interface{}) error { return NewNotFoundError("jam operasional image", id) }
+	TarifPengirimanNotFoundError = func(id interface{}) error { return NewNotFoundError("tarif pengiriman image", id) }
 )
