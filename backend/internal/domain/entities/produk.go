@@ -16,11 +16,10 @@ type Produk struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 
 	// relasi
-	Merk       Merk         `gorm:"foreignKey:IdMerk;references:IDMerk"`
-	Tipe       Tipe         `gorm:"foreignKey:IdTipe;references:IDTipe"`
-	Ukuran     Ukuran       `gorm:"foreignKey:IdUkuran;references:IDUkuran"`
-	Warna      Warna        `gorm:"foreignKey:IdWarna;references:IDWarna"`
-	FotoProduk []FotoProduk `gorm:"foreignKey:IdProduk;references:IDProduk;constraint:OnDelete:CASCADE"`
+	Merk   Merk   `gorm:"foreignKey:IdMerk;references:IDMerk;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
+	Tipe   Tipe   `gorm:"foreignKey:IdTipe;references:IDTipe;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
+	Ukuran Ukuran `gorm:"foreignKey:IdUkuran;references:IDUkuran;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
+	Warna  Warna  `gorm:"foreignKey:IdWarna;references:IDWarna;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
 }
 
 func (Produk) TableName() string {
