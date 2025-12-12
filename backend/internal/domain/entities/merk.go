@@ -8,6 +8,9 @@ type Merk struct {
 	Keterangan string    `json:"keterangan" gorm:"type:varchar(255)"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
+
+	//has many produk
+	Produk []Produk `gorm:"foreignKey:IdMerk;references:IDMerk"`
 }
 
 func (Merk) TableName() string {

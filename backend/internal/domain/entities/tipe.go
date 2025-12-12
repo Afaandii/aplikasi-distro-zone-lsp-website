@@ -8,6 +8,9 @@ type Tipe struct {
 	Keterangan string    `json:"keterangan" gorm:"type:varchar(255)"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
+
+	// hasmany ke produk
+	Produk []Produk `gorm:"foreignKey:IdTipe;references:IDTipe"`
 }
 
 func (Tipe) TableName() string {

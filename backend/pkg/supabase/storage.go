@@ -26,7 +26,7 @@ func ptr[T any](v T) *T {
 	return &v
 }
 
-func UploadKaryawanPhoto(filename string, fileBytes []byte) (string, error) {
+func UploadUserPhoto(filename string, fileBytes []byte) (string, error) {
 	bucket := os.Getenv("SUPABASE_BUCKET_USER")
 	if bucket == "" {
 		return "", fmt.Errorf("SUPABASE_BUCKET_USER tidak ditemukan")

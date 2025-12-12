@@ -8,6 +8,9 @@ type Ukuran struct {
 	Keterangan string    `json:"keterangan" gorm:"type:varchar(255)"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
+
+	// hasmany ke produk
+	Produk []Produk `gorm:"foreignKey:IdUkuran;references:IDUkuran"`
 }
 
 func (Ukuran) TableName() string {

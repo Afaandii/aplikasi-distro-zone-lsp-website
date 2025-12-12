@@ -74,7 +74,7 @@ func (k *KaryawanController) Create(w http.ResponseWriter, r *http.Request) {
 		fileBytes, _ := io.ReadAll(file)
 		filename := fmt.Sprintf("karyawan/%d_%s", time.Now().Unix(), handler.Filename)
 
-		photoURL, err = supabase.UploadKaryawanPhoto(filename, fileBytes)
+		photoURL, err = supabase.UploadUserPhoto(filename, fileBytes)
 		if err != nil {
 			helper.WriteJSON(w, 500, map[string]string{"error": err.Error()})
 			return
@@ -127,7 +127,7 @@ func (k *KaryawanController) Update(w http.ResponseWriter, r *http.Request, idKa
 		fileBytes, _ := io.ReadAll(file)
 		filename := fmt.Sprintf("karyawan/%d_%s", time.Now().Unix(), handler.Filename)
 
-		photoURL, err = supabase.UploadKaryawanPhoto(filename, fileBytes)
+		photoURL, err = supabase.UploadUserPhoto(filename, fileBytes)
 		if err != nil {
 			helper.WriteJSON(w, 500, map[string]string{"error": err.Error()})
 			return

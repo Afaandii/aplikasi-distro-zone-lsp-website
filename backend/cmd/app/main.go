@@ -22,6 +22,7 @@ func main() {
 
 	// auto generate jika belum ada table didatabase
 	db.AutoMigrate(&entities.Role{})
+	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Customer{})
 	db.AutoMigrate(&entities.Karyawan{})
 	db.AutoMigrate(&entities.Merk{})
@@ -33,6 +34,9 @@ func main() {
 	roleRepo := repo.NewRolePGRepository(db)
 	roleUc := usecase.NewRoleUsecase(roleRepo)
 	roleCtrl := controller.NewRoleController(roleUc)
+	userRepo := repo.NewUserPGRepository(db)
+	userUc := usecase.NewUserUsecase(userRepo)
+	userCtrl := controller.NewUserController(userUc)
 	customerRepo := repo.NewCustomerPGRepository(db)
 	customerUc := usecase.NewCustomerUsecase(customerRepo)
 	customerCtrl := controller.NewCustomerController(customerUc)
@@ -53,6 +57,7 @@ func main() {
 	warnaCtrl := controller.NewWarnaController(warnaUc)
 
 	server.RegisterRoleRoutes(roleCtrl)
+	server.RegisterUserRoutes(userCtrl)
 	server.RegisterCutomerRoutes(customerCtrl)
 	server.RegisterKaryawanRoutes(karyawanCtrl)
 	server.RegisterMerkRoutes(merkCtrl)
