@@ -3,6 +3,7 @@ package supabase
 import (
 	"bytes"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
 
@@ -65,6 +66,35 @@ func UploadUserPhoto(filename string, fileBytes []byte) (string, error) {
 	)
 
 	return publicURL, nil
+}
+
+func DeleteUserPhoto(photoURL string) error {
+	bucket := os.Getenv("SUPABASE_BUCKET_USER")
+	if bucket == "" {
+		return fmt.Errorf("SUPABASE_BUCKET_USER tidak ditemukan")
+	}
+
+	u, err := url.Parse(photoURL)
+	if err != nil {
+		return fmt.Errorf("gagal parse URL: %w", err)
+	}
+
+	path := u.Path
+	prefix := fmt.Sprintf("/storage/v1/object/public/%s/", bucket)
+	if !strings.HasPrefix(path, prefix) {
+		return fmt.Errorf("URL format tidak valid untuk bucket ini")
+	}
+
+	// Dapatkan nama file dengan menghapus prefix
+	filename := strings.TrimPrefix(path, prefix)
+
+	// Method ini membutuhkan bucket dan slice of string untuk nama file
+	_, err = StorageClient.RemoveFile(bucket, []string{filename})
+	if err != nil {
+		return fmt.Errorf("gagal menghapus file: %w", err)
+	}
+
+	return nil
 }
 
 func UploadProductPhoto(filename string, fileBytes []byte) (string, error) {
