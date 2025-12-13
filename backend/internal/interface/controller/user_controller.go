@@ -120,12 +120,28 @@ func (usr *UserController) Update(w http.ResponseWriter, r *http.Request, idUser
 		return
 	}
 
-	var photoURL string
+	// AMBIL DATA USER YANG SUDAH ADA UNTUK MENDAPATKAN FOTO LAMA
+	existingUser, err := usr.UC.GetByID(idUser)
+	if err != nil {
+		helper.WriteJSON(w, 404, map[string]string{"error": "user not found"})
+		return
+	}
 
-	// cek apakah ada file
+	// GUNAKAN FOTO LAMA SEBAGAI NILAI DEFAULT
+	var photoURL string = existingUser.FotoProfile
+
+	// cek apakah ada file baru
 	file, handler, err := r.FormFile("foto_profile")
 	if err == nil {
 		defer file.Close()
+
+		// HAPUS FOTO LAMA JIKA ADA
+		if existingUser.FotoProfile != "" {
+			err = supabase.DeleteUserPhoto(existingUser.FotoProfile)
+			if err != nil {
+				fmt.Printf("Gagal menghapus foto lama: %v\n", err)
+			}
+		}
 
 		fileBytes, _ := io.ReadAll(file)
 		filename := fmt.Sprintf("user/%d_%s", time.Now().Unix(), handler.Filename)
@@ -158,7 +174,25 @@ func (usr *UserController) Update(w http.ResponseWriter, r *http.Request, idUser
 }
 
 func (usr *UserController) Delete(w http.ResponseWriter, r *http.Request, idUser int) {
-	err := usr.UC.Delete(idUser)
+	user, err := usr.UC.GetByID(idUser)
+	if err != nil {
+		var notFoundErr *helperPkg.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			helper.WriteJSON(w, http.StatusNotFound, map[string]string{"error": "user not found"})
+			return
+		}
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	if user.FotoProfile != "" {
+		err = supabase.DeleteUserPhoto(user.FotoProfile)
+		if err != nil {
+			fmt.Printf("Gagal menghapus foto user: %v\n", err)
+		}
+	}
+
+	err = usr.UC.Delete(idUser)
 	if err != nil {
 		var notFoundErr *helperPkg.NotFoundError
 		if errors.As(err, &notFoundErr) {
