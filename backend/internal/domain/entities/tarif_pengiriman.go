@@ -8,6 +8,8 @@ type TarifPengiriman struct {
 	HargaPerKg        int       `json:"harga_per_kg" gorm:"type:int"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
+
+	Pesanan []Pesanan `gorm:"foreignKey:TarifPengirimanRef;references:IDTarifPengiriman"`
 }
 
 func (TarifPengiriman) TableName() string {

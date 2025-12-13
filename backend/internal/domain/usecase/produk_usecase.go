@@ -39,10 +39,10 @@ func (u *produkUsecase) GetByID(idProduk int) (*entities.Produk, error) {
 
 func (u *produkUsecase) Create(id_merk int, id_tipe int, id_ukuran int, id_warna int, nama_kaos string, harga_jual int, harga_pokok int, stok_kaos int) (*entities.Produk, error) {
 	p := &entities.Produk{
-		IdMerk:     id_merk,
-		IdTipe:     id_tipe,
-		IdUkuran:   id_ukuran,
-		IdWarna:    id_warna,
+		MerkRef:    id_merk,
+		TipeRef:    id_tipe,
+		UkuranRef:  id_ukuran,
+		WarnaRef:   id_warna,
 		NamaKaos:   nama_kaos,
 		HargaJual:  harga_jual,
 		HargaPokok: harga_pokok,
@@ -63,10 +63,10 @@ func (u *produkUsecase) Update(idProduk int, id_merk int, id_tipe int, id_ukuran
 	if existing == nil {
 		return nil, helper.ProdukNotFoundError(idProduk)
 	}
-	existing.IdMerk = id_merk
-	existing.IdTipe = id_tipe
-	existing.IdUkuran = id_ukuran
-	existing.IdWarna = id_warna
+	existing.MerkRef = id_merk
+	existing.TipeRef = id_tipe
+	existing.UkuranRef = id_ukuran
+	existing.WarnaRef = id_warna
 	existing.NamaKaos = nama_kaos
 	existing.HargaJual = harga_jual
 	existing.HargaPokok = harga_pokok

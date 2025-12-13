@@ -12,8 +12,8 @@ type ChatCS struct {
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 
-	Pengirim User `gorm:"foreignKey:IDPengirim;references:IDPenerima;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
-	Penerima User `gorm:"foreignKey:IDPenerima;references:IDPenerima;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
+	Pengirim User `gorm:"foreignKey:IDPengirim;references:IDUser;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
+	Penerima User `gorm:"foreignKey:IDPenerima;references:IDUser;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
 }
 
 func (ChatCS) TableName() string {

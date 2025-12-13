@@ -1,10 +1,12 @@
 package entities
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	IDUser      int       `json:"id_user" gorm:"primaryKey;column:id_user;autoIncrement"`
-	IdRole      int       `json:"id_role" gorm:"column:id_role;not null"`
+	RoleRef     int       `json:"id_role" gorm:"column:id_role;not null"`
 	Nama        string    `json:"nama" gorm:"type:varchar(255)"`
 	Username    string    `json:"username" gorm:"type:varchar(255);unique"`
 	Password    string    `json:"password" gorm:"type:varchar(255)"`
@@ -16,10 +18,17 @@ type User struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 
-	// Relasi
-	Role Role `gorm:"foreignKey:IdRole;references:IDRole;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
+	// Relasi dengan constraint
+	Role Role `gorm:"foreignKey:RoleRef;references:IDRole;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+
+	Transaksi           []Transaksi  `gorm:"foreignKey:UserRef;references:IDUser"`
+	PesananDibuat       []Pesanan    `gorm:"foreignKey:PemesanRef;references:IDUser"`
+	PesananDiverifikasi []Pesanan    `gorm:"foreignKey:DiverifikasiRef;references:IDUser"`
+	Pembayaran          []Pembayaran `gorm:"foreignKey:UserRef;references:IDUser"`
+	Pengirim            []ChatCS     `gorm:"foreignKey:IDPengirim;references:IDUser"`
+	Penerima            []ChatCS     `gorm:"foreignKey:IDPenerima;references:IDUser"`
 }
 
 func (User) TableName() string {
-	return "user"
+	return "users"
 }
