@@ -1,6 +1,8 @@
 package entities
 
-import "time"
+import (
+	"time"
+)
 
 type Role struct {
 	IDRole     int       `json:"id_role" gorm:"primaryKey;column:id_role;autoIncrement"`
@@ -9,9 +11,9 @@ type Role struct {
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 
-	User []User `gorm:"foreignKey:IdRole;references:IDRole;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
+	Users []User `gorm:"foreignKey:RoleRef;references:IDRole;"`
 }
 
 func (Role) TableName() string {
-	return "role"
+	return "roles"
 }

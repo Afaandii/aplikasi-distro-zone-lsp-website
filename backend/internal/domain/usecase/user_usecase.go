@@ -48,7 +48,7 @@ func (u *userUsecase) Create(id_role int, nama string, username string, password
 	}
 
 	usr := &entities.User{
-		IdRole:      id_role,
+		RoleRef:     id_role,
 		Nama:        nama,
 		Username:    username,
 		Password:    string(hashedPassword),
@@ -80,7 +80,7 @@ func (u *userUsecase) Update(idUser int, id_role int, nama string, username stri
 		return nil, helper.UserNotFoundError(idUser)
 	}
 
-	usr.IdRole = id_role
+	usr.RoleRef = id_role
 	usr.Nama = nama
 	usr.Username = username
 	usr.Alamat = alamat

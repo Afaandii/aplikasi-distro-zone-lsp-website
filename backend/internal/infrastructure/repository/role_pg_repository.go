@@ -18,7 +18,7 @@ func NewRolePGRepository(db *gorm.DB) repo.RoleRepository {
 
 func (r *rolePGRepository) FindAll() ([]entities.Role, error) {
 	var list []entities.Role
-	if err := r.db.Order("id_role").Find(&list).Error; err != nil {
+	if err := r.db.Preload("Users").Order("id_role").Find(&list).Error; err != nil {
 		return nil, err
 	}
 	return list, nil

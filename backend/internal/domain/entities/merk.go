@@ -10,7 +10,7 @@ type Merk struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 
 	//has many produk
-	Produk []Produk `gorm:"foreignKey:IdMerk;references:IDMerk;constraint:OnUpdate:RESTRICT,OnDelete:CASCADE"`
+	Produk []Produk `gorm:"foreignKey:MerkRef;references:IDMerk"`
 }
 
 func (Merk) TableName() string {

@@ -43,10 +43,10 @@ func (p *produkPGRepository) Update(u *entities.Produk) error {
 	result := p.db.Model(&entities.Produk{}).
 		Where("id_produk = ?", u.IDProduk).
 		Updates(map[string]interface{}{
-			"id_merk":     u.IdMerk,
-			"id_tipe":     u.IdTipe,
-			"id_ukuran":   u.IdUkuran,
-			"id_warna":    u.IdWarna,
+			"id_merk":     u.MerkRef,
+			"id_tipe":     u.TipeRef,
+			"id_ukuran":   u.UkuranRef,
+			"id_warna":    u.WarnaRef,
 			"nama_kaos":   u.NamaKaos,
 			"harga_jual":  u.HargaJual,
 			"harga_pokok": u.HargaPokok,
