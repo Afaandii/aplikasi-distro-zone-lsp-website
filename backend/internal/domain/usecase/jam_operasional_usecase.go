@@ -4,14 +4,13 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	"aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"aplikasi-distro-zone-lsp-website/pkg/helper"
-	"time"
 )
 
 type JamOperasionalUsecase interface {
 	GetAll() ([]entities.JamOperasional, error)
 	GetByID(idJamOperasional int) (*entities.JamOperasional, error)
-	Create(tipe_layanan string, hari string, jam_buka time.Time, jam_tutup time.Time, status string) (*entities.JamOperasional, error)
-	Update(idJamOperasional int, tipe_layanan string, hari string, jam_buka time.Time, jam_tutup time.Time, status string) (*entities.JamOperasional, error)
+	Create(tipe_layanan string, hari string, jam_buka string, jam_tutup string, status string) (*entities.JamOperasional, error)
+	Update(idJamOperasional int, tipe_layanan string, hari string, jam_buka string, jam_tutup string, status string) (*entities.JamOperasional, error)
 	Delete(idJamOperasional int) error
 }
 
@@ -38,7 +37,7 @@ func (u *jamOperasionalUsecase) GetByID(idJamOperasional int) (*entities.JamOper
 	return jo, nil
 }
 
-func (u *jamOperasionalUsecase) Create(tipe_layanan string, hari string, jam_buka time.Time, jam_tutup time.Time, status string) (*entities.JamOperasional, error) {
+func (u *jamOperasionalUsecase) Create(tipe_layanan string, hari string, jam_buka string, jam_tutup string, status string) (*entities.JamOperasional, error) {
 	jo := &entities.JamOperasional{
 		TipeLayanan: tipe_layanan,
 		Hari:        hari,
@@ -53,7 +52,7 @@ func (u *jamOperasionalUsecase) Create(tipe_layanan string, hari string, jam_buk
 	return jo, nil
 }
 
-func (u *jamOperasionalUsecase) Update(idJamOperasional int, tipe_layanan string, hari string, jam_buka time.Time, jam_tutup time.Time, status string) (*entities.JamOperasional, error) {
+func (u *jamOperasionalUsecase) Update(idJamOperasional int, tipe_layanan string, hari string, jam_buka string, jam_tutup string, status string) (*entities.JamOperasional, error) {
 	existing, err := u.repo.FindByID(idJamOperasional)
 	if err != nil {
 		return nil, err
