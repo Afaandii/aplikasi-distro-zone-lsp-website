@@ -20,17 +20,23 @@ func main() {
 		log.Fatal("db connect:", err)
 	}
 
-	// auto generate jika belum ada table didatabase
+	// auto generate model entities jika belum ada table didatabase
 	db.AutoMigrate(&entities.Role{})
-	db.AutoMigrate(&entities.Customer{})
-	db.AutoMigrate(&entities.Karyawan{})
+	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Merk{})
 	db.AutoMigrate(&entities.Tipe{})
 	db.AutoMigrate(&entities.Ukuran{})
 	db.AutoMigrate(&entities.Warna{})
-	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Produk{})
 	db.AutoMigrate(&entities.FotoProduk{})
+	db.AutoMigrate(&entities.JamOperasional{})
+	db.AutoMigrate(&entities.TarifPengiriman{})
+	db.AutoMigrate(&entities.ChatCS{})
+	db.AutoMigrate(&entities.Pesanan{})
+	db.AutoMigrate(&entities.DetailPesanan{})
+	db.AutoMigrate(&entities.Transaksi{})
+	db.AutoMigrate(&entities.DetailTransaksi{})
+	db.AutoMigrate(&entities.Pembayaran{})
 	supabase.InitStorage()
 
 	roleRepo := repo.NewRolePGRepository(db)
@@ -63,6 +69,12 @@ func main() {
 	fotoProdukRepo := repo.NewFotoProdukPGRepository(db)
 	fotoProdukUc := usecase.NewFotoProdukUsecase(fotoProdukRepo)
 	fotoProdukCtrl := controller.NewFotoProdukController(fotoProdukUc)
+	tarifPengirimanRepo := repo.NewTarifPengirimanPGRepository(db)
+	tarifPengirimanUc := usecase.NewTarifPengirimanUsecase(tarifPengirimanRepo)
+	tarifPengirimanCtrl := controller.NewTarifPengirimanController(tarifPengirimanUc)
+	jamOperasionalRepo := repo.NewJamOperasionalPGRepository(db)
+	jamOperasionalUc := usecase.NewJamOperasionalUsecase(jamOperasionalRepo)
+	jamOperasionalCtrl := controller.NewJamOperasionalController(jamOperasionalUc)
 
 	server.RegisterRoleRoutes(roleCtrl)
 	server.RegisterUserRoutes(userCtrl)
@@ -74,6 +86,8 @@ func main() {
 	server.RegisterWarnaRoutes(warnaCtrl)
 	server.RegisterProdukRoutes(produkCtrl)
 	server.RegisterFotoProdukRoutes(fotoProdukCtrl)
+	server.RegisterTarifPengirimanRoutes(tarifPengirimanCtrl)
+	server.RegisterJamOperasionalRoutes(jamOperasionalCtrl)
 
 	port := os.Getenv("PORT")
 	if port == "" {
