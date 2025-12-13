@@ -56,26 +56,28 @@ func (jo *JamOperasionalController) Create(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// 2. Parsing string waktu ke time.Time
-	const timeLayout = "15:04" // Format standar Go untuk HH:MM (format_jam:fortmat_menit)
-	jamBuka, err := time.Parse(timeLayout, payload.JamBuka)
-	if err != nil {
-		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Format jam_buka tidak valid, gunakan format HH:MM (contoh: 09:00)"})
+	// VALIDASI FORMAT JAM (SAJA)
+	const timeLayout = "15:04"
+	if _, err := time.Parse(timeLayout, payload.JamBuka); err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "Format jam_buka harus HH:MM (contoh: jam:menit)",
+		})
 		return
 	}
 
-	jamTutup, err := time.Parse(timeLayout, payload.JamTutup)
-	if err != nil {
-		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Format jam_tutup tidak valid, gunakan format HH:MM"})
+	if _, err := time.Parse(timeLayout, payload.JamTutup); err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "Format jam_tutup harus HH:MM",
+		})
 		return
 	}
 
-	// 3. Kirim data yang sudah bertipe time.Time ke usecase
+	// KIRIM STRING KE USECASE
 	created, err := jo.UC.Create(
 		strings.TrimSpace(payload.TipeLayanan),
 		strings.TrimSpace(payload.Hari),
-		jamBuka,
-		jamTutup,
+		payload.JamBuka,
+		payload.JamTutup,
 		strings.TrimSpace(payload.Status),
 	)
 	if err != nil {
@@ -100,27 +102,23 @@ func (jo *JamOperasionalController) Update(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// 2. Parsing string waktu ke time.Time
 	const timeLayout = "15:04"
-	jamBuka, err := time.Parse(timeLayout, payload.JamBuka)
-	if err != nil {
-		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Format jam_buka tidak valid, gunakan format HH:MM"})
+	if _, err := time.Parse(timeLayout, payload.JamBuka); err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Format jam_buka harus HH:MM"})
 		return
 	}
 
-	jamTutup, err := time.Parse(timeLayout, payload.JamTutup)
-	if err != nil {
-		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Format jam_tutup tidak valid, gunakan format HH:MM"})
+	if _, err := time.Parse(timeLayout, payload.JamTutup); err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Format jam_tutup harus HH:MM"})
 		return
 	}
 
-	// 3. Kirim data yang sudah bertipe time.Time ke usecase
 	updated, err := jo.UC.Update(
 		idJamOperasional,
 		strings.TrimSpace(payload.TipeLayanan),
 		strings.TrimSpace(payload.Hari),
-		jamBuka,
-		jamTutup,
+		payload.JamBuka,
+		payload.JamTutup,
 		strings.TrimSpace(payload.Status),
 	)
 	if err != nil {
