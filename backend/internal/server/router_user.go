@@ -2,13 +2,31 @@ package server
 
 import (
 	"aplikasi-distro-zone-lsp-website/internal/interface/controller"
+	"aplikasi-distro-zone-lsp-website/pkg/middleware"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
 func RegisterUserRoutes(c *controller.UserController) {
-	http.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
+
+	http.HandleFunc("/api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.Login(w, r)
+	})
+
+	http.HandleFunc("/api/v1/auth/register", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.Register(w, r)
+	})
+
+	http.HandleFunc("/api/v1/user", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			c.GetAll(w, r)
@@ -17,15 +35,18 @@ func RegisterUserRoutes(c *controller.UserController) {
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
-	})
+	}))
 
-	http.HandleFunc("/user/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1/user/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
-		if len(parts) != 2 {
-			w.WriteHeader(http.StatusNotFound)
+		// Untuk request "/api/v1/user/1", parts akan menjadi ["api", "v1", "user", "1"]
+		// Kita butuh setidaknya 4 bagian untuk mendapatkan ID
+		if len(parts) < 4 {
+			http.Error(w, "Not Found", http.StatusNotFound)
 			return
 		}
-		id, err := strconv.Atoi(parts[1])
+		idStr := parts[len(parts)-1]
+		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -40,5 +61,5 @@ func RegisterUserRoutes(c *controller.UserController) {
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
-	})
+	}))
 }

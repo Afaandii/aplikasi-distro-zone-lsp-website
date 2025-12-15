@@ -5,6 +5,7 @@ import (
 	helper "aplikasi-distro-zone-lsp-website/internal/interface/helper"
 	helperPkg "aplikasi-distro-zone-lsp-website/pkg/helper"
 	"aplikasi-distro-zone-lsp-website/pkg/supabase"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -15,6 +16,18 @@ import (
 
 type UserController struct {
 	UC usecase.UserUsecase
+}
+
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type RegisterRequest struct {
+	Nama     string `json:"nama"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	NoTelp   string `json:"no_telp"`
 }
 
 func NewUserController(uc usecase.UserUsecase) *UserController {
@@ -116,7 +129,11 @@ func (usr *UserController) Update(w http.ResponseWriter, r *http.Request, idUser
 
 	idRole, err := strconv.Atoi(idRoleStr)
 	if err != nil {
-		helper.WriteJSON(w, 400, map[string]string{"error": "invalid id_role"})
+		if r.FormValue("id_role") == "" {
+			helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "id_role is required"})
+		} else {
+			helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id_role format"})
+		}
 		return
 	}
 
@@ -203,4 +220,63 @@ func (usr *UserController) Delete(w http.ResponseWriter, r *http.Request, idUser
 		return
 	}
 	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "deleted successfully!"})
+}
+
+func (usr *UserController) Login(w http.ResponseWriter, r *http.Request) {
+	var req LoginRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+		return
+	}
+
+	// Terima token dari usecase
+	user, token, err := usr.UC.Login(req.Username, req.Password)
+	if err != nil {
+		var authErr *helperPkg.AuthenticationError
+		if errors.As(err, &authErr) {
+			helper.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": authErr.Message})
+			return
+		}
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	// --- LOGIKA BARU: KIRIM TOKEN KE FRONTEND ---
+	helper.WriteJSON(w, http.StatusOK, map[string]interface{}{
+		"message": "Login successful",
+		"user":    user,
+		"token":   token,
+	})
+}
+
+func (usr *UserController) Register(w http.ResponseWriter, r *http.Request) {
+	var req RegisterRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+		return
+	}
+
+	// Validate required fields
+	if req.Nama == "" || req.Username == "" || req.Password == "" || req.NoTelp == "" {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "All fields are required"})
+		return
+	}
+
+	user, err := usr.UC.Register(req.Nama, req.Username, req.Password, req.NoTelp)
+	if err != nil {
+		var conflictErr *helperPkg.ConflictError
+		if errors.As(err, &conflictErr) {
+			helper.WriteJSON(w, http.StatusConflict, map[string]string{"error": conflictErr.Message})
+			return
+		}
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusCreated, map[string]interface{}{
+		"message": "Registration successful",
+		"user":    user,
+	})
 }

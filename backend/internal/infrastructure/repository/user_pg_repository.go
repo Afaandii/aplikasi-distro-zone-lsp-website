@@ -68,3 +68,22 @@ func (r *userPGRepository) Delete(idUser int) error {
 	}
 	return nil
 }
+
+func (r *userPGRepository) FindByUsername(username string) (*entities.User, error) {
+	var user entities.User
+	err := r.db.
+		Preload("Role").
+		First(&user, "username = ?", username).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userPGRepository) Register(u *entities.User) error {
+	return r.db.Create(u).Error
+}
