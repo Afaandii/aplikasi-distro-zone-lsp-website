@@ -11,13 +11,13 @@ export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate(); // Tambahkan hook useNavigate
-  const [searchParams] = useSearchParams(); // Tambahkan hook useSearchParams
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const redirectUrl = searchParams.get("redirect");
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -26,15 +26,15 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:8000/api/v1/auth/login", {
-        email,
+      const res = await axios.post("http://localhost:8080/api/v1/auth/login", {
+        username,
         password,
         remember_me: isChecked,
       });
 
-      if (res.status === 201) {
-        const token = res.data.data.token;
-        const user = res.data.data.user;
+      if (res.status === 200) {
+        const token = res.data.token;
+        const user = res.data.user;
 
         if (isChecked) {
           localStorage.setItem("token", token);
@@ -51,17 +51,20 @@ export default function SignInForm() {
         }
 
         if (redirectUrl) {
-          window.location.href = redirectUrl;
+          navigate(redirectUrl);
         } else {
-          if (user.role_id === 1) {
-            window.location.href = "/dashboard";
+          if (user.Role.IDRole === 1) {
+            navigate("/dashboard");
           } else {
-            window.location.href = "/";
+            navigate("/");
           }
         }
       }
     } catch (err: any) {
-      setErrorMessage(err.response?.data?.message || "Login gagal!");
+      setErrorMessage(
+        err.response?.data?.message ||
+          "Login gagal! Terjadi kesalahan pada server"
+      );
     }
 
     setLoading(false);
@@ -82,7 +85,7 @@ export default function SignInForm() {
               Halaman Login
             </h1>
             <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-              Masukan email dan password anda untuk login!
+              Masukan username dan password anda untuk login!
             </p>
           </div>
 
@@ -136,12 +139,12 @@ export default function SignInForm() {
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Email <span className="text-error-500">*</span>{" "}
+                    Username <span className="text-error-500">*</span>{" "}
                   </Label>
                   <Input
-                    placeholder="Masukan email kamu misal example@gmail.com"
-                    value={email}
-                    onChange={(e: any) => setEmail(e.target.value)}
+                    placeholder="Masukan username anda"
+                    value={username}
+                    onChange={(e: any) => setUsername(e.target.value)}
                   />
                 </div>
                 <div>
@@ -151,7 +154,7 @@ export default function SignInForm() {
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Masukan password kamu"
+                      placeholder="Masukan password anda"
                       value={password}
                       onChange={(e: any) => setPassword(e.target.value)}
                     />

@@ -20,7 +20,7 @@ import EditProdukImage from "./pages/ProdukImage/EditProdukImage";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import Home from "./pages/Dashboard/Home";
-import ProtectedRoute from "./components/protect/ProtectedRoute";
+// import ProtectedRoute from "./components/protect/ProtectedRoute";
 import Roles from "./pages/Roles/Roles";
 import CreateRoles from "./pages/Roles/CreateRoles";
 import EditRoles from "./pages/Roles/EditRoles";
@@ -53,43 +53,47 @@ export default function App() {
           {/* Dashboard Layout */}
           <Route
             element={
-              <ProtectedRoute adminOnly={true}>
-                <AppLayout />
-              </ProtectedRoute>
+              // <ProtectedRoute adminOnly={false}>
+              <AppLayout />
+              // </ProtectedRoute>
             }
           >
             {/* Dashbord admin homepage */}
             <Route path="/dashboard" element={<Home />} />
-            {/* Category Page */}
-            <Route path="/category" element={<Category />} />
-            <Route path="/create-category" element={<CreateCategory />} />
-            <Route path="/edit-category/:id" element={<EditCategory />} />
 
-            {/* Jenis Page */}
-            <Route path="/type" element={<Jenis />} />
-            <Route path="/create-type" element={<CreateJenis />} />
-            <Route path="/edit-type/:id" element={<EditJenis />} />
-
+            {/* Master menu */}
             {/* Merk Page */}
-            <Route path="/brand" element={<Merk />} />
-            <Route path="/create-brand" element={<CreateMerk />} />
-            <Route path="/edit-brand/:id" element={<EditMerk />} />
+            <Route path="/merk" element={<Merk />} />
+            <Route path="/create-merk" element={<CreateMerk />} />
+            <Route path="/edit-merk/:id" element={<EditMerk />} />
+            {/* Tipe Page */}
+            <Route path="/tipe" element={<Category />} />
+            <Route path="/create-tipe" element={<CreateCategory />} />
+            <Route path="/edit-tipe/:id" element={<EditCategory />} />
+            {/* Ukuran Page */}
+            <Route path="/ukuran" element={<Jenis />} />
+            <Route path="/create-ukuran" element={<CreateJenis />} />
+            <Route path="/edit-ukuran/:id" element={<EditJenis />} />
+            {/* Warna Page */}
+            <Route path="/warna" element={<Jenis />} />
+            <Route path="/create-warna" element={<CreateJenis />} />
+            <Route path="/edit-warna/:id" element={<EditJenis />} />
+            {/* Produk Page */}
+            <Route path="/produk" element={<Produk />} />
+            <Route path="/create-produk" element={<CreateProduct />} />
+            <Route path="/edit-produk/:id" element={<EditProduct />} />
 
-            {/* Product Page */}
-            <Route path="/product" element={<Produk />} />
-            <Route path="/create-product" element={<CreateProduct />} />
-            <Route path="/edit-product/:id" element={<EditProduct />} />
-
-            {/* Product Image Page */}
-            <Route path="/image-product" element={<ProdukImage />} />
+            {/* Produk Gambar */}
+            <Route path="/gambar-produk" element={<ProdukImage />} />
             <Route
-              path="/create-image-product"
+              path="/create-gambar-produk"
               element={<CreateProdukImage />}
             />
             <Route
-              path="/edit-image-product/:id"
+              path="/edit-gambar-produk/:id"
               element={<EditProdukImage />}
             />
+            {/* Master menu end */}
 
             {/* Roles page */}
             <Route path="/roles" element={<Roles />} />

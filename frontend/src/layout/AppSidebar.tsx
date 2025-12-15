@@ -6,6 +6,7 @@ import {
   FaCog,
   FaChevronDown,
   FaEllipsisH,
+  FaChartLine,
 } from "react-icons/fa";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
@@ -21,30 +22,43 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <FaExchangeAlt className="text-lg" />,
-    name: "Transaction",
+    name: "Transaksi",
     subItems: [
-      { name: "Payments", path: "/payment", pro: false },
+      { name: "Pembayaran", path: "/pembayaran", pro: false },
+      { name: "Pesanan", path: "/pesanan", pro: false },
+      { name: "Detail Pesanan", path: "/detail-pesanan", pro: false },
       { name: "Transaksi", path: "/transaksi", pro: false },
-      { name: "Detil Transaksi", path: "/detail-transaksi", pro: false },
+      { name: "Detail Transaksi", path: "/detail-transaksi", pro: false },
     ],
   },
   {
     icon: <FaDatabase className="text-lg" />,
     name: "Master",
     subItems: [
-      { name: "Kategori", path: "/category", pro: false },
-      { name: "Jenis", path: "/type", pro: false },
-      { name: "Merk", path: "/brand", pro: false },
-      { name: "Produk", path: "/product", pro: false },
-      { name: "Gambar Produk", path: "/image-product", pro: false },
+      { name: "Merk", path: "/merk", pro: false },
+      { name: "Tipe", path: "/tipe", pro: false },
+      { name: "Ukuran", path: "/ukuran", pro: false },
+      { name: "Warna", path: "/warna", pro: false },
+      { name: "Produk", path: "/produk", pro: false },
+      { name: "Gambar Produk", path: "/gambar-product", pro: false },
+      { name: "Tarif Pengiriman", path: "/tarif-pengiriman", pro: false },
+      { name: "Jam Operasional", path: "/jam-operasional", pro: false },
     ],
   },
   {
     icon: <FaCog className="text-lg" />,
-    name: "Settings",
+    name: "Pengaturan",
     subItems: [
-      { name: "User", path: "/users", pro: false },
-      { name: "Role", path: "/roles", pro: false },
+      { name: "User", path: "/pengguna", pro: false },
+      { name: "Role", path: "/peran", pro: false },
+    ],
+  },
+  {
+    icon: <FaChartLine className="text-lg" />,
+    name: "Laporan",
+    subItems: [
+      { name: "Laporan Transaksi", path: "/laporan-transaksi", pro: false },
+      { name: "Laporan Pesanan", path: "/laporan-pesanan", pro: false },
     ],
   },
 ];
@@ -68,42 +82,65 @@ const AppSidebar: React.FC = () => {
         return location.pathname === "/";
       }
 
-      // Untuk path khusus seperti /category, kita buat logika khusus
-      if (path === "/category") {
+      // Master
+      if (path === "/merk") {
         return (
-          location.pathname.startsWith("/category") ||
-          location.pathname.startsWith("/edit-category") ||
-          location.pathname.startsWith("/create-category")
+          location.pathname.startsWith("/merk") ||
+          location.pathname.startsWith("/edit-merk") ||
+          location.pathname.startsWith("/create-merk")
         );
       }
-      if (path === "/type") {
+      if (path === "/tipe") {
         return (
-          location.pathname.startsWith("/type") ||
-          location.pathname.startsWith("/edit-type") ||
-          location.pathname.startsWith("/create-type")
+          location.pathname.startsWith("/tipe") ||
+          location.pathname.startsWith("/edit-tipe") ||
+          location.pathname.startsWith("/create-tipe")
         );
       }
-      if (path === "/brand") {
+      if (path === "/ukuran") {
         return (
-          location.pathname.startsWith("/brand") ||
-          location.pathname.startsWith("/edit-brand") ||
-          location.pathname.startsWith("/create-brand")
+          location.pathname.startsWith("/ukuran") ||
+          location.pathname.startsWith("/edit-ukuran") ||
+          location.pathname.startsWith("/create-ukuran")
         );
       }
-      if (path === "/product") {
+      if (path === "/warna") {
         return (
-          location.pathname.startsWith("/product") ||
-          location.pathname.startsWith("/edit-product") ||
-          location.pathname.startsWith("/create-product")
+          location.pathname.startsWith("/warna") ||
+          location.pathname.startsWith("/edit-warna") ||
+          location.pathname.startsWith("/create-warna")
         );
       }
-      if (path === "/image-product") {
+      if (path === "/produk") {
         return (
-          location.pathname.startsWith("/image-product") ||
-          location.pathname.startsWith("/edit-image-product") ||
-          location.pathname.startsWith("/create-image-product")
+          location.pathname.startsWith("/produk") ||
+          location.pathname.startsWith("/edit-produk") ||
+          location.pathname.startsWith("/create-produk")
         );
       }
+      if (path === "/foto-produk") {
+        return (
+          location.pathname.startsWith("/foto-produk") ||
+          location.pathname.startsWith("/edit-foto-produk") ||
+          location.pathname.startsWith("/create-foto-produk")
+        );
+      }
+      if (path === "/tarif-pengiriman") {
+        return (
+          location.pathname.startsWith("/tarif-pengiriman") ||
+          location.pathname.startsWith("/edit-tarif-pengiriman") ||
+          location.pathname.startsWith("/create-tarif-pengiriman")
+        );
+      }
+      if (path === "/jam-operasional") {
+        return (
+          location.pathname.startsWith("/jam-operasional") ||
+          location.pathname.startsWith("/edit-jam-operasional") ||
+          location.pathname.startsWith("/create-jam-operasional")
+        );
+      }
+      // master end
+
       if (path === "/roles") {
         return (
           location.pathname.startsWith("/roles") ||
