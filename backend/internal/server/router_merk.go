@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterMerkRoutes(c *controller.MerkController) {
-	http.HandleFunc("/merk", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1/merk", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			c.GetAll(w, r)
@@ -19,13 +19,14 @@ func RegisterMerkRoutes(c *controller.MerkController) {
 		}
 	})
 
-	http.HandleFunc("/merk/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1/merk/", func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
-		if len(parts) != 2 {
+		if len(parts) < 4 {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
-		id, err := strconv.Atoi(parts[1])
+		idStr := parts[len(parts)-1]
+		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
