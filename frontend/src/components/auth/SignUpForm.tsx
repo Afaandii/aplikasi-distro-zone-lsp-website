@@ -124,6 +124,21 @@ export default function SignUpForm() {
             {/* FORM */}
             <form onSubmit={handleRegister}>
               <div className="space-y-5">
+                {/* Name */}
+                <div>
+                  <div className="sm:col-span-1">
+                    <Label>
+                      Nama<span className="text-error-500">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      placeholder="Masukan Nama anda"
+                      value={username}
+                      onChange={(e: any) => setUsername(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 {/* Username */}
                 <div>
                   <div className="sm:col-span-1">
@@ -139,14 +154,14 @@ export default function SignUpForm() {
                   </div>
                 </div>
 
-                {/* Email */}
+                {/* No telepon */}
                 <div>
                   <Label>
-                    Email<span className="text-error-500">*</span>
+                    No. Telepon<span className="text-error-500">*</span>
                   </Label>
                   <Input
                     type="email"
-                    placeholder="Masukan email anda misal @example.com"
+                    placeholder="Masukan no. telepon anda"
                     value={email}
                     onChange={(e: any) => setEmail(e.target.value)}
                   />
