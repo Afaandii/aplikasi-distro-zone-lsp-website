@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	"aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"aplikasi-distro-zone-lsp-website/pkg/helper"
+	"aplikasi-distro-zone-lsp-website/pkg/jwt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -14,6 +15,9 @@ type UserUsecase interface {
 	Create(id_role int, nama string, username string, password string, nik string, alamat string, kota string, no_telp string, foto_profile string) (*entities.User, error)
 	Update(idUser int, id_role int, nama string, username string, password string, nik string, alamat string, kota string, no_telp string, foto_profile string) (*entities.User, error)
 	Delete(idUser int) error
+
+	Login(username, password string) (*entities.User, string, error)
+	Register(nama string, username string, password string, no_telp string) (*entities.User, error)
 }
 
 type userUsecase struct {
@@ -114,4 +118,73 @@ func (u *userUsecase) Delete(idUser int) error {
 		return helper.UserNotFoundError(idUser)
 	}
 	return u.repo.Delete(idUser)
+}
+
+func (u *userUsecase) Login(username, password string) (*entities.User, string, error) {
+	user, err := u.repo.FindByUsername(username)
+	if err != nil {
+		return nil, "", err
+	}
+	if user == nil {
+		return nil, "", helper.UserNotFoundError(username)
+	}
+
+	// Compare the provided password with the stored hash
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return nil, "", helper.InvalidCredentialsError()
+	}
+
+	var roleName string
+	if user.Role.IDRole != 0 {
+		roleName = user.Role.NamaRole
+	} else {
+		roleName = "User"
+	}
+
+	tokenString, err := jwt.GenerateToken(user.IDUser, user.Username, roleName)
+	if err != nil {
+		// Jika gagal buat token, return error
+		return nil, "", err
+	}
+
+	// Jangan kirim password ke response
+	user.Password = ""
+
+	// Kembalikan user dan token
+	return user, tokenString, nil
+}
+
+func (u *userUsecase) Register(nama string, username string, password string, no_telp string) (*entities.User, error) {
+	// Check if username already exists
+	existingUser, err := u.repo.FindByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	if existingUser != nil {
+		return nil, helper.UsernameAlreadyExistsError(username)
+	}
+
+	// Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create new user with default role (assuming role 2 is for regular users)
+	user := &entities.User{
+		RoleRef:  2,
+		Nama:     nama,
+		Username: username,
+		Password: string(hashedPassword),
+		NoTelp:   no_telp,
+	}
+
+	if err := u.repo.Register(user); err != nil {
+		return nil, err
+	}
+
+	// Don't send password in response
+	user.Password = ""
+	return user, nil
 }

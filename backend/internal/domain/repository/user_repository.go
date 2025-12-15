@@ -8,4 +8,7 @@ type UserRepository interface {
 	Create(u *entities.User) error
 	Update(u *entities.User) error
 	Delete(idUser int) error
+
+	FindByUsername(username string) (*entities.User, error)
+	Register(u *entities.User) error
 }

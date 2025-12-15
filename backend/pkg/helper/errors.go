@@ -10,6 +10,22 @@ type NotFoundError struct {
 	ID     interface{}
 }
 
+type ConflictError struct {
+	Message string
+}
+
+func (e *ConflictError) Error() string {
+	return e.Message
+}
+
+type AuthenticationError struct {
+	Message string
+}
+
+func (e *AuthenticationError) Error() string {
+	return e.Message
+}
+
 // Error mengimplementasikan interface error
 func (e *NotFoundError) Error() string {
 	if e.ID != nil {
@@ -40,4 +56,6 @@ var (
 	ProdukImageNotFoundError     = func(id interface{}) error { return NewNotFoundError("produk image", id) }
 	JamOperasionalNotFoundError  = func(id interface{}) error { return NewNotFoundError("jam operasional image", id) }
 	TarifPengirimanNotFoundError = func(id interface{}) error { return NewNotFoundError("tarif pengiriman image", id) }
+	UsernameAlreadyExistsError   = func(username string) error { return NewNotFoundError("username already exists", username) }
+	InvalidCredentialsError      = func() error { return fmt.Errorf("invalid username or password") }
 )
