@@ -7,6 +7,7 @@ import (
 	repo "aplikasi-distro-zone-lsp-website/internal/infrastructure/repository"
 	"aplikasi-distro-zone-lsp-website/internal/interface/controller"
 	"aplikasi-distro-zone-lsp-website/internal/server"
+	config "aplikasi-distro-zone-lsp-website/pkg/config"
 	"aplikasi-distro-zone-lsp-website/pkg/supabase"
 	"fmt"
 	"log"
@@ -82,9 +83,10 @@ func main() {
 	server.RegisterJamOperasionalRoutes(jamOperasionalCtrl)
 
 	port := os.Getenv("PORT")
+	handleCors := config.CorsMiddleware(http.DefaultServeMux)
 	if port == "" {
 		port = "8080"
 	}
 	fmt.Println("Server is running on port", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, handleCors))
 }
