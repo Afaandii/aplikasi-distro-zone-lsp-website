@@ -7,13 +7,11 @@ import axios from "axios";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
-
-  // state form
+  const [nama, setNama] = useState("");
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+  const [noTelp, setNoTelp] = useState("");
   const [password, setPassword] = useState("");
 
-  // error & loading
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,28 +22,28 @@ export default function SignUpForm() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/auth/register",
+        "http://localhost:8080/api/v1/auth/register",
         {
-          role_id: 2,
-          name: username,
-          email: email,
+          nama: nama,
+          username: username,
+          no_telp: noTelp,
           password: password,
         }
       );
 
-      if (response.status === 201) {
+      if (response.status >= 200 && response.status < 300) {
         try {
           const loginResponse = await axios.post(
-            "http://localhost:8000/api/v1/auth/login",
+            "http://localhost:8080/api/v1/auth/login",
             {
-              email: email,
+              username: username,
               password: password,
             }
           );
 
-          if (loginResponse.data.status === "success") {
+          if (loginResponse.data.token) {
             // 3. Simpan token dari response login
-            const token = loginResponse.data.data.token;
+            const token = loginResponse.data.token;
             sessionStorage.setItem("token", token);
 
             // 4. Arahkan ke homepage
@@ -124,7 +122,7 @@ export default function SignUpForm() {
             {/* FORM */}
             <form onSubmit={handleRegister}>
               <div className="space-y-5">
-                {/* Name */}
+                {/* Nama */}
                 <div>
                   <div className="sm:col-span-1">
                     <Label>
@@ -133,8 +131,8 @@ export default function SignUpForm() {
                     <Input
                       type="text"
                       placeholder="Masukan Nama anda"
-                      value={username}
-                      onChange={(e: any) => setUsername(e.target.value)}
+                      value={nama}
+                      onChange={(e: any) => setNama(e.target.value)}
                     />
                   </div>
                 </div>
@@ -160,10 +158,10 @@ export default function SignUpForm() {
                     No. Telepon<span className="text-error-500">*</span>
                   </Label>
                   <Input
-                    type="email"
+                    type="text"
                     placeholder="Masukan no. telepon anda"
-                    value={email}
-                    onChange={(e: any) => setEmail(e.target.value)}
+                    value={noTelp}
+                    onChange={(e: any) => setNoTelp(e.target.value)}
                   />
                 </div>
 
