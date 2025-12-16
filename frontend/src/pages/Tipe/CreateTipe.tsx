@@ -1,47 +1,23 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function EditCategory() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+export default function CreateTipe() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
+    nama_tipe: "",
+    keterangan: "",
   });
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchCategory = async () => {
-    try {
-      const token = getToken();
-
-      const res = await axios.get(
-        `http://localhost:8000/api/v1/edit-categories/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const cat = res.data.datas;
-      if (cat) {
-        setFormData({
-          name: cat.category_name,
-          description: cat.description ?? "",
-        });
-      }
-    } catch (err) {
-      console.error("Error fetching category:", err);
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  useEffect(() => {
-    fetchCategory();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,11 +25,11 @@ export default function EditCategory() {
     const token = getToken();
 
     try {
-      const response = await axios.put(
-        `http://localhost:8000/api/v1/update-categories/${id}`,
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/tipe",
         {
-          category_name: formData.name,
-          description: formData.description,
+          nama_tipe: formData.nama_tipe,
+          keterangan: formData.keterangan,
         },
         {
           headers: {
@@ -63,18 +39,14 @@ export default function EditCategory() {
         }
       );
 
-      if (response.status === 200) {
-        setSuccessMessage("Kategori berhasil diperbarui.");
-        navigate("/category");
+      setFormData({ nama_tipe: "", keterangan: "" });
+      if (response.status === 201) {
+        setSuccessMessage("Tipe berhasil ditambahkan.");
+        navigate("/tipe");
       }
-    } catch (error) {
-      console.error("Error updating category:", error);
+    } catch (error: any) {
+      console.error("Error creating tipe:", error);
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -82,7 +54,7 @@ export default function EditCategory() {
       {/* Header Section */}
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">Form Edit Kategori</h1>
+          <h1 className="text-2xl font-bold text-white">Form Tambah Tipe</h1>
         </div>
       </section>
 
@@ -104,39 +76,40 @@ export default function EditCategory() {
             {/* Nama Kategori Field */}
             <div className="mb-4">
               <label
-                htmlFor="name"
+                htmlFor="nama_tipe"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Nama Kategori
+                Nama Tipe
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="nama_tipe"
+                name="nama_tipe"
+                value={formData.nama_tipe}
                 onChange={handleChange}
-                placeholder="Masukan nama kategori"
+                placeholder="Masukan nama tipe"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
 
-            {/* Description Field */}
+            {/* description Field */}
             <div className="mb-6">
               <label
-                htmlFor="description"
+                htmlFor="keterangan"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Description
+                Keterangan Tipe
               </label>
               <input
                 type="text"
-                id="description"
-                name="description"
-                value={formData.description}
+                id="keterangan"
+                name="keterangan"
+                value={formData.keterangan}
                 onChange={handleChange}
-                placeholder="Masukan description"
+                placeholder="Masukan keterangan"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
               />
             </div>
 
@@ -149,7 +122,7 @@ export default function EditCategory() {
                 Simpan
               </button>
               <Link
-                to="/category"
+                to="/tipe"
                 className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors duration-200"
               >
                 Kembali

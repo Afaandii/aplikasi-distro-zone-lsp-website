@@ -3,14 +3,14 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 
-type Category = {
-  id: number;
-  category_name: string;
-  description: string | null;
+type Tipe = {
+  id_tipe: number;
+  nama_tipe: string;
+  keterangan: string | null;
 };
 
-export default function Category() {
-  const [categories, setCategories] = useState<Category[]>([]);
+export default function Tipe() {
+  const [tipe, setTipe] = useState<Tipe[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,18 +18,18 @@ export default function Category() {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchCategories = async () => {
+  const fetchTipe = async () => {
     try {
       const token = getToken();
 
-      const res = await axios.get("http://localhost:8000/api/v1/categories", {
+      const res = await axios.get("http://localhost:8080/api/v1/tipe", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (res.data.status === "success") {
-        setCategories(res.data.data);
+      if (res.status === 200) {
+        setTipe(res.data);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -39,25 +39,22 @@ export default function Category() {
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchTipe();
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Anda yakin ingin menghapus kategori ini?")) return;
+    if (!window.confirm("Anda yakin ingin menghapus tipe ini?")) return;
 
     const token = getToken();
     try {
-      await axios.delete(
-        `http://localhost:8000/api/v1/delete-categories/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://localhost:8080/api/v1/tipe/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      setCategories((prev) => prev.filter((cat) => cat.id !== id));
-      setSuccessMessage("Kategori berhasil dihapus.");
+      setTipe((prev) => prev.filter((tp) => tp.id_tipe !== id));
+      setSuccessMessage("Tipe berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
@@ -70,12 +67,10 @@ export default function Category() {
       {/* Header Section */}
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">
-            Manage Tabel Kategori
-          </h1>
+          <h1 className="text-2xl font-bold text-white">Manage Tabel Tipe</h1>
 
           <Link
-            to="/create-category"
+            to="/create-tipe"
             className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
           >
             <FaPlus className="text-lg" />
@@ -85,9 +80,7 @@ export default function Category() {
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
-          <h3 className="text-lg font-semibold text-white">
-            DataTable Kategori
-          </h3>
+          <h3 className="text-lg font-semibold text-white">DataTable Tipe</h3>
         </div>
 
         <div className="p-4">
@@ -106,11 +99,11 @@ export default function Category() {
 
           {loading ? (
             <p className="text-gray-300 text-center">Loading Data...</p>
-          ) : categories.length === 0 ? (
+          ) : tipe.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-red-500 text-lg">Tidak ada data kategori</p>
+              <p className="text-red-500 text-lg">Tidak ada data tipe</p>
               <p className="text-gray-400 text-sm mt-2">
-                Silakan tambah kategori baru menggunakan tombol + di atas
+                Silakan tambah tipe baru menggunakan tombol + di atas
               </p>
             </div>
           ) : (
@@ -122,10 +115,10 @@ export default function Category() {
                       No
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Name Kategori
+                      Name Tipe
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Deskripsi
+                      Keterangan
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Aksi
@@ -134,26 +127,24 @@ export default function Category() {
                 </thead>
 
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
-                  {categories.map((cat, index) => (
-                    <tr key={cat.id} className="hover:bg-gray-700">
+                  {tipe.map((tp, index) => (
+                    <tr key={tp.id_tipe} className="hover:bg-gray-700">
                       <td className="px-4 py-3 text-white">{index + 1}</td>
-                      <td className="px-4 py-3 text-white">
-                        {cat.category_name}
-                      </td>
+                      <td className="px-4 py-3 text-white">{tp.nama_tipe}</td>
                       <td className="px-4 py-3 text-gray-300">
-                        {cat.description ?? "-"}
+                        {tp.keterangan}
                       </td>
 
                       <td className="px-4 py-3">
                         <Link
-                          to={`/edit-category/${cat.id}`}
+                          to={`/edit-tipe/${tp.id_tipe}`}
                           className="inline-flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded mr-2"
                         >
                           <FaEdit className="text-lg" />
                         </Link>
 
                         <button
-                          onClick={() => handleDelete(cat.id)}
+                          onClick={() => handleDelete(tp.id_tipe)}
                           className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded"
                         >
                           <FaTrash className="text-lg" />
