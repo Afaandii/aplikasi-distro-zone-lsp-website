@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 
-type Type = {
-  id: number;
-  type_name: string;
-  description: string | null;
+type Ukuran = {
+  id_ukuran: number;
+  nama_ukuran: string;
+  keterangan: string | null;
 };
 
-export default function Jenis() {
-  const [type, setType] = useState<Type[]>([]);
+export default function Ukuran() {
+  const [ukuran, setUkuran] = useState<Ukuran[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,18 +18,18 @@ export default function Jenis() {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchType = async () => {
+  const fetchUkuran = async () => {
     try {
       const token = getToken();
 
-      const res = await axios.get("http://localhost:8000/api/v1/type-product", {
+      const res = await axios.get("http://localhost:8080/api/v1/ukuran", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (res.data.status === "success") {
-        setType(res.data.data);
+      if (res.status === 200) {
+        setUkuran(res.data);
       }
     } catch (error) {
       console.error("Error fetching type product:", error);
@@ -39,7 +39,7 @@ export default function Jenis() {
   };
 
   useEffect(() => {
-    fetchType();
+    fetchUkuran();
   }, []);
 
   const handleDelete = async (id: number) => {
@@ -48,17 +48,14 @@ export default function Jenis() {
 
     const token = getToken();
     try {
-      await axios.delete(
-        `http://localhost:8000/api/v1/delete-type-product/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://localhost:8080/api/v1/ukuran/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      setType((prev) => prev.filter((type) => type.id !== id));
-      setSuccessMessage("Jenis berhasil dihapus.");
+      setUkuran((prev) => prev.filter((ukuran) => ukuran.id_ukuran !== id));
+      setSuccessMessage("Ukuran berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
@@ -70,10 +67,10 @@ export default function Jenis() {
     <>
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">Manage Tabel Jenis</h1>
+          <h1 className="text-2xl font-bold text-white">Manage Tabel Ukuran</h1>
 
           <Link
-            to="/create-type"
+            to="/create-ukuran"
             className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
           >
             <FaPlus className="text-lg" />
@@ -83,9 +80,7 @@ export default function Jenis() {
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
-          <h3 className="text-lg font-semibold text-white">
-            DataTable Kategori
-          </h3>
+          <h3 className="text-lg font-semibold text-white">DataTable Ukuran</h3>
         </div>
 
         <div className="p-4">
@@ -104,11 +99,11 @@ export default function Jenis() {
 
           {loading ? (
             <p className="text-gray-300 text-center">Loading Data...</p>
-          ) : type.length === 0 ? (
+          ) : ukuran.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-red-500 text-lg">Tidak ada data jenis</p>
+              <p className="text-red-500 text-lg">Tidak ada data ukuran</p>
               <p className="text-gray-400 text-sm mt-2">
-                Silakan tambah jenis baru menggunakan tombol + di atas
+                Silakan tambah ukuran baru menggunakan tombol + di atas
               </p>
             </div>
           ) : (
@@ -126,13 +121,13 @@ export default function Jenis() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Name Jenis
+                      Name Ukuran
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Deskripsi
+                      Keterangan Ukuran
                     </th>
                     <th
                       scope="col"
@@ -143,28 +138,28 @@ export default function Jenis() {
                   </tr>
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
-                  {type.map((jenis, index) => (
-                    <tr key={jenis.id} className="hover:bg-gray-700">
+                  {ukuran.map((ukuran, index) => (
+                    <tr key={ukuran.id_ukuran} className="hover:bg-gray-700">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
                         {index + 1}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {jenis.type_name}
+                        {ukuran.nama_ukuran}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                        {jenis.description}
+                        {ukuran.keterangan}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         {/* Tombol Edit */}
                         <Link
-                          to={`/edit-type/${jenis.id}`}
+                          to={`/edit-ukuran/${ukuran.id_ukuran}`}
                           className="inline-flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded mr-2 transition-colors duration-200"
                         >
                           <FaEdit className="text-lg" />
                         </Link>
                         {/* Tombol Hapus */}
                         <button
-                          onClick={() => handleDelete(jenis.id)}
+                          onClick={() => handleDelete(ukuran.id_ukuran)}
                           className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors duration-200"
                         >
                           <FaTrash className="text-lg" />

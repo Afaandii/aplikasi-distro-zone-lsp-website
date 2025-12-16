@@ -2,9 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import NotFound from "./pages/NotFound/NotFound";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Jenis from "./pages/Jenis/Jenis";
-import CreateJenis from "./pages/Jenis/CreateJenis";
-import EditJenis from "./pages/Jenis/EditJenis";
+import Jenis from "./pages/Ukuran/Ukuran";
+import CreateJenis from "./pages/Ukuran/CreateUkuran";
+import EditJenis from "./pages/Ukuran/EditUkuran";
 import Merk from "./pages/Merk/Merk";
 import CreateMerk from "./pages/Merk/CreateMerk";
 import EditMerk from "./pages/Merk/EditMerk";
@@ -37,6 +37,9 @@ import GlobalNotification from "./components/ui-toko/GlobalNotification";
 import Tipe from "./pages/Tipe/Tipe";
 import CreateTipe from "./pages/Tipe/CreateTipe";
 import EditTipe from "./pages/Tipe/EditTipe";
+import Ukuran from "./pages/Ukuran/Ukuran";
+import CreateUkuran from "./pages/Ukuran/CreateUkuran";
+import EditUkuran from "./pages/Ukuran/EditUkuran";
 
 export default function App() {
   return (
@@ -71,13 +74,13 @@ export default function App() {
             <Route path="/create-tipe" element={<CreateTipe />} />
             <Route path="/edit-tipe/:id_tipe" element={<EditTipe />} />
             {/* Ukuran Page */}
-            <Route path="/ukuran" element={<Jenis />} />
-            <Route path="/create-ukuran" element={<CreateJenis />} />
-            <Route path="/edit-ukuran/:id" element={<EditJenis />} />
+            <Route path="/ukuran" element={<Ukuran />} />
+            <Route path="/create-ukuran" element={<CreateUkuran />} />
+            <Route path="/edit-ukuran/:id_ukuran" element={<EditUkuran />} />
             {/* Warna Page */}
             <Route path="/warna" element={<Jenis />} />
             <Route path="/create-warna" element={<CreateJenis />} />
-            <Route path="/edit-warna/:id" element={<EditJenis />} />
+            <Route path="/edit-warna/:id_warna" element={<EditJenis />} />
             {/* Produk Page */}
             <Route path="/produk" element={<Produk />} />
             <Route path="/create-produk" element={<CreateProduct />} />
