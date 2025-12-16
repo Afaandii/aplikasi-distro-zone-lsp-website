@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-export default function EditMerk() {
-  const { id_merk } = useParams<{ id_merk: string }>();
+export default function EditWarna() {
+  const { id_warna } = useParams<{ id_warna: string }>();
   const navigate = useNavigate();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    nama_merk: "",
+    nama_warna: "",
     keterangan: "",
   });
 
@@ -16,32 +16,32 @@ export default function EditMerk() {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchMerk = async () => {
+  const fetchWarna = async () => {
     try {
       const token = getToken();
 
       const res = await axios.get(
-        `http://localhost:8080/api/v1/merk/${id_merk}`,
+        `http://localhost:8080/api/v1/warna/${id_warna}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       // Cari kategori sesuai ID
-      const mrk = res.data;
-      if (mrk) {
+      const wrn = res.data;
+      if (wrn) {
         setFormData({
-          nama_merk: mrk.nama_merk,
-          keterangan: mrk.keterangan ?? "",
+          nama_warna: wrn.nama_warna,
+          keterangan: wrn.keterangan ?? "",
         });
       }
     } catch (err) {
-      console.error("Error fetching category:", err);
+      console.error("Error fetching warna:", err);
     }
   };
 
   useEffect(() => {
-    fetchMerk();
+    fetchWarna();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,9 +50,9 @@ export default function EditMerk() {
     const token = getToken();
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/v1/merk/${id_merk}`,
+        `http://localhost:8080/api/v1/warna/${id_warna}`,
         {
-          nama_merk: formData.nama_merk,
+          nama_warna: formData.nama_warna,
           keterangan: formData.keterangan,
         },
         {
@@ -64,11 +64,11 @@ export default function EditMerk() {
       );
 
       if (response.status === 200) {
-        setSuccessMessage("Merk berhasil diperbarui.");
-        navigate("/merk");
+        setSuccessMessage("Warna berhasil diperbarui.");
+        navigate("/warna");
       }
     } catch (error) {
-      console.error("Error updating merk:", error);
+      console.error("Error updating warna:", error);
     }
   };
 
@@ -81,7 +81,7 @@ export default function EditMerk() {
     <>
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">Form Edit Merk</h1>
+          <h1 className="text-2xl font-bold text-white">Form Edit Warna</h1>
         </div>
       </section>
 
@@ -99,33 +99,33 @@ export default function EditMerk() {
         )}
         <div className="p-6">
           <form onSubmit={handleSubmit}>
-            {/* Nama merk */}
+            {/* Nama warna */}
             <div className="mb-4">
               <label
-                htmlFor="nama_merk"
+                htmlFor="nama_warna"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Nama Merk
+                Nama Warna
               </label>
               <input
                 type="text"
-                id="nama_merk"
-                name="nama_merk"
-                value={formData.nama_merk}
+                id="nama_warna"
+                name="nama_warna"
+                value={formData.nama_warna}
                 onChange={handleChange}
-                placeholder="Masukan nama merk"
+                placeholder="Masukan nama warna"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
 
-            {/* keterangan merk */}
+            {/* keterangan warna */}
             <div className="mb-6">
               <label
                 htmlFor="keterangan"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Keterangan Merk
+                Keterangan Warna
               </label>
               <input
                 type="text"
@@ -147,7 +147,7 @@ export default function EditMerk() {
                 Simpan
               </button>
               <Link
-                to="/merk"
+                to="/warna"
                 className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors duration-200"
               >
                 Kembali

@@ -32,7 +32,7 @@ export default function Tipe() {
         setTipe(res.data);
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error("Error fetching tipe:", error);
     }
 
     setLoading(false);
@@ -43,7 +43,7 @@ export default function Tipe() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Anda yakin ingin menghapus tipe ini?")) return;
+    if (!window.confirm("Anda yakin ingin menghapus tipe produk ini?")) return;
 
     const token = getToken();
     try {
