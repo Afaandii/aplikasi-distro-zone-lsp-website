@@ -2,9 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import NotFound from "./pages/NotFound/NotFound";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Category from "./pages/Category/Category";
-import CreateCategory from "./pages/Category/CreateCategory";
-import EditCategory from "./pages/Category/EditCategory";
 import Jenis from "./pages/Jenis/Jenis";
 import CreateJenis from "./pages/Jenis/CreateJenis";
 import EditJenis from "./pages/Jenis/EditJenis";
@@ -37,6 +34,9 @@ import Payments from "./pages/Payment/Payments";
 import Transaction from "./pages/Transaksi/Transaction";
 import DetailTransaction from "./pages/Transaksi/DetailTransaction";
 import GlobalNotification from "./components/ui-toko/GlobalNotification";
+import Tipe from "./pages/Tipe/Tipe";
+import CreateTipe from "./pages/Tipe/CreateTipe";
+import EditTipe from "./pages/Tipe/EditTipe";
 
 export default function App() {
   return (
@@ -67,9 +67,9 @@ export default function App() {
             <Route path="/create-merk" element={<CreateMerk />} />
             <Route path="/edit-merk/:id_merk" element={<EditMerk />} />
             {/* Tipe Page */}
-            <Route path="/tipe" element={<Category />} />
-            <Route path="/create-tipe" element={<CreateCategory />} />
-            <Route path="/edit-tipe/:id" element={<EditCategory />} />
+            <Route path="/tipe" element={<Tipe />} />
+            <Route path="/create-tipe" element={<CreateTipe />} />
+            <Route path="/edit-tipe/:id_tipe" element={<EditTipe />} />
             {/* Ukuran Page */}
             <Route path="/ukuran" element={<Jenis />} />
             <Route path="/create-ukuran" element={<CreateJenis />} />
