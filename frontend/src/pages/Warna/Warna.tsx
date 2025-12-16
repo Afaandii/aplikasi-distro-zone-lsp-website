@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 
-type Ukuran = {
-  id_ukuran: number;
-  nama_ukuran: string;
+type Warna = {
+  id_warna: number;
+  nama_warna: string;
   keterangan: string | null;
 };
 
-export default function Ukuran() {
-  const [ukuran, setUkuran] = useState<Ukuran[]>([]);
+export default function Warna() {
+  const [warna, setWarna] = useState<Warna[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,44 +18,43 @@ export default function Ukuran() {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchUkuran = async () => {
+  const fetchWarna = async () => {
     try {
       const token = getToken();
 
-      const res = await axios.get("http://localhost:8080/api/v1/ukuran", {
+      const res = await axios.get("http://localhost:8080/api/v1/warna", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (res.status === 200) {
-        setUkuran(res.data);
+        setWarna(res.data);
       }
     } catch (error) {
-      console.error("Error fetching ukuran produk:", error);
+      console.error("Error fetching warna produk:", error);
     }
 
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchUkuran();
+    fetchWarna();
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Anda yakin ingin menghapus ukuran produk ini?"))
-      return;
+    if (!window.confirm("Anda yakin ingin menghapus warna produk ini?")) return;
 
     const token = getToken();
     try {
-      await axios.delete(`http://localhost:8080/api/v1/ukuran/${id}`, {
+      await axios.delete(`http://localhost:8080/api/v1/warna/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setUkuran((prev) => prev.filter((ukuran) => ukuran.id_ukuran !== id));
-      setSuccessMessage("Ukuran berhasil dihapus.");
+      setWarna((prev) => prev.filter((warna) => warna.id_warna !== id));
+      setSuccessMessage("Warna berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
@@ -67,10 +66,9 @@ export default function Ukuran() {
     <>
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">Manage Tabel Ukuran</h1>
-
+          <h1 className="text-2xl font-bold text-white">Manage Tabel Warna</h1>
           <Link
-            to="/create-ukuran"
+            to="/create-warna"
             className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
           >
             <FaPlus className="text-lg" />
@@ -78,13 +76,14 @@ export default function Ukuran() {
         </div>
       </section>
 
+      {/* Card Container */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
-          <h3 className="text-lg font-semibold text-white">DataTable Ukuran</h3>
+          <h3 className="text-lg font-semibold text-white">DataTable Warna</h3>
         </div>
 
         <div className="p-4">
-          {/* Pesan Sukses */}
+          {/* Pesan Sukses (Alert) */}
           {successMessage && (
             <div className="mb-4 p-3 bg-green-600 text-white rounded-md flex items-center justify-between">
               <span>{successMessage}</span>
@@ -97,13 +96,14 @@ export default function Ukuran() {
             </div>
           )}
 
+          {/* Tabel */}
           {loading ? (
             <p className="text-gray-300 text-center">Loading Data...</p>
-          ) : ukuran.length === 0 ? (
+          ) : warna.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-red-500 text-lg">Tidak ada data ukuran</p>
+              <p className="text-red-500 text-lg">Tidak ada data warna</p>
               <p className="text-gray-400 text-sm mt-2">
-                Silakan tambah ukuran baru menggunakan tombol + di atas
+                Silakan tambah warna baru menggunakan tombol + di atas
               </p>
             </div>
           ) : (
@@ -121,13 +121,13 @@ export default function Ukuran() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Name Ukuran
+                      Nama Warna
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Keterangan Ukuran
+                      Keterangan
                     </th>
                     <th
                       scope="col"
@@ -138,28 +138,28 @@ export default function Ukuran() {
                   </tr>
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
-                  {ukuran.map((ukuran, index) => (
-                    <tr key={ukuran.id_ukuran} className="hover:bg-gray-700">
+                  {warna.map((warna, index) => (
+                    <tr key={warna.id_warna} className="hover:bg-gray-700">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
                         {index + 1}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {ukuran.nama_ukuran}
+                        {warna.nama_warna}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                        {ukuran.keterangan}
+                        {warna.keterangan}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         {/* Tombol Edit */}
                         <Link
-                          to={`/edit-ukuran/${ukuran.id_ukuran}`}
+                          to={`/edit-warna/${warna.id_warna}`}
                           className="inline-flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded mr-2 transition-colors duration-200"
                         >
                           <FaEdit className="text-lg" />
                         </Link>
                         {/* Tombol Hapus */}
                         <button
-                          onClick={() => handleDelete(ukuran.id_ukuran)}
+                          onClick={() => handleDelete(warna.id_warna)}
                           className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors duration-200"
                         >
                           <FaTrash className="text-lg" />

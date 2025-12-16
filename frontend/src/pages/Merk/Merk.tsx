@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 
-type Brand = {
+type Merk = {
   id_merk: number;
   nama_merk: string;
   keterangan: string | null;
 };
 
 export default function Merk() {
-  const [merk, setMerk] = useState<Brand[]>([]);
+  const [merk, setMerk] = useState<Merk[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +18,7 @@ export default function Merk() {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchBrand = async () => {
+  const fetchMerk = async () => {
     try {
       const token = getToken();
 
@@ -32,18 +32,18 @@ export default function Merk() {
         setMerk(res.data);
       }
     } catch (error) {
-      console.error("Error fetching brand product:", error);
+      console.error("Error fetching merk produk:", error);
     }
 
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchBrand();
+    fetchMerk();
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Anda yakin ingin menghapus merk product ini?")) return;
+    if (!window.confirm("Anda yakin ingin menghapus merk produk ini?")) return;
 
     const token = getToken();
     try {
