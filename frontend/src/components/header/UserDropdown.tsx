@@ -32,14 +32,11 @@ export default function UserDropdown() {
     const fetchUserData = async () => {
       const token = getToken();
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/v1/auth/user",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get("http://localhost:8080/api/v1/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.data.status === "Ok") {
           const data = response.data.data;

@@ -4,13 +4,13 @@ import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 
 type Brand = {
-  id: number;
-  brand_name: string;
-  description: string | null;
+  id_merk: number;
+  nama_merk: string;
+  keterangan: string | null;
 };
 
 export default function Merk() {
-  const [brand, setBrand] = useState<Brand[]>([]);
+  const [merk, setMerk] = useState<Brand[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,17 +22,14 @@ export default function Merk() {
     try {
       const token = getToken();
 
-      const res = await axios.get(
-        "http://localhost:8000/api/v1/brand-product",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get("http://localhost:8080/api/v1/merk", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      if (res.data.status === "success") {
-        setBrand(res.data.data);
+      if (res.status === 200) {
+        setMerk(res.data);
       }
     } catch (error) {
       console.error("Error fetching brand product:", error);
@@ -50,16 +47,13 @@ export default function Merk() {
 
     const token = getToken();
     try {
-      await axios.delete(
-        `http://localhost:8000/api/v1/delete-brand-product/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://localhost:8080/api/v1/merk/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      setBrand((prev) => prev.filter((brand) => brand.id !== id));
+      setMerk((prev) => prev.filter((merk) => merk.id_merk !== id));
       setSuccessMessage("Merk berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -74,7 +68,7 @@ export default function Merk() {
         <div className="flex items-center justify-between p-3 rounded-t-lg">
           <h1 className="text-2xl font-bold text-white">Manage Tabel Merk</h1>
           <Link
-            to="/create-brand"
+            to="/create-merk"
             className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
           >
             <FaPlus className="text-lg" />
@@ -105,7 +99,7 @@ export default function Merk() {
           {/* Tabel */}
           {loading ? (
             <p className="text-gray-300 text-center">Loading Data...</p>
-          ) : brand.length === 0 ? (
+          ) : merk.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-red-500 text-lg">Tidak ada data merk</p>
               <p className="text-gray-400 text-sm mt-2">
@@ -133,7 +127,7 @@ export default function Merk() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Deskripsi
+                      Keterangan
                     </th>
                     <th
                       scope="col"
@@ -144,28 +138,28 @@ export default function Merk() {
                   </tr>
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
-                  {brand.map((brand, index) => (
-                    <tr key={brand.id} className="hover:bg-gray-700">
+                  {merk.map((merk, index) => (
+                    <tr key={merk.id_merk} className="hover:bg-gray-700">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
                         {index + 1}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {brand.brand_name}
+                        {merk.nama_merk}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                        {brand.description}
+                        {merk.keterangan}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         {/* Tombol Edit */}
                         <Link
-                          to={`/edit-brand/${brand.id}`}
+                          to={`/edit-merk/${merk.id_merk}`}
                           className="inline-flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded mr-2 transition-colors duration-200"
                         >
                           <FaEdit className="text-lg" />
                         </Link>
                         {/* Tombol Hapus */}
                         <button
-                          onClick={() => handleDelete(brand.id)}
+                          onClick={() => handleDelete(merk.id_merk)}
                           className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors duration-200"
                         >
                           <FaTrash className="text-lg" />

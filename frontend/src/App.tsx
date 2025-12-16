@@ -20,7 +20,7 @@ import EditProdukImage from "./pages/ProdukImage/EditProdukImage";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import Home from "./pages/Dashboard/Home";
-// import ProtectedRoute from "./components/protect/ProtectedRoute";
+import ProtectedRoute from "./components/protect/ProtectedRoute";
 import Roles from "./pages/Roles/Roles";
 import CreateRoles from "./pages/Roles/CreateRoles";
 import EditRoles from "./pages/Roles/EditRoles";
@@ -53,9 +53,9 @@ export default function App() {
           {/* Dashboard Layout */}
           <Route
             element={
-              // <ProtectedRoute adminOnly={false}>
-              <AppLayout />
-              // </ProtectedRoute>
+              <ProtectedRoute adminOnly={true}>
+                <AppLayout />
+              </ProtectedRoute>
             }
           >
             {/* Dashbord admin homepage */}
@@ -65,7 +65,7 @@ export default function App() {
             {/* Merk Page */}
             <Route path="/merk" element={<Merk />} />
             <Route path="/create-merk" element={<CreateMerk />} />
-            <Route path="/edit-merk/:id" element={<EditMerk />} />
+            <Route path="/edit-merk/:id_merk" element={<EditMerk />} />
             {/* Tipe Page */}
             <Route path="/tipe" element={<Category />} />
             <Route path="/create-tipe" element={<CreateCategory />} />
