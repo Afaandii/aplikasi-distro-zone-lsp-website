@@ -3,13 +3,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function EditMerk() {
-  const { id } = useParams<{ id: string }>(); 
+  const { id_merk } = useParams<{ id_merk: string }>();
   const navigate = useNavigate();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState({
-    brand_name: "",
-    description: "",
+    nama_merk: "",
+    keterangan: "",
   });
 
   const getToken = () => {
@@ -18,18 +18,21 @@ export default function EditMerk() {
 
   const fetchMerk = async () => {
     try {
-      const token = getToken()
+      const token = getToken();
 
-      const res = await axios.get(`http://localhost:8000/api/v1/edit-brand-product/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `http://localhost:8080/api/v1/merk/${id_merk}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       // Cari kategori sesuai ID
-      const typ = res.data.datas
-      if (typ) {
+      const mrk = res.data;
+      if (mrk) {
         setFormData({
-          brand_name: typ.brand_name,
-          description: typ.description ?? "",
+          nama_merk: mrk.nama_merk,
+          keterangan: mrk.keterangan ?? "",
         });
       }
     } catch (err) {
@@ -44,13 +47,13 @@ export default function EditMerk() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = getToken()
+    const token = getToken();
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/v1/update-brand-product/${id}`,
+        `http://localhost:8080/api/v1/merk/${id_merk}`,
         {
-          brand_name: formData.brand_name,
-          description: formData.description,
+          nama_merk: formData.nama_merk,
+          keterangan: formData.keterangan,
         },
         {
           headers: {
@@ -61,11 +64,11 @@ export default function EditMerk() {
       );
 
       if (response.status === 201) {
-        setSuccessMessage("Brand berhasil diperbarui.");
-        navigate("/brand");
+        setSuccessMessage("Merk berhasil diperbarui.");
+        navigate("/merk");
       }
     } catch (error) {
-      console.error("Error updating category:", error);
+      console.error("Error updating merk:", error);
     }
   };
 
@@ -84,53 +87,53 @@ export default function EditMerk() {
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         {successMessage && (
-            <div className="mb-4 p-3 bg-green-600 text-white rounded-md flex items-center justify-between">
-              <span>{successMessage}</span>
-              <button
-                onClick={() => setSuccessMessage(null)}
-                className="ml-2 text-white hover:text-gray-200"
-              >
-                &times;
-              </button>
-            </div>
-          )}
+          <div className="mb-4 p-3 bg-green-600 text-white rounded-md flex items-center justify-between">
+            <span>{successMessage}</span>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="ml-2 text-white hover:text-gray-200"
+            >
+              &times;
+            </button>
+          </div>
+        )}
         <div className="p-6">
           <form onSubmit={handleSubmit}>
             {/* Nama merk */}
             <div className="mb-4">
               <label
-                htmlFor="brand_name"
+                htmlFor="nama_merk"
                 className="block text-sm font-medium text-white mb-1"
               >
                 Nama Merk
               </label>
               <input
                 type="text"
-                id="brand_name"
-                name="brand_name"
-                value={formData.brand_name}
+                id="nama_merk"
+                name="nama_merk"
+                value={formData.nama_merk}
                 onChange={handleChange}
-                placeholder="Masukan nama kategori"
+                placeholder="Masukan nama merk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
 
-            {/* deskripsi merk */}
+            {/* keterangan merk */}
             <div className="mb-6">
               <label
-                htmlFor="description"
+                htmlFor="keterangan"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Deskripsi
+                Keterangan Merk
               </label>
               <input
                 type="text"
-                id="description"
-                name="description"
-                value={formData.description}
+                id="keterangan"
+                name="keterangan"
+                value={formData.keterangan}
                 onChange={handleChange}
-                placeholder="Masukan description merk"
+                placeholder="Masukan keterangan merk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -144,7 +147,7 @@ export default function EditMerk() {
                 Simpan
               </button>
               <Link
-                to="/brand"
+                to="/merk"
                 className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors duration-200"
               >
                 Kembali

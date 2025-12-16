@@ -7,8 +7,8 @@ export default function CreateMerk() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    brand_name: "",
-    description: "",
+    nama_merk: "",
+    keterangan: "",
   });
 
   const getToken = () => {
@@ -23,14 +23,14 @@ export default function CreateMerk() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = getToken()
+    const token = getToken();
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/create-brand-product",
+        "http://localhost:8080/api/v1/merk",
         {
-          brand_name: formData.brand_name,
-          description: formData.description,
+          nama_merk: formData.nama_merk,
+          keterangan: formData.keterangan,
         },
         {
           headers: {
@@ -39,14 +39,14 @@ export default function CreateMerk() {
           },
         }
       );
-      
-      setFormData({ brand_name: "", description: "" });
+
+      setFormData({ nama_merk: "", keterangan: "" });
       if (response.status === 201) {
-        setSuccessMessage("Brand berhasil ditambahkan.");
-        navigate("/brand");
+        setSuccessMessage("Merk berhasil ditambahkan.");
+        navigate("/merk");
       }
     } catch (error: any) {
-      console.error("Error creating brand:", error);
+      console.error("Error creating merk:", error);
     }
   };
 
@@ -58,17 +58,17 @@ export default function CreateMerk() {
         </div>
       </section>
 
-        {successMessage && (
-            <div className="mb-4 p-3 bg-green-600 text-white rounded-md flex items-center justify-between">
-              <span>{successMessage}</span>
-              <button
-                onClick={() => setSuccessMessage(null)}
-                className="ml-2 text-white hover:text-gray-200"
-              >
-                &times;
-              </button>
-            </div>
-          )}
+      {successMessage && (
+        <div className="mb-4 p-3 bg-green-600 text-white rounded-md flex items-center justify-between">
+          <span>{successMessage}</span>
+          <button
+            onClick={() => setSuccessMessage(null)}
+            className="ml-2 text-white hover:text-gray-200"
+          >
+            &times;
+          </button>
+        </div>
+      )}
       {/* Form Card */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
@@ -76,16 +76,16 @@ export default function CreateMerk() {
             {/* Nama Kategori Field */}
             <div className="mb-4">
               <label
-                htmlFor="brand_name"
+                htmlFor="nama_merk"
                 className="block text-sm font-medium text-white mb-1"
               >
                 Nama Merk
               </label>
               <input
                 type="text"
-                id="brand_name"
-                name="brand_name"
-                value={formData.brand_name}
+                id="nama_merk"
+                name="nama_merk"
+                value={formData.nama_merk}
                 onChange={handleChange}
                 placeholder="Masukan nama merk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -96,18 +96,18 @@ export default function CreateMerk() {
             {/* description Field */}
             <div className="mb-6">
               <label
-                htmlFor="description"
+                htmlFor="keterangan"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Deskripsi
+                Keterangan Merk
               </label>
               <input
                 type="text"
-                id="description"
-                name="description"
-                value={formData.description}
+                id="keterangan"
+                name="keterangan"
+                value={formData.keterangan}
                 onChange={handleChange}
-                placeholder="Masukan description merk"
+                placeholder="Masukan keterangan merk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -122,7 +122,7 @@ export default function CreateMerk() {
                 Simpan
               </button>
               <Link
-                to="/brand"
+                to="/merk"
                 className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors duration-200"
               >
                 Kembali
