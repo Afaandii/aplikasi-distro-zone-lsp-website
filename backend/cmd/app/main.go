@@ -70,6 +70,7 @@ func main() {
 	jamOperasionalRepo := repo.NewJamOperasionalPGRepository(db)
 	jamOperasionalUc := usecase.NewJamOperasionalUsecase(jamOperasionalRepo)
 	jamOperasionalCtrl := controller.NewJamOperasionalController(jamOperasionalUc)
+	masterDataCtrl := controller.NewMasterDataController(merkUc, tipeUc, ukuranUc, warnaUc)
 
 	server.RegisterRoleRoutes(roleCtrl)
 	server.RegisterUserRoutes(userCtrl)
@@ -77,7 +78,7 @@ func main() {
 	server.RegisterTipeRoutes(tipeCtrl)
 	server.RegisterUkuranRoutes(ukuranCtrl)
 	server.RegisterWarnaRoutes(warnaCtrl)
-	server.RegisterProdukRoutes(produkCtrl)
+	server.RegisterProdukRoutes(produkCtrl, masterDataCtrl)
 	server.RegisterFotoProdukRoutes(fotoProdukCtrl)
 	server.RegisterTarifPengirimanRoutes(tarifPengirimanCtrl)
 	server.RegisterJamOperasionalRoutes(jamOperasionalCtrl)
