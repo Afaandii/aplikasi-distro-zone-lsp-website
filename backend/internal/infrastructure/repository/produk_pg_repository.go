@@ -18,7 +18,7 @@ func NewProdukPGRepository(db *gorm.DB) repo.ProdukRepository {
 
 func (p *produkPGRepository) FindAll() ([]entities.Produk, error) {
 	var list []entities.Produk
-	if err := p.db.Order("id_produk").Find(&list).Error; err != nil {
+	if err := p.db.Preload("Merk").Preload("Tipe").Preload("Ukuran").Preload("Warna").Order("id_produk").Find(&list).Error; err != nil {
 		return nil, err
 	}
 	return list, nil
@@ -26,7 +26,7 @@ func (p *produkPGRepository) FindAll() ([]entities.Produk, error) {
 
 func (p *produkPGRepository) FindByID(idProduk int) (*entities.Produk, error) {
 	var pro entities.Produk
-	if err := p.db.First(&pro, idProduk).Error; err != nil {
+	if err := p.db.Preload("Merk").Preload("Tipe").Preload("Ukuran").Preload("Warna").First(&pro, idProduk).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
