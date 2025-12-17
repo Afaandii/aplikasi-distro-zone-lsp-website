@@ -40,7 +40,7 @@ const navItems: NavItem[] = [
       { name: "Ukuran", path: "/ukuran", pro: false },
       { name: "Warna", path: "/warna", pro: false },
       { name: "Produk", path: "/produk", pro: false },
-      { name: "Gambar Produk", path: "/gambar-product", pro: false },
+      { name: "Gambar Produk", path: "/foto-produk", pro: false },
       { name: "Tarif Pengiriman", path: "/tarif-pengiriman", pro: false },
       { name: "Jam Operasional", path: "/jam-operasional", pro: false },
     ],
