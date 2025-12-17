@@ -40,6 +40,9 @@ import EditProduk from "./pages/Produk/EditProduk";
 import GambarProduk from "./pages/ProdukImage/GambarProduk";
 import CreateGambarProduk from "./pages/ProdukImage/CreateGambarProduk";
 import EditGambarProduk from "./pages/ProdukImage/EditGambarProduk";
+import TarifPengiriman from "./pages/TarifPengiriman/TarifPengiriman";
+import CreateTarifPengiriman from "./pages/TarifPengiriman/CreateTarifPengiriman";
+import EditTarifPengiriman from "./pages/TarifPengiriman/EditTarifPengiriman";
 
 export default function App() {
   return (
@@ -88,7 +91,6 @@ export default function App() {
               path="/edit-produk/:id_foto_produk"
               element={<EditProduk />}
             />
-
             {/* Produk Gambar */}
             <Route path="/foto-produk" element={<GambarProduk />} />
             <Route
@@ -98,6 +100,16 @@ export default function App() {
             <Route
               path="/edit-foto-produk/:id_foto_produk"
               element={<EditGambarProduk />}
+            />
+            {/* Tarif Pengiriman */}
+            <Route path="/tarif-pengiriman" element={<TarifPengiriman />} />
+            <Route
+              path="/create-tarif-pengiriman"
+              element={<CreateTarifPengiriman />}
+            />
+            <Route
+              path="/edit-tarif-pengiriman/:id_tarif_pengiriman"
+              element={<EditTarifPengiriman />}
             />
             {/* Master menu end */}
 
