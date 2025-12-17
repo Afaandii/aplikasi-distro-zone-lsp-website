@@ -227,7 +227,7 @@ export default function Users() {
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         {/* Tombol Edit */}
                         <Link
-                          to={`/edit-users/${user.id_user}`}
+                          to={`/edit-user/${user.id_user}`}
                           className="inline-flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded mr-2 transition-colors duration-200"
                         >
                           <FaEdit className="text-lg" />
