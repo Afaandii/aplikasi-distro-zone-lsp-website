@@ -62,4 +62,12 @@ func RegisterUserRoutes(c *controller.UserController) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	}))
+
+	http.HandleFunc("/api/v1/user/kasir", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.GetCashiers(w, r)
+	}))
 }

@@ -11,6 +11,7 @@ import (
 
 type UserUsecase interface {
 	GetAll() ([]entities.User, error)
+	GetCashiers() ([]entities.User, error)
 	GetByID(idUser int) (*entities.User, error)
 	Create(id_role int, nama string, username string, password string, nik string, alamat string, kota string, no_telp string, foto_profile string) (*entities.User, error)
 	Update(idUser int, id_role int, nama string, username string, password string, nik string, alamat string, kota string, no_telp string, foto_profile string) (*entities.User, error)
@@ -41,6 +42,11 @@ func (u *userUsecase) GetByID(idUser int) (*entities.User, error) {
 		return nil, helper.UserNotFoundError(idUser)
 	}
 	return usr, nil
+}
+
+func (u *userUsecase) GetCashiers() ([]entities.User, error) {
+	// Role ID 2 is for Kasir (as shown in the database image)
+	return u.repo.FindByRole(2)
 }
 
 func (u *userUsecase) Create(id_role int, nama string, username string, password string,
