@@ -1,27 +1,28 @@
 import { useState, useEffect } from "react";
-import { data, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 
-type Product = {
-  id: number;
-  category_id: number;
-  type_id: number;
-  brand_id: number;
-  product_name: string;
-  price: number;
-  stock: number;
-  ratings: number;
-  spesification_product: string | null;
-  information_product: string | null;
+type Produk = {
+  id_produk: number;
+  id_merk: number;
+  id_tipe: number;
+  id_ukuran: number;
+  id_warna: number;
+  nama_kaos: string;
+  harga_jual: number;
+  harga_pokok: number;
+  stok_kaos: number;
 
-  brand_product?: { id: number; brand_name: string };
-  category?: { id: number; category_name: string };
-  type_product?: { id: number; type_name: string };
+  // ambil data relasi
+  Merk?: { id_merk: number; nama_merk: string };
+  Tipe?: { id_tipe: number; nama_tipe: string };
+  Ukuran?: { id_ukuran: number; nama_ukuran: string };
+  Warna?: { id_warna: number; nama_warna: string };
 };
 
 export default function Produk() {
-  const [product, setProduct] = useState<Product[]>([]);
+  const [produk, setProduk] = useState<Produk[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -29,43 +30,42 @@ export default function Produk() {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchProduct = async () => {
+  const fetchProduk = async () => {
     try {
       const token = getToken();
 
-      const res = await axios.get("http://localhost:8000/api/v1/product", {
+      const res = await axios.get("http://localhost:8080/api/v1/produk", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log(res.data);
-      if (res.data.status === "success") {
-        setProduct(res.data.data);
+      if (res.status === 200) {
+        setProduk(res.data);
       }
     } catch (error) {
-      console.error("Error fetching brand product:", error);
+      console.error("Error fetching produk:", error);
     }
 
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchProduct();
+    fetchProduk();
   }, []);
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("Anda yakin ingin menghapus product ini?")) return;
+  const handleDelete = async (id_produk: number) => {
+    if (!window.confirm("Anda yakin ingin menghapus produk ini?")) return;
 
     const token = getToken();
     try {
-      await axios.delete(`http://localhost:8000/api/v1/delete-product/${id}`, {
+      await axios.delete(`http://localhost:8080/api/v1/produk/${id_produk}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setProduct((prev) => prev.filter((prod) => prod.id !== id));
+      setProduk((prev) => prev.filter((prod) => prod.id_produk !== id_produk));
       setSuccessMessage("Produk berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -74,22 +74,21 @@ export default function Produk() {
     }
   };
 
-  const truncateText = (text: string | null, maxLength: number = 100) => {
-    if (!text) return "-";
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
-  };
+  // crop teks panjang spesifikasi dan informasi produk
+  // const truncateText = (text: string | null, maxLength: number = 100) => {
+  //   if (!text) return "-";
+  //   if (text.length <= maxLength) return text;
+  //   return text.substring(0, maxLength) + "...";
+  // };
 
   return (
     <>
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">
-            Manage Tabel Product
-          </h1>
+          <h1 className="text-2xl font-bold text-white">Manage Tabel Produk</h1>
           {/* Tombol Tambah */}
           <Link
-            to="/create-product"
+            to="/create-produk"
             className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
           >
             <FaPlus className="text-lg" />
@@ -100,9 +99,7 @@ export default function Produk() {
       {/* Card Container */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
-          <h3 className="text-lg font-semibold text-white">
-            DataTable Product
-          </h3>
+          <h3 className="text-lg font-semibold text-white">DataTable Produk</h3>
         </div>
 
         <div className="p-4">
@@ -122,7 +119,7 @@ export default function Produk() {
           {/* Tabel */}
           {loading ? (
             <p className="text-gray-300 text-center">Loading Data...</p>
-          ) : product.length === 0 ? (
+          ) : produk.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-red-500 text-lg">Tidak ada data produk</p>
               <p className="text-gray-400 text-sm mt-2">
@@ -144,19 +141,25 @@ export default function Produk() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Category_id
+                      Id Merk
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Jenis_id
+                      Id Tipe
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Merk_id
+                      Id Ukuran
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      Id Warna
                     </th>
                     <th
                       scope="col"
@@ -168,31 +171,19 @@ export default function Produk() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Price
+                      Harga Jual
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Stock
+                      Harga Pokok
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Rating
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-                    >
-                      Spesifikasi Produk
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-                    >
-                      Informasi Produk
+                      Stok Kaos
                     </th>
                     <th
                       scope="col"
@@ -203,49 +194,52 @@ export default function Produk() {
                   </tr>
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
-                  {product.map((product, index) => (
-                    <tr key={product.id} className="hover:bg-gray-700">
+                  {produk.map((prod, index) => (
+                    <tr key={prod.id_produk} className="hover:bg-gray-700">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
                         {index + 1}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {product.category?.category_name}
+                        {prod.Merk?.nama_merk}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {product.type_product?.type_name}
+                        {prod.Tipe?.nama_tipe}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {product.brand_product?.brand_name}
+                        {prod.Ukuran?.nama_ukuran}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {product.product_name}
+                        {prod.Warna?.nama_warna}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {product.price}
+                        {prod.nama_kaos}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {product.stock}
+                        {prod.harga_jual}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {product.ratings}
+                        {prod.harga_pokok}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        {prod.stok_kaos}
+                      </td>
+                      {/* <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
                         {truncateText(product.spesification_product)}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
                         {truncateText(product.information_product)}
-                      </td>
+                      </td> */}
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         {/* Tombol Edit */}
                         <Link
-                          to={`/edit-product/${product.id}`}
+                          to={`/edit-produk/${prod.id_produk}`}
                           className="inline-flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded mr-2 transition-colors duration-200"
                         >
                           <FaEdit className="text-lg" />
                         </Link>
                         {/* Tombol Hapus */}
                         <button
-                          onClick={() => handleDelete(product.id)}
+                          onClick={() => handleDelete(prod.id_produk)}
                           className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors duration-200"
                         >
                           <FaTrash className="text-lg" />

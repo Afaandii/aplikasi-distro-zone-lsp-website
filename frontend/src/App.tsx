@@ -6,8 +6,6 @@ import Merk from "./pages/Merk/Merk";
 import CreateMerk from "./pages/Merk/CreateMerk";
 import EditMerk from "./pages/Merk/EditMerk";
 import Produk from "./pages/Produk/Produk";
-import CreateProduct from "./pages/Produk/CreateProduk";
-import EditProduct from "./pages/Produk/EditProduk";
 import ProdukImage from "./pages/ProdukImage/ProdukImage";
 import CreateProdukImage from "./pages/ProdukImage/CreateProdukImage";
 import EditProdukImage from "./pages/ProdukImage/EditProdukImage";
@@ -40,6 +38,8 @@ import EditUkuran from "./pages/Ukuran/EditUkuran";
 import Warna from "./pages/Warna/Warna";
 import CreateWarna from "./pages/Warna/CreateWarna";
 import EditWarna from "./pages/Warna/EditWarna";
+import CreateProduk from "./pages/Produk/CreateProduk";
+import EditProduk from "./pages/Produk/EditProduk";
 
 export default function App() {
   return (
@@ -83,8 +83,8 @@ export default function App() {
             <Route path="/edit-warna/:id_warna" element={<EditWarna />} />
             {/* Produk Page */}
             <Route path="/produk" element={<Produk />} />
-            <Route path="/create-produk" element={<CreateProduct />} />
-            <Route path="/edit-produk/:id" element={<EditProduct />} />
+            <Route path="/create-produk" element={<CreateProduk />} />
+            <Route path="/edit-produk/:id_produk" element={<EditProduk />} />
 
             {/* Produk Gambar */}
             <Route path="/gambar-produk" element={<ProdukImage />} />
