@@ -46,6 +46,7 @@ import EditTarifPengiriman from "./pages/TarifPengiriman/EditTarifPengiriman";
 import JamOperasional from "./pages/JamOperasional/JamOperasional";
 import CreateJamOperasional from "./pages/JamOperasional/CreateJamOperasional";
 import EditJamOperasional from "./pages/JamOperasional/EditJamOperasional";
+import CreateUser from "./pages/Users/CreateUser";
 
 export default function App() {
   return (
@@ -137,8 +138,9 @@ export default function App() {
             <Route path="/detail-transaksi" element={<DetailTransaction />} />
 
             {/* User page */}
-            <Route path="/users" element={<Users />} />
-            <Route path="/edit-users/:id" element={<EditUser />} />
+            <Route path="/user" element={<Users />} />
+            <Route path="/create-user" element={<CreateUser />} />
+            <Route path="/edit-user/:id_user" element={<EditUser />} />
           </Route>
           <Route>
             <Route path="/user-profile" element={<UserInfoCard />} />
