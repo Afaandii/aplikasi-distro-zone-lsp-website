@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterRoleRoutes(c *controller.RoleController) {
-	http.HandleFunc("/role", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1/role", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			c.GetAll(w, r)
@@ -19,7 +19,7 @@ func RegisterRoleRoutes(c *controller.RoleController) {
 		}
 	})
 
-	http.HandleFunc("/role/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1/role/", func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 		if len(parts) != 2 {
 			w.WriteHeader(http.StatusNotFound)

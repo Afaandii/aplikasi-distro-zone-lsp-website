@@ -39,6 +39,19 @@ func (r *userPGRepository) FindByID(idUser int) (*entities.User, error) {
 	return &user, nil
 }
 
+func (r *userPGRepository) FindByRole(roleID int) ([]entities.User, error) {
+	var users []entities.User
+	err := r.db.
+		Preload("Role").
+		Where("id_role = ?", roleID).
+		Order("id_user").
+		Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 func (r *userPGRepository) Create(c *entities.User) error {
 	return r.db.Create(c).Error
 }

@@ -57,6 +57,15 @@ func (k *UserController) GetByID(w http.ResponseWriter, r *http.Request, idUser 
 	helper.WriteJSON(w, http.StatusOK, user)
 }
 
+func (k *UserController) GetCashiers(w http.ResponseWriter, r *http.Request) {
+	cashiers, err := k.UC.GetCashiers()
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	helper.WriteJSON(w, http.StatusOK, cashiers)
+}
+
 func (usr *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	// wajib parse multipart
 	r.ParseMultipartForm(10 << 20) // max 10MB
