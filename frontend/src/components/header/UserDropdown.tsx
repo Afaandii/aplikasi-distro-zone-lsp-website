@@ -23,9 +23,9 @@ export default function UserDropdown() {
   }
 
   const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    profile_image: "",
+    nama: "",
+    username: "",
+    foto_profile: "",
   });
 
   useEffect(() => {
@@ -38,12 +38,12 @@ export default function UserDropdown() {
           },
         });
 
-        if (response.data.status === "Ok") {
-          const data = response.data.data;
+        if (response.status === 200) {
+          const data = response.data[0];
           setUserData({
-            name: data.name || "",
-            email: data.email || "",
-            profile_image: data.profile_image || "/images/default.jpg",
+            nama: data.nama,
+            username: data.username,
+            foto_profile: data.foto_profile || "/images/default.jpg",
           });
         } else {
           throw new Error(response.data.message || "Unknown error");
@@ -157,13 +157,13 @@ export default function UserDropdown() {
       >
         <span className="mr-3 overflow-hidden rounded-full h-10 w-10">
           <img
-            src={userData.profile_image || "/images/default.jpg"}
+            src={userData.foto_profile || "/images/default.jpg"}
             alt="User"
           />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm text-gray-800">
-          {userData.name}
+        <span className="block mr-1 font-medium text-theme-sm text-gray-500">
+          {userData.nama}
         </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
@@ -188,14 +188,14 @@ export default function UserDropdown() {
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
-        className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
+        className="absolute right-0 mt-4.25 flex w-65 flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
       >
         <div>
           <span className="block font-medium text-gray-800 text-theme-sm dark:text-gray-400">
-            {userData.name}
+            {userData.nama}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {userData.email}
+            {userData.username}
           </span>
         </div>
 
