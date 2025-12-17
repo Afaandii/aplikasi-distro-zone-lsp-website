@@ -1,16 +1,26 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Select from "../../components/form/Select";
 import FileInput from "../../components/form/input/FileInput";
 import axios from "axios";
 
-type Product = {
-  id: number;
-  product_name: string;
+type Produk = {
+  id_produk: number;
+  nama_kaos: string;
 };
 
-export default function CreateProdukImage() {
-  const [products, setProducts] = useState<Product[]>([]);
+type FotoProduk = {
+  id_foto_produk: number;
+  id_produk: number;
+  url_foto: string | null;
+  Produk: Produk;
+};
+
+export default function EditGambarProduk() {
+  const { id_foto_produk } = useParams<{ id_foto_produk: string }>();
+  const navigate = useNavigate();
+  const [produk, setProduk] = useState<Produk[]>([]);
+  const [fotoProduk, setFotoProduk] = useState<FotoProduk | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(
     null
   );
@@ -19,42 +29,50 @@ export default function CreateProdukImage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const navigate = useNavigate();
-
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
+      if (!id_foto_produk) return;
+
       try {
         const token = getToken();
-        const res = await axios.get(
-          "http://localhost:8000/api/v1/create-product-image",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const [fotoRes, produkRes] = await Promise.all([
+          axios.get(
+            `http://localhost:8080/api/v1/foto-produk/${id_foto_produk}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+          axios.get(`http://localhost:8080/api/v1/produk`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-        if (res.data.status === "success") {
-          setProducts(res.data.data.product);
+        if (fotoRes.status === 200) {
+          const fotoData: FotoProduk = fotoRes.data;
+
+          setFotoProduk(fotoData);
+          setSelectedProductId(fotoData.id_produk);
+          // ini ambil data master produk
+          setProduk(produkRes.data);
         }
       } catch (err) {
-        console.error("Gagal memuat data produk:", err);
-        setError("Gagal memuat daftar produk. Silakan coba lagi.");
+        console.error("Gagal memuat data foto produk:", err);
+        setError("Gagal memuat data. Silakan coba lagi.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
-  }, []);
+    fetchData();
+  }, [id_foto_produk]);
 
-  const productOptions = products.map((product) => ({
-    value: product.id.toString(),
-    label: product.product_name,
+  const productOptions = produk.map((prod) => ({
+    value: prod.id_produk.toString(),
+    label: prod.nama_kaos,
   }));
 
   const handleSelectChangeProductImage = (value: string | number) => {
@@ -73,25 +91,29 @@ export default function CreateProdukImage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedProductId) {
-      setError("Silakan pilih produk.");
+    if (!id_foto_produk) {
+      setError("ID foto produk tidak ditemukan.");
       return;
     }
-    if (!selectedFile) {
-      setError("Silakan pilih gambar.");
+
+    if (!selectedProductId) {
+      setError("Silakan pilih produk.");
       return;
     }
     setSubmitting(true);
     setError(null);
 
     const formData = new FormData();
-    formData.append("product_id", selectedProductId.toString());
-    formData.append("image", selectedFile);
+    formData.append("id_produk", selectedProductId.toString());
+
+    if (selectedFile) {
+      formData.append("url_foto", selectedFile);
+    }
 
     try {
       const token = getToken();
-      await axios.post(
-        "http://localhost:8000/api/v1/store-product-image",
+      await axios.put(
+        `http://localhost:8080/api/v1/foto-produk/${id_foto_produk}`,
         formData,
         {
           headers: {
@@ -101,7 +123,7 @@ export default function CreateProdukImage() {
         }
       );
 
-      navigate("/image-product");
+      navigate("/foto-produk");
     } catch (err: any) {
       console.error("Error saat menyimpan:", err);
       if (err.response?.data?.message) {
@@ -119,7 +141,7 @@ export default function CreateProdukImage() {
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
           <h1 className="text-2xl font-bold text-white">
-            Form Tambah Product Image
+            Form Edit Gambar Produk
           </h1>
         </div>
       </section>
@@ -131,42 +153,64 @@ export default function CreateProdukImage() {
             {/* Product */}
             <div className="mb-4">
               <label
-                htmlFor="product_id"
+                htmlFor="id_produk"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Product
+                Produk
               </label>
               <Select
                 options={productOptions}
-                defaultValue={
-                  selectedProductId ? selectedProductId.toString() : ""
-                }
-                placeholder="Pilih Product"
+                placeholder="Pilih Produk"
                 onChange={handleSelectChangeProductImage}
-                id="product_id"
-                name="product_id"
+                id="id_produk"
+                name="id_produk"
+                defaultValue={selectedProductId?.toString()}
               />
             </div>
 
-            {/* Image Field */}
+            {/* Gambar Field */}
             <div className="mb-6">
               <label
-                htmlFor="image"
+                htmlFor="url_foto"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Image Product
+                Gambar Produk
               </label>
-              <FileInput onChange={handleFileChange} />
+              <FileInput onChange={handleFileChange} className="custom-class" />
+
+              {loading ? (
+                <div className="mt-2">
+                  <div className="w-32 h-28 bg-gray-700 animate-pulse rounded border border-gray-600" />
+                  <span className="block mt-2 text-sm text-gray-400">
+                    Loading data...
+                  </span>
+                </div>
+              ) : fotoProduk?.url_foto ? (
+                <div className="mt-2">
+                  <img
+                    src={fotoProduk.url_foto}
+                    alt="Current"
+                    className="w-32 h-28 object-cover rounded border border-gray-600"
+                  />
+                  <span className="block mt-2 text-sm text-gray-400">
+                    Gambar saat ini
+                  </span>
+                </div>
+              ) : (
+                <div className="mt-2">
+                  <div className="text-sm text-gray-500 italic">
+                    Belum ada gambar produk.
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="mb-4 p-2 bg-red-600 text-white text-sm rounded">
                 {error}
               </div>
             )}
 
-            {/* Tombol Simpan dan Kembali */}
             <div className="flex justify-between">
               <button
                 type="submit"
@@ -180,7 +224,7 @@ export default function CreateProdukImage() {
                 {submitting ? "Menyimpan..." : "Simpan"}
               </button>
               <Link
-                to="/image-product"
+                to="/foto-produk"
                 className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors duration-200"
               >
                 Kembali
