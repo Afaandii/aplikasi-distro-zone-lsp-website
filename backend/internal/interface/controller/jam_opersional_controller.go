@@ -19,6 +19,26 @@ func NewJamOperasionalController(uc usecase.JamOperasionalUsecase) *JamOperasion
 	return &JamOperasionalController{UC: uc}
 }
 
+// parsing jam dari string ke time
+func parseJamToTime(jam string) (time.Time, error) {
+	layouts := []string{
+		"15:04",
+		"15:04:05",
+	}
+
+	var parsed time.Time
+	var err error
+
+	for _, layout := range layouts {
+		parsed, err = time.Parse(layout, jam)
+		if err == nil {
+			return parsed, nil
+		}
+	}
+
+	return time.Time{}, errors.New("format jam harus HH:MM atau HH:MM:SS")
+}
+
 func (jo *JamOperasionalController) GetAll(w http.ResponseWriter, r *http.Request) {
 	jop, err := jo.UC.GetAll()
 	if err != nil {
@@ -57,17 +77,18 @@ func (jo *JamOperasionalController) Create(w http.ResponseWriter, r *http.Reques
 	}
 
 	// VALIDASI FORMAT JAM (SAJA)
-	const timeLayout = "15:04"
-	if _, err := time.Parse(timeLayout, payload.JamBuka); err != nil {
+	jamBuka, err := parseJamToTime(payload.JamBuka)
+	if err != nil {
 		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{
-			"error": "Format jam_buka harus HH:MM (contoh: jam:menit)",
+			"error": err.Error(),
 		})
 		return
 	}
 
-	if _, err := time.Parse(timeLayout, payload.JamTutup); err != nil {
+	jamTutup, err := parseJamToTime(payload.JamTutup)
+	if err != nil {
 		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{
-			"error": "Format jam_tutup harus HH:MM",
+			"error": err.Error(),
 		})
 		return
 	}
@@ -76,8 +97,8 @@ func (jo *JamOperasionalController) Create(w http.ResponseWriter, r *http.Reques
 	created, err := jo.UC.Create(
 		strings.TrimSpace(payload.TipeLayanan),
 		strings.TrimSpace(payload.Hari),
-		payload.JamBuka,
-		payload.JamTutup,
+		jamBuka.Format("15:04:05"),
+		jamTutup.Format("15:04:05"),
 		strings.TrimSpace(payload.Status),
 	)
 	if err != nil {
@@ -102,14 +123,19 @@ func (jo *JamOperasionalController) Update(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	const timeLayout = "15:04"
-	if _, err := time.Parse(timeLayout, payload.JamBuka); err != nil {
-		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Format jam_buka harus HH:MM"})
+	jamBuka, err := parseJamToTime(payload.JamBuka)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"error": err.Error(),
+		})
 		return
 	}
 
-	if _, err := time.Parse(timeLayout, payload.JamTutup); err != nil {
-		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "Format jam_tutup harus HH:MM"})
+	jamTutup, err := parseJamToTime(payload.JamTutup)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -117,8 +143,8 @@ func (jo *JamOperasionalController) Update(w http.ResponseWriter, r *http.Reques
 		idJamOperasional,
 		strings.TrimSpace(payload.TipeLayanan),
 		strings.TrimSpace(payload.Hari),
-		payload.JamBuka,
-		payload.JamTutup,
+		jamBuka.Format("15:04:05"),
+		jamTutup.Format("15:04:05"),
 		strings.TrimSpace(payload.Status),
 	)
 	if err != nil {
