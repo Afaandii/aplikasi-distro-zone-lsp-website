@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import axios from "axios";
 
 type User = {
-  id: number;
-  name: string;
-  email: string;
-  profile_image: string | null;
-  role?: { id: number; role_name: string };
+  id_user: number;
+  nama: string;
+  username: string;
+  password: string;
+  nik: number;
+  alamat: string;
+  no_telp: number;
+  foto_profile: string;
+
+  Role?: { id_role: number; nama_role: string };
 };
 
 export default function Users() {
@@ -24,17 +29,14 @@ export default function Users() {
     try {
       const token = getToken();
 
-      const res = await axios.get(
-        "http://localhost:8000/api/v1/auth/user-all",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get("http://localhost:8080/api/v1/user/kasir", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      if (res.data.status === "Ok") {
-        setUsers(res.data.datas);
+      if (res.status === 200) {
+        setUsers(res.data);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -47,21 +49,18 @@ export default function Users() {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id_user: number) => {
     if (!window.confirm("Anda yakin ingin menghapus user ini?")) return;
 
     const token = getToken();
     try {
-      await axios.delete(
-        `http://localhost:8000/api/v1/auth/delete-user/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://localhost:8080/api/v1/user/${id_user}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      setUsers((prev) => prev.filter((user) => user.id !== id));
+      setUsers((prev) => prev.filter((user) => user.id_user !== id_user));
       setSuccessMessage("User berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -74,14 +73,24 @@ export default function Users() {
     <>
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">Manage Tabel Users</h1>
+          <h1 className="text-2xl font-bold text-white">
+            Manage Tabel User Karyawan
+          </h1>
+          <Link
+            to="/create-user"
+            className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
+          >
+            <FaPlus className="text-lg" />
+          </Link>
         </div>
       </section>
 
       {/* Card Container */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
-          <h3 className="text-lg font-semibold text-white">DataTable Users</h3>
+          <h3 className="text-lg font-semibold text-white">
+            DataTable User Karyawan
+          </h3>
         </div>
 
         <div className="p-4">
@@ -123,19 +132,43 @@ export default function Users() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
+                      Role
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
                       Nama
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Email
+                      Username
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Role
+                      Password
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      Nik
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      Alamat
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      No Telp
                     </th>
                     <th
                       scope="col"
@@ -153,23 +186,35 @@ export default function Users() {
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
                   {users.map((user, index) => (
-                    <tr key={user.id} className="hover:bg-gray-700">
+                    <tr key={user.id_user} className="hover:bg-gray-700">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
                         {index + 1}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {user.name}
+                        {user.Role?.nama_role}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                        {user.email}
+                        {user.nama}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                        {user.role?.role_name}
+                        {user.username}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
+                        {user.password}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
+                        {user.nik}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
+                        {user.alamat}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
+                        {user.no_telp}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
-                        {user.profile_image ? (
+                        {user.foto_profile ? (
                           <img
-                            src={user.profile_image}
+                            src={user.foto_profile}
                             alt="Profile"
                             className="w-10 h-10 rounded-full object-cover"
                           />
@@ -182,14 +227,14 @@ export default function Users() {
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         {/* Tombol Edit */}
                         <Link
-                          to={`/edit-users/${user.id}`}
+                          to={`/edit-users/${user.id_user}`}
                           className="inline-flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded mr-2 transition-colors duration-200"
                         >
                           <FaEdit className="text-lg" />
                         </Link>
                         {/* Tombol Hapus */}
                         <button
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => handleDelete(user.id_user)}
                           className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors duration-200"
                         >
                           <FaTrash className="text-lg" />

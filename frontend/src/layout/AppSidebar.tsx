@@ -49,8 +49,8 @@ const navItems: NavItem[] = [
     icon: <FaCog className="text-lg" />,
     name: "Pengaturan",
     subItems: [
-      { name: "User", path: "/pengguna", pro: false },
-      { name: "Role", path: "/peran", pro: false },
+      { name: "User", path: "/user", pro: false },
+      { name: "Role", path: "/role", pro: false },
     ],
   },
   {
