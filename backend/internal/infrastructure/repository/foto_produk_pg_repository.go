@@ -18,7 +18,7 @@ func NewFotoProdukPGRepository(db *gorm.DB) repo.FotoProdukRepository {
 
 func (r *fotoProdukPGRepository) FindAll() ([]entities.FotoProduk, error) {
 	var list []entities.FotoProduk
-	if err := r.db.Order("id_foto_produk").Find(&list).Error; err != nil {
+	if err := r.db.Preload("Produk").Order("id_foto_produk").Find(&list).Error; err != nil {
 		return nil, err
 	}
 	return list, nil
@@ -26,7 +26,7 @@ func (r *fotoProdukPGRepository) FindAll() ([]entities.FotoProduk, error) {
 
 func (r *fotoProdukPGRepository) FindByID(idFotoProduk int) (*entities.FotoProduk, error) {
 	var rol entities.FotoProduk
-	if err := r.db.First(&rol, idFotoProduk).Error; err != nil {
+	if err := r.db.Preload("Produk").First(&rol, idFotoProduk).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
