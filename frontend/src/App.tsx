@@ -43,6 +43,9 @@ import EditGambarProduk from "./pages/ProdukImage/EditGambarProduk";
 import TarifPengiriman from "./pages/TarifPengiriman/TarifPengiriman";
 import CreateTarifPengiriman from "./pages/TarifPengiriman/CreateTarifPengiriman";
 import EditTarifPengiriman from "./pages/TarifPengiriman/EditTarifPengiriman";
+import JamOperasional from "./pages/JamOperasional/JamOperasional";
+import CreateJamOperasional from "./pages/JamOperasional/CreateJamOperasional";
+import EditJamOperasional from "./pages/JamOperasional/EditJamOperasional";
 
 export default function App() {
   return (
@@ -110,6 +113,16 @@ export default function App() {
             <Route
               path="/edit-tarif-pengiriman/:id_tarif_pengiriman"
               element={<EditTarifPengiriman />}
+            />
+            {/* Jam Operasional */}
+            <Route path="/jam-operasional" element={<JamOperasional />} />
+            <Route
+              path="/create-jam-operasional"
+              element={<CreateJamOperasional />}
+            />
+            <Route
+              path="/edit-jam-operasional/:id_jam_operasional"
+              element={<EditJamOperasional />}
             />
             {/* Master menu end */}
 
