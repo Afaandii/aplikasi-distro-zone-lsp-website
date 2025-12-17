@@ -1,30 +1,27 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Select from "../../components/form/Select";
-import TextArea from "../../components/form/input/TextArea";
 import axios from "axios";
 
-export default function EditProduct() {
-  const { id } = useParams<{ id: string }>();
+export default function EditProduk() {
+  const { id_produk } = useParams<{ id_produk: string }>();
   const navigate = useNavigate();
 
-  const [categories, setCategories] = useState<
-    { value: string; label: string }[]
-  >([]);
-  const [jenis, setJenis] = useState<{ value: string; label: string }[]>([]);
-  const [brands, setBrands] = useState<{ value: string; label: string }[]>([]);
+  const [merk, setMerk] = useState<{ value: string; label: string }[]>([]);
+  const [tipe, setTipe] = useState<{ value: string; label: string }[]>([]);
+  const [ukuran, setUkuran] = useState<{ value: string; label: string }[]>([]);
+  const [warna, setWarna] = useState<{ value: string; label: string }[]>([]);
   const [message, setMessage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    category_id: "",
-    type_id: "",
-    brand_id: "",
-    product_name: "",
-    price: "",
-    stock: "",
-    ratings: "",
-    spesification_product: "",
-    information_product: "",
+    id_merk: "",
+    id_tipe: "",
+    id_ukuran: "",
+    id_warna: "",
+    nama_kaos: "",
+    harga_jual: "",
+    harga_pokok: "",
+    stok_kaos: "",
   });
 
   const getToken = () => {
@@ -33,53 +30,68 @@ export default function EditProduct() {
 
   useEffect(() => {
     const token = getToken();
+
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/v1/edit-product/${id}`,
-          {
+        const [produkRes, masterRes] = await Promise.all([
+          axios.get(`http://localhost:8080/api/v1/produk/${id_produk}`, {
             headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+          }),
+          axios.get(`http://localhost:8080/api/v1/master-data/produk`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-        const { product, categories, types, brands } = response.data.data;
+        const produk = produkRes.data;
+        const master = masterRes.data;
 
-        // Format select options
-        const formattedCategories = categories.map((cat: any) => ({
-          value: cat.id.toString(),
-          label: cat.category_name || "N/A",
-        }));
-        const formattedJenis = types.map((jenis: any) => ({
-          value: jenis.id.toString(),
-          label: jenis.type_name || "N/A",
-        }));
-        const formattedBrands = brands.map((brand: any) => ({
-          value: brand.id.toString(),
-          label: brand.brand_name || "N/A",
-        }));
-
+        //  form dari produk
         setFormData({
-          category_id: product.category_id?.toString() || "",
-          type_id: product.type_id?.toString() || "",
-          brand_id: product.brand_id?.toString() || "",
-          product_name: product.product_name || "",
-          price: product.price?.toString() || "",
-          stock: product.stock?.toString() || "",
-          ratings: product.rating?.toString() || "",
-          spesification_product: product.spesification_product || "",
-          information_product: product.information_product || "",
+          id_merk: String(produk.id_merk ?? ""),
+          id_tipe: String(produk.id_tipe ?? ""),
+          id_ukuran: String(produk.id_ukuran ?? ""),
+          id_warna: String(produk.id_warna ?? ""),
+          nama_kaos: produk.nama_kaos ?? "",
+          harga_jual: String(produk.harga_jual ?? ""),
+          harga_pokok: String(produk.harga_pokok ?? ""),
+          stok_kaos: String(produk.stok_kaos ?? ""),
         });
 
-        setCategories(formattedCategories);
-        setJenis(formattedJenis);
-        setBrands(formattedBrands);
+        // options dari MASTER TABLE
+        setMerk(
+          master.merk.map((m: any) => ({
+            value: String(m.id_merk),
+            label: m.nama_merk,
+          }))
+        );
+
+        setTipe(
+          master.tipe.map((t: any) => ({
+            value: String(t.id_tipe),
+            label: t.nama_tipe,
+          }))
+        );
+
+        setUkuran(
+          master.ukuran.map((u: any) => ({
+            value: String(u.id_ukuran),
+            label: u.nama_ukuran,
+          }))
+        );
+
+        setWarna(
+          master.warna.map((w: any) => ({
+            value: String(w.id_warna),
+            label: w.nama_warna,
+          }))
+        );
       } catch (err) {
-        console.error("Error fetching ", err);
+        console.error("Fetch error:", err);
       }
     };
 
-    if (id) fetchData();
-  }, [id]);
+    fetchData();
+  }, [id_produk]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -95,12 +107,14 @@ export default function EditProduct() {
     const token = getToken();
 
     if (
-      !formData.category_id ||
-      !formData.type_id ||
-      !formData.brand_id ||
-      !formData.product_name ||
-      !formData.price ||
-      !formData.stock
+      !formData.id_merk ||
+      !formData.id_tipe ||
+      !formData.id_ukuran ||
+      !formData.id_warna ||
+      !formData.nama_kaos ||
+      !formData.harga_jual ||
+      !formData.harga_pokok ||
+      !formData.stok_kaos
     ) {
       setMessage("Harap lengkapi semua field wajib.");
       return;
@@ -108,19 +122,18 @@ export default function EditProduct() {
 
     try {
       const payload = {
-        category_id: formData.category_id,
-        type_id: formData.type_id,
-        brand_id: formData.brand_id,
-        product_name: formData.product_name,
-        price: parseInt(formData.price),
-        stock: parseInt(formData.stock),
-        rating: parseFloat(formData.ratings) || 0,
-        spesification_product: formData.spesification_product,
-        information_product: formData.information_product,
+        id_merk: parseInt(formData.id_merk),
+        id_tipe: parseInt(formData.id_tipe),
+        id_ukuran: parseInt(formData.id_ukuran),
+        id_warna: parseInt(formData.id_warna),
+        nama_kaos: formData.nama_kaos,
+        harga_jual: parseInt(formData.harga_jual),
+        harga_pokok: parseInt(formData.harga_pokok),
+        stok_kaos: parseInt(formData.stok_kaos),
       };
 
       await axios.put(
-        `http://localhost:8000/api/v1/update-product/${id}`,
+        `http://localhost:8080/api/v1/produk/${id_produk}`,
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -128,9 +141,9 @@ export default function EditProduct() {
       );
 
       setMessage("Produk berhasil diperbarui.");
-      setTimeout(() => navigate("/product"), 1500);
+      setTimeout(() => navigate("/produk"), 1500);
     } catch (err: any) {
-      console.error("Error updating product:", err);
+      console.error("Error updating produk:", err);
     }
   };
 
@@ -138,7 +151,7 @@ export default function EditProduct() {
     <>
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">Form Edit Product</h1>
+          <h1 className="text-2xl font-bold text-white">Form Edit Produk</h1>
         </div>
       </section>
 
@@ -158,70 +171,87 @@ export default function EditProduct() {
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
           <form onSubmit={handleSubmit}>
-            {/* Category */}
-            <div className="mb-4">
-              <label
-                htmlFor="category_id"
-                className="block text-sm font-medium text-white mb-1"
-              >
-                Category
-              </label>
-              <Select
-                options={categories}
-                placeholder="Pilih Kategori"
-                defaultValue={formData.category_id}
-                onChange={handleSelectChange("category_id")}
-                id="category_id"
-              />
-            </div>
-
-            {/* Jenis */}
-            <div className="mb-4">
-              <label
-                htmlFor="type_id"
-                className="block text-sm font-medium text-white mb-1"
-              >
-                Jenis
-              </label>
-              <Select
-                options={jenis}
-                placeholder="Pilih Jenis"
-                defaultValue={formData.type_id}
-                onChange={handleSelectChange("type_id")}
-                id="type_id"
-              />
-            </div>
-
             {/* Merk */}
             <div className="mb-4">
               <label
-                htmlFor="brand_id"
+                htmlFor="id_merk"
                 className="block text-sm font-medium text-white mb-1"
               >
                 Merk
               </label>
               <Select
-                options={brands}
+                options={merk}
                 placeholder="Pilih Merk"
-                defaultValue={formData.brand_id}
-                onChange={handleSelectChange("brand_id")}
-                id="brand_id"
+                defaultValue={formData.id_merk}
+                onChange={handleSelectChange("id_merk")}
+                id="id_merk"
               />
             </div>
 
-            {/* Nama Produk Field */}
+            {/* Tipe */}
             <div className="mb-4">
               <label
-                htmlFor="product_name"
+                htmlFor="id_tipe"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Tipe
+              </label>
+              <Select
+                options={tipe}
+                placeholder="Pilih Tipe"
+                defaultValue={formData.id_tipe}
+                onChange={handleSelectChange("id_tipe")}
+                id="id_tipe"
+              />
+            </div>
+
+            {/* Ukuran */}
+            <div className="mb-4">
+              <label
+                htmlFor="id_ukuran"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Ukuran
+              </label>
+              <Select
+                options={ukuran}
+                placeholder="Pilih Ukuran"
+                defaultValue={formData.id_ukuran}
+                onChange={handleSelectChange("id_ukuran")}
+                id="id_ukuran"
+              />
+            </div>
+
+            {/* Warna */}
+            <div className="mb-4">
+              <label
+                htmlFor="id_warna"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Warna
+              </label>
+              <Select
+                options={warna}
+                placeholder="Pilih Warna"
+                defaultValue={formData.id_warna}
+                onChange={handleSelectChange("id_warna")}
+                id="id_warna"
+              />
+            </div>
+
+            {/* Nama Produk */}
+            <div className="mb-4">
+              <label
+                htmlFor="nama_produk"
                 className="block text-sm font-medium text-white mb-1"
               >
                 Nama Produk
               </label>
               <input
                 type="text"
-                id="product_name"
-                name="product_name"
-                value={formData.product_name}
+                id="nama_produk"
+                name="nama_produk"
+                value={formData.nama_kaos}
                 onChange={handleChange}
                 placeholder="Masukan nama produk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -229,107 +259,65 @@ export default function EditProduct() {
               />
             </div>
 
-            {/* Price Field */}
+            {/* Harga Jual */}
             <div className="mb-4">
               <label
-                htmlFor="price"
+                htmlFor="harga_jual"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Harga Produk
+                Harga Jual
               </label>
               <input
                 type="number"
-                id="price"
-                name="price"
-                value={formData.price}
+                id="harga_jual"
+                name="harga_jual"
+                value={formData.harga_jual}
                 onChange={handleChange}
-                placeholder="Masukan harga produk"
+                placeholder="Masukan harga jual produk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
 
-            {/* Stock Field */}
+            {/* Harga Pokok */}
             <div className="mb-4">
               <label
-                htmlFor="stock"
+                htmlFor="harga_pokok"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Stock Produk
+                Harga Pokok
               </label>
               <input
                 type="number"
-                id="stock"
-                name="stock"
-                value={formData.stock}
+                id="harga_pokok"
+                name="harga_pokok"
+                value={formData.harga_pokok}
                 onChange={handleChange}
-                placeholder="Masukan stock produk"
+                placeholder="Masukan harga pokok produk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
 
-            {/* Ratings Field */}
+            {/* Stok Kaos */}
             <div className="mb-4">
               <label
-                htmlFor="ratings"
+                htmlFor="stok_kaos"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Ratings Produk
+                Stok Produk
               </label>
               <input
                 type="number"
                 step={0.1}
                 inputMode="decimal"
-                id="ratings"
-                name="ratings"
-                value={formData.ratings}
+                id="stok_kaos"
+                name="stok_kaos"
+                value={formData.stok_kaos}
                 onChange={handleChange}
-                placeholder="Masukan rating produk, contoh: 4.5"
+                placeholder="Masukan stok produk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
-              />
-            </div>
-
-            {/* spesifikasi Field */}
-            <div className="mb-6">
-              <label
-                htmlFor="spesification_product"
-                className="block text-sm font-medium text-white mb-1"
-              >
-                Spesifikasi Produk
-              </label>
-              <TextArea
-                rows={6}
-                value={formData.spesification_product}
-                onChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    spesification_product: value,
-                  }))
-                }
-                placeholder="Masukan Spesifikasi Produk"
-              />
-            </div>
-
-            {/* informasi Field */}
-            <div className="mb-6">
-              <label
-                htmlFor="information_product"
-                className="block text-sm font-medium text-white mb-1"
-              >
-                Informasi Produk
-              </label>
-              <TextArea
-                rows={6}
-                value={formData.information_product}
-                onChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    information_product: value,
-                  }))
-                }
-                placeholder="Masukan Informasi Produk"
               />
             </div>
 
@@ -342,7 +330,7 @@ export default function EditProduct() {
                 Simpan
               </button>
               <Link
-                to="/product"
+                to="/produk"
                 className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors duration-200"
               >
                 Kembali
