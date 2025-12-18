@@ -18,6 +18,14 @@ func RegisterUserRoutes(c *controller.UserController) {
 		c.Login(w, r)
 	})
 
+	http.HandleFunc("/api/v1/auth/logout", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.Logout(w, r)
+	}))
+
 	http.HandleFunc("/api/v1/auth/register", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -26,7 +34,7 @@ func RegisterUserRoutes(c *controller.UserController) {
 		c.Register(w, r)
 	})
 
-	http.HandleFunc("/api/v1/user", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1/user", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			c.GetAll(w, r)
@@ -35,7 +43,7 @@ func RegisterUserRoutes(c *controller.UserController) {
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
-	}))
+	})
 
 	http.HandleFunc("/api/v1/user/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
