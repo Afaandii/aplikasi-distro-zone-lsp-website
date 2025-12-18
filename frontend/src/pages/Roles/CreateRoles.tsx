@@ -7,8 +7,8 @@ export default function CreateRoles() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    role_name: "",
-    description: "",
+    nama_role: "",
+    keterangan: "",
   });
 
   const getToken = () => {
@@ -23,13 +23,13 @@ export default function CreateRoles() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = getToken()
+    const token = getToken();
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/create-role",
+        "http://localhost:8080/api/v1/role",
         {
-          role_name: formData.role_name,
-          description: formData.description,
+          nama_role: formData.nama_role,
+          keterangan: formData.keterangan,
         },
         {
           headers: {
@@ -39,10 +39,10 @@ export default function CreateRoles() {
         }
       );
 
-      setFormData({ role_name: "", description: "" });
+      setFormData({ nama_role: "", keterangan: "" });
       if (response.status === 201) {
         setSuccessMessage("Roles berhasil ditambahkan.");
-        navigate("/roles");
+        navigate("/role");
       }
     } catch (error: any) {
       console.error("Error creating category:", error);
@@ -53,60 +53,60 @@ export default function CreateRoles() {
     <>
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">Form Tambah Roles</h1>
+          <h1 className="text-2xl font-bold text-white">Form Tambah Role</h1>
         </div>
       </section>
 
       {/* Form Card */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         {successMessage && (
-            <div className="mb-4 p-3 bg-green-600 text-white rounded-md flex items-center justify-between">
-              <span>{successMessage}</span>
-              <button
-                onClick={() => setSuccessMessage(null)}
-                className="ml-2 text-white hover:text-gray-200"
-              >
-                &times;
-              </button>
-            </div>
-          )}
+          <div className="mb-4 p-3 bg-green-600 text-white rounded-md flex items-center justify-between">
+            <span>{successMessage}</span>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="ml-2 text-white hover:text-gray-200"
+            >
+              &times;
+            </button>
+          </div>
+        )}
         <div className="p-6">
           <form onSubmit={handleSubmit}>
             {/* Nama role Field */}
             <div className="mb-4">
               <label
-                htmlFor="role_name"
+                htmlFor="nama_role"
                 className="block text-sm font-medium text-white mb-1"
               >
                 Nama Role
               </label>
               <input
                 type="text"
-                id="role_name"
-                name="role_name"
-                value={formData.role_name}
+                id="nama_role"
+                name="nama_role"
+                value={formData.nama_role}
                 onChange={handleChange}
-                placeholder="Masukan nama kategori"
+                placeholder="Masukan nama role"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
 
-            {/* description Field */}
+            {/* Keterangan Field */}
             <div className="mb-6">
               <label
-                htmlFor="description"
+                htmlFor="keterangan"
                 className="block text-sm font-medium text-white mb-1"
               >
-                Deskripsi
+                Keterangan
               </label>
               <input
                 type="text"
-                id="description"
-                name="description"
-                value={formData.description}
+                id="keterangan"
+                name="keterangan"
+                value={formData.keterangan}
                 onChange={handleChange}
-                placeholder="Masukan description"
+                placeholder="Masukan keterangan contoh: bisa handle apa...."
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -121,7 +121,7 @@ export default function CreateRoles() {
                 Simpan
               </button>
               <Link
-                to="/roles"
+                to="/role"
                 className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors duration-200"
               >
                 Kembali

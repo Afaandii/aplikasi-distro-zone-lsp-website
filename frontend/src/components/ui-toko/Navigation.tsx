@@ -1,296 +1,191 @@
-import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import {
-  FiSearch,
-  FiShoppingCart,
-  FiDownload,
-  FiGrid,
-  FiHome,
-  FiUser,
-} from "react-icons/fi";
-import UserDropdown from "../header/UserDropdown";
-import { HiOutlineDocumentText } from "react-icons/hi2";
+import React, { useState, useEffect } from "react";
+import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import { IoMenu } from "react-icons/io5";
+import { MdClose } from "react-icons/md";
 
-export default function Navigation() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [cartCount, setCartCount] = useState(0);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+interface NavItem {
+  label: string;
+  href: string;
+}
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [searchParams] = useSearchParams();
+const Navbar: React.FC = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [cartCount] = useState(3);
+
+  const navItems: NavItem[] = [
+    { label: "Home", href: "#home" },
+    { label: "Tentang Distrozone", href: "#about" },
+    { label: "Produk", href: "/produk-list" },
+    { label: "Kategori", href: "#categories" },
+    { label: "Kontak", href: "#contact" },
+  ];
 
   useEffect(() => {
-    // Jika kita berada di halaman search, ambil query dari URL
-    if (location.pathname === "/search") {
-      const queryFromUrl = searchParams.get("sr");
-      queueMicrotask(() => {
-        setSearchQuery(queryFromUrl || "");
-      });
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
     } else {
-      queueMicrotask(() => {
-        setSearchQuery("");
-      });
+      document.body.style.overflow = "unset";
     }
-  }, [location.pathname, location.search, searchParams]);
-
-  const getToken = () => {
-    return localStorage.getItem("token") || sessionStorage.getItem("token");
-  };
-
-  // Check if user is logged in
-  useEffect(() => {
-    const token = getToken();
-    queueMicrotask(() => {
-      setIsLoggedIn(!!token);
-    });
-  }, []);
-
-  const fetchCartCount = useCallback(async () => {
-    try {
-      const token = getToken();
-
-      if (!token) {
-        setCartCount(0);
-        return;
-      }
-
-      const res = await axios.get("http://localhost:8000/api/v1/cart-product", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const totalItems = res.data?.data?.total_items ?? 0;
-      setCartCount(totalItems);
-    } catch (error) {
-      console.error("Gagal mengambil cart:", error);
-      setCartCount(0);
-    }
-  }, []);
-
-  useEffect(() => {
-    const loadCart = async () => {
-      await fetchCartCount();
-    };
-
-    loadCart();
-  }, [fetchCartCount]);
-
-  useEffect(() => {
-    // Fungsi untuk menangani event custom
-    const handleCartUpdate = () => {
-      fetchCartCount();
-    };
-
-    // Tambahkan event listener
-    window.addEventListener("cartUpdated", handleCartUpdate);
-
-    // Bersihkan event listener saat komponen dilepas
-    return () => {
-      window.removeEventListener("cartUpdated", handleCartUpdate);
-    };
-  }, [fetchCartCount]);
-
-  // FUNGSI UNTUK MENANGANI SEARCH
-  const handleSearch = () => {
-    const trimmedQuery = searchQuery.trim();
-    if (trimmedQuery) {
-      navigate(`/search?sr=${encodeURIComponent(trimmedQuery)}`);
-      setSearchQuery("");
-    }
-  };
+  }, [isMobileMenuOpen]);
 
   return (
     <>
-      {/* Desktop Navigation (fixed saat discroll) */}
-      <div className="hidden md:block fixed top-0 left-0 right-0 z-50 shadow-sm">
-        <div className="bg-white text-gray-500 px-7 py-1">
-          <div className="max-w-[1190px] mx-auto flex items-center justify-between text-sm">
-            <div className="flex items-center gap-6">
-              <button className="flex items-center gap-2 hover:opacity-80">
-                <FiDownload size={16} />
-                <span>Download Aplikasi Goshop</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white text-gray-500 px-7">
-          <div className="max-w-[1190px] mx-auto flex items-center gap-7">
-            {/* Logo */}
-            <div className="flex items-center">
-              <a href="/">
-                <img
-                  src="/images/goshop.png"
-                  alt="Goshop"
-                  className="w-36 h-10"
-                />
-              </a>
-            </div>
-
-            {/* Search Bar */}
-            <div className="flex-1 max-w-3xl pt-2">
-              <div className="relative flex items-center rounded-lg overflow-hidden bg-white border border-blue-200">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Cari produk"
-                  className="flex-1 px-4 py-2.5 text-gray-700 placeholder-gray-500 focus:outline-none rounded-l-lg"
-                />
-                <button
-                  onClick={handleSearch}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 mr-1 rounded-md transition-colors"
-                >
-                  <FiSearch size={24} />
-                </button>
-              </div>
-            </div>
-
-            {/* Cart and Auth Buttons */}
-            <div className="flex items-center gap-4">
-              <a href="/cart-produk" className="relative hover:opacity-80 ml-2">
-                <FiShoppingCart size={28} />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </a>
-              <div className="w-[1.3px] bg-gray-300 h-8 mx-3"></div>
-
-              {/* Conditional rendering for auth buttons or user dropdown */}
-              {isLoggedIn ? (
-                <UserDropdown />
-              ) : (
-                <>
-                  <a
-                    href="/login"
-                    className="px-6 py-1 border-2 font-medium text-green-600 border-green-600 rounded-full hover:bg-green-500 hover:text-white hover:border-green-500 transition-colors"
-                  >
-                    Masuk
-                  </a>
-                  <a
-                    href="/register"
-                    className="px-6 py-1 bg-green-600 font-medium text-white rounded-full transition-colors"
-                  >
-                    Daftar
-                  </a>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white text-gray-500 px-6 py-1">
-          <div className="max-w-[1190px] mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <button className="flex items-center gap-2 hover:opacity-80">
-                <FiGrid size={20} />
-                <span className="font-medium">Kategori</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Navigation (md ke bawah) */}
-      <div className="md:hidden">
-        {/* Top Fixed Bar */}
-        <div className="fixed top-0 left-0 right-0 bg-white text-gray-800 px-2 py-3 z-50 shadow-sm">
-          <div className="flex items-center justify-between gap-2">
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled ? "bg-black/95 backdrop-blur-md shadow-lg" : "bg-black"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <div className="shrink-0">
-              <a href="/">
-                <img
-                  src="/images/no-teks-logo.png"
-                  alt="Goshop"
-                  className="w-10 h-10"
-                />
+              <a href="#home" className="flex items-center group">
+                <div className="text-2xl md:text-3xl font-black tracking-tighter">
+                  <span className="text-white">DISTRO</span>
+                  <span className="text-orange-500 group-hover:text-orange-400 transition-colors">
+                    ZONE
+                  </span>
+                </div>
               </a>
             </div>
 
-            {/* Search Bar - Mengisi ruang */}
-            <div className="flex-1 max-w-xs">
-              <div className="relative flex items-center rounded-lg overflow-hidden bg-white border border-blue-200">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Cari produk"
-                  className="flex-1 px-2 py-2 text-gray-800 text-sm placeholder-gray-500 focus:outline-none rounded-l-lg"
-                />
-                <button
-                  onClick={handleSearch}
-                  className="bg-green-600 text-white p-1.5 mr-1 rounded-md"
+            {/* Desktop Menu - Center */}
+            <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
+              {navItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="px-3 lg:px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
                 >
-                  <FiSearch size={16} />
-                </button>
-              </div>
+                  {item.label}
+                </a>
+              ))}
             </div>
 
-            {/* Conditional rendering for auth button or user icon */}
-            {isLoggedIn ? (
-              <a
-                href="/cart-produk"
-                className="flex flex-col items-center relative"
+            {/* Right Icons */}
+            <div className="flex items-center space-x-2 md:space-x-3">
+              {/* Search Icon */}
+              <button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                aria-label="Search"
               >
-                <FiShoppingCart size={26} />
+                <FaSearch className="w-5 h-5" />
+              </button>
+
+              {/* Cart Icon with Badge */}
+              <a
+                href="#cart"
+                className="relative p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                aria-label="Shopping Cart"
+              >
+                <FaShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
               </a>
-            ) : (
+
+              {/* User Icon - Hidden on mobile */}
               <a
-                href="/login"
-                className="text-sm font-medium px-3 py-1.5 border-2 border-green-600 rounded-full whitespace-nowrap"
+                href="#login"
+                className="hidden sm:flex p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                aria-label="User Account"
               >
-                Masuk
+                <FaUser className="w-5 h-5" />
               </a>
-            )}
+
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                aria-label="Toggle Menu"
+              >
+                {isMobileMenuOpen ? (
+                  <MdClose className="w-6 h-6" />
+                ) : (
+                  <IoMenu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Bottom Fixed Bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center py-2 z-50">
-          <a href="/" className="flex flex-col items-center text-gray-600">
-            <FiHome size={24} />
-            <span className="text-xs mt-1">Home</span>
-          </a>
-          <a
-            href="/"
-            className="flex flex-col items-center text-gray-600 relative"
-          >
-            <HiOutlineDocumentText size={24} className="bg-white" />
-            <span className="text-xs mt-1">Transaksi</span>
-          </a>
+        {/* Search Bar Dropdown */}
+        {isSearchOpen && (
+          <div className="border-t border-white/10 bg-black/98 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Cari produk distro..."
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 pl-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  autoFocus
+                />
+                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
 
-          {/* Conditional rendering for account button */}
-          {isLoggedIn ? (
-            <a
-              href="/user-profile"
-              className="flex flex-col items-center text-gray-600"
-            >
-              <FiUser size={24} />
-              <span className="text-xs mt-1">Akun</span>
-            </a>
-          ) : (
-            <a
-              href="/login"
-              className="flex flex-col items-center text-gray-600"
-            >
-              <FiUser size={24} />
-              <span className="text-xs mt-1">Masuk</span>
-            </a>
-          )}
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="absolute top-16 right-0 bottom-0 w-full max-w-sm bg-zinc-900 shadow-xl">
+            <div className="flex flex-col h-full">
+              {/* Mobile Menu Items */}
+              <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                {navItems.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+
+                {/* User Login Link - Mobile Only */}
+                <a
+                  href="#login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center space-x-3 px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                >
+                  <FaUser className="w-5 h-5" />
+                  <span>Login / Daftar</span>
+                </a>
+              </nav>
+
+              {/* Mobile Menu Footer */}
+              <div className="border-t border-white/10 p-4">
+                <button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors duration-200">
+                  Belanja Sekarang
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
-}
+};
+
+export default Navbar;

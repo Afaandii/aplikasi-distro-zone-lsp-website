@@ -53,7 +53,7 @@ export default function SignInForm() {
         if (redirectUrl) {
           navigate(redirectUrl);
         } else {
-          if (user.Role.IDRole === 1) {
+          if (user.id_role === 1 || user.id_role === 2) {
             navigate("/dashboard");
           } else {
             navigate("/");

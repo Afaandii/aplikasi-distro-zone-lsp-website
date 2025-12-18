@@ -76,7 +76,7 @@ export default function UserDropdown() {
         return;
       }
       await axios.post(
-        "http://localhost:8000/api/v1/auth/logout",
+        "http://localhost:8080/api/v1/auth/logout",
         {},
         {
           headers: {

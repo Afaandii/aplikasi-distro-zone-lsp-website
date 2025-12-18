@@ -35,7 +35,7 @@ export default function ProtectedRoute({
       return <Navigate to="/login" replace />;
     }
     // Jika role bukan admin
-    if (adminOnly && Number(user.id_role) !== 1) {
+    if (adminOnly && Number(user.id_role) !== 1 && Number(user.id_role !== 2)) {
       return <Navigate to="/" replace />;
     }
   }
