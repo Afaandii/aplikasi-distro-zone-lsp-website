@@ -1,25 +1,33 @@
-import CardProduct from "../components/ui-toko/CardProduct";
-import Carousel from "../components/ui-toko/Carousel";
-import CategoryProduct from "../components/ui-toko/CategoryProduct";
+import AboutSection from "../components/ui-toko/About";
+import CategoriesSection from "../components/ui-toko/CategoriesSection";
+import ContactForm from "../components/ui-toko/Contact";
+import FeaturedProducts from "../components/ui-toko/FeaturedProduct";
+import FeaturesSection from "../components/ui-toko/FeaturedSection";
 import Footer from "../components/ui-toko/Footer";
+import Demo from "../components/ui-toko/Hero";
 import Navigation from "../components/ui-toko/Navigation";
+import TestimonialsSection from "../components/ui-toko/Testimonials";
 
-export default function HomeToko(){
+export default function HomeToko() {
   return (
     <>
       {/* navigasi */}
       <Navigation />
 
-      <main className="md:pt-[130px] pt-14 pb-16 bg-white min-h-screen">
+      <main className="pt-14 bg-white min-h-screen">
         {/* carousel banner */}
-        <Carousel />
+        <Demo />
         {/* carousel category */}
-        <CategoryProduct />
+        <AboutSection />
         {/* card produk */}
-        <CardProduct />
+        <FeaturedProducts />
+        <FeaturesSection />
+        <CategoriesSection />
+        <TestimonialsSection />
+        <ContactForm />
       </main>
-        {/* footer */}
-        <Footer />
+      {/* footer */}
+      <Footer />
     </>
-  )
+  );
 }

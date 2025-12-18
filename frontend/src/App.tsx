@@ -10,9 +10,6 @@ import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import Home from "./pages/Dashboard/Home";
 import ProtectedRoute from "./components/protect/ProtectedRoute";
-import Roles from "./pages/Roles/Roles";
-import CreateRoles from "./pages/Roles/CreateRoles";
-import EditRoles from "./pages/Roles/EditRoles";
 import Users from "./pages/Users/User";
 import EditUser from "./pages/Users/EditUser";
 import HomeToko from "./pages/HomeToko";
@@ -47,6 +44,10 @@ import JamOperasional from "./pages/JamOperasional/JamOperasional";
 import CreateJamOperasional from "./pages/JamOperasional/CreateJamOperasional";
 import EditJamOperasional from "./pages/JamOperasional/EditJamOperasional";
 import CreateUser from "./pages/Users/CreateUser";
+import Roles from "./pages/Roles/Roles";
+import CreateRoles from "./pages/Roles/CreateRoles";
+import EditRoles from "./pages/Roles/EditRoles";
+import ProductsPage from "./components/ui-toko/ProductCard";
 
 export default function App() {
   return (
@@ -127,20 +128,22 @@ export default function App() {
             />
             {/* Master menu end */}
 
-            {/* Roles page */}
-            <Route path="/roles" element={<Roles />} />
-            <Route path="/create-roles" element={<CreateRoles />} />
-            <Route path="/edit-roles/:id" element={<EditRoles />} />
-
-            {/* Payment page */}
-            <Route path="/payment" element={<Payments />} />
-            <Route path="/transaksi" element={<Transaction />} />
-            <Route path="/detail-transaksi" element={<DetailTransaction />} />
+            {/* Setting menu */}
+            {/* Role page */}
+            <Route path="/role" element={<Roles />} />
+            <Route path="/create-role" element={<CreateRoles />} />
+            <Route path="/edit-role/:id_role" element={<EditRoles />} />
 
             {/* User page */}
             <Route path="/user" element={<Users />} />
             <Route path="/create-user" element={<CreateUser />} />
             <Route path="/edit-user/:id_user" element={<EditUser />} />
+            {/* Setting menu end */}
+
+            {/* Payment page */}
+            <Route path="/payment" element={<Payments />} />
+            <Route path="/transaksi" element={<Transaction />} />
+            <Route path="/detail-transaksi" element={<DetailTransaction />} />
           </Route>
           <Route>
             <Route path="/user-profile" element={<UserInfoCard />} />
@@ -154,6 +157,7 @@ export default function App() {
           />
           <Route path="/cart-produk" element={<CartProduct />} />
           <Route path="/search" element={<SearchResults />} />
+          <Route path="/produk-list" element={<ProductsPage />} />
           {/* Route halaman toko end */}
 
           {/* Fallback Route If Not Found Page */}

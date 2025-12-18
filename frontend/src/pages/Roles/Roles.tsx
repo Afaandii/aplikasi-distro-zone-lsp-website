@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 
 type Roles = {
-  id: number;
-  role_name: string;
-  description: string | null;
+  id_role: number;
+  nama_role: string;
+  keterangan: string | null;
 };
 
 export default function Roles() {
@@ -22,14 +22,14 @@ export default function Roles() {
     try {
       const token = getToken();
 
-      const res = await axios.get("http://localhost:8000/api/v1/role", {
+      const res = await axios.get("http://localhost:8080/api/v1/role", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (res.data.status === "success") {
-        setroles(res.data.data);
+      if (res.status === 200) {
+        setroles(res.data);
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -42,18 +42,18 @@ export default function Roles() {
     fetchRoles();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id_role: number) => {
     if (!window.confirm("Anda yakin ingin menghapus role ini?")) return;
 
     const token = getToken();
     try {
-      await axios.delete(`http://localhost:8000/api/v1/delete-role/${id}`, {
+      await axios.delete(`http://localhost:8080/api/v1/role/${id_role}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setroles((prev) => prev.filter((rol) => rol.id !== id));
+      setroles((prev) => prev.filter((rol) => rol.id_role !== id_role));
       setSuccessMessage("Role berhasil dihapus.");
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
@@ -65,9 +65,9 @@ export default function Roles() {
     <>
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">Manage Tabel Roles</h1>
+          <h1 className="text-2xl font-bold text-white">Manage Tabel Role</h1>
           <Link
-            to="/create-roles"
+            to="/create-role"
             className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
           >
             <FaPlus className="text-lg" />
@@ -77,7 +77,7 @@ export default function Roles() {
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
-          <h3 className="text-lg font-semibold text-white">DataTable Roles</h3>
+          <h3 className="text-lg font-semibold text-white">DataTable Role</h3>
         </div>
 
         <div className="p-4">
@@ -115,7 +115,7 @@ export default function Roles() {
                       Name Role
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Deskripsi
+                      Keterangan
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Aksi
@@ -125,23 +125,23 @@ export default function Roles() {
 
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
                   {roles.map((rol, index) => (
-                    <tr key={rol.id} className="hover:bg-gray-700">
+                    <tr key={rol.id_role} className="hover:bg-gray-700">
                       <td className="px-4 py-3 text-white">{index + 1}</td>
-                      <td className="px-4 py-3 text-white">{rol.role_name}</td>
+                      <td className="px-4 py-3 text-white">{rol.nama_role}</td>
                       <td className="px-4 py-3 text-gray-300">
-                        {rol.description ?? "-"}
+                        {rol.keterangan ?? "-"}
                       </td>
 
                       <td className="px-4 py-3">
                         <Link
-                          to={`/edit-roles/${rol.id}`}
+                          to={`/edit-role/${rol.id_role}`}
                           className="inline-flex items-center px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded mr-2"
                         >
                           <FaEdit className="text-lg" />
                         </Link>
 
                         <button
-                          onClick={() => handleDelete(rol.id)}
+                          onClick={() => handleDelete(rol.id_role)}
                           className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded"
                         >
                           <FaTrash className="text-lg" />
