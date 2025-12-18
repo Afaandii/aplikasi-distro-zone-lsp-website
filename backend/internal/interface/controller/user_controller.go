@@ -289,3 +289,11 @@ func (usr *UserController) Register(w http.ResponseWriter, r *http.Request) {
 		"user":    user,
 	})
 }
+
+func (usr *UserController) Logout(w http.ResponseWriter, r *http.Request) {
+	// Untuk JWT, logout sebenarnya terjadi di sisi klien dengan menghapus token
+
+	helper.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "Logout successful",
+	})
+}

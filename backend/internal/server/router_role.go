@@ -21,11 +21,12 @@ func RegisterRoleRoutes(c *controller.RoleController) {
 
 	http.HandleFunc("/api/v1/role/", func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
-		if len(parts) != 2 {
-			w.WriteHeader(http.StatusNotFound)
+		if len(parts) < 4 {
+			http.Error(w, "Not Found", http.StatusNotFound)
 			return
 		}
-		id, err := strconv.Atoi(parts[1])
+		idStr := parts[len(parts)-1]
+		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
