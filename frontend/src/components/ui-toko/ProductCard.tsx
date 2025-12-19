@@ -193,7 +193,7 @@ const ProductFilter: React.FC<{
       {/* Reset Button */}
       <button
         onClick={() => onFilterChange({ categories: [], priceRange: "all" })}
-        className="mt-8 w-full bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 font-bold py-3 rounded-lg transition-colors duration-200"
+        className="mt-8 w-full bg-red-400 hover:bg-red-700 border border-gray-300 text-gray-900 font-bold py-3 rounded-lg transition-colors duration-200"
       >
         Reset Filter
       </button>
