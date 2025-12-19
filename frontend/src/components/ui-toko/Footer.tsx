@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaMapPin,
-  FaPhoneAlt,
-  FaTwitter,
-  FaYoutube,
-} from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaPhoneAlt, FaTwitter } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 import { LuMapPin } from "react-icons/lu";
 
@@ -23,19 +16,10 @@ interface SocialLink {
 
 const Footer: React.FC = () => {
   const navigationLinks: FooterLink[] = [
-    { label: "Home", href: "#home" },
-    { label: "Tentang Kami", href: "#about" },
-    { label: "Produk", href: "#products" },
-    { label: "Kategori", href: "#categories" },
-    { label: "Testimoni", href: "#testimonials" },
-    { label: "Kontak", href: "#contact" },
-  ];
-
-  const shopLinks: FooterLink[] = [
-    { label: "T-Shirt", href: "#tshirt" },
-    { label: "Hoodie", href: "#hoodie" },
-    { label: "Jaket", href: "#jacket" },
-    { label: "Aksesoris", href: "#accessories" },
+    { label: "Home", href: "/" },
+    { label: "Tentang Kami", href: "/about-us" },
+    { label: "Blog", href: "/blog" },
+    { label: "Kontak", href: "/kontak-kami" },
   ];
 
   const supportLinks: FooterLink[] = [
@@ -62,11 +46,6 @@ const Footer: React.FC = () => {
       href: "https://twitter.com/distrozone",
       label: "Twitter",
     },
-    {
-      icon: <FaYoutube className="w-5 h-5" />,
-      href: "https://youtube.com/@distrozone",
-      label: "Youtube",
-    },
   ];
 
   const currentYear = new Date().getFullYear();
@@ -92,14 +71,14 @@ const Footer: React.FC = () => {
 
             {/* Brand Description */}
             <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm">
-              Distro streetwear lokal dengan desain original dan kualitas
-              premium. Support karya anak bangsa, ekspresikan identitasmu.
+              Distro Zone lokal dengan desain original dan kualitas premium.
+              Support karya anak bangsa, ekspresikan identitasmu.
             </p>
 
             {/* Newsletter Subscription */}
             <div>
               <h4 className="text-white font-bold text-sm mb-3">
-                Subscribe Newsletter
+                Subscribe DistoZone
               </h4>
               <div className="flex space-x-2">
                 <input
@@ -107,7 +86,7 @@ const Footer: React.FC = () => {
                   placeholder="Email kamu..."
                   className="flex-1 bg-zinc-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
-                <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-lg transition-colors duration-200 flex-shrink-0">
+                <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-lg transition-colors duration-200 shrink-0">
                   <IoMdMail className="w-4 h-4" />
                 </button>
               </div>
@@ -136,22 +115,6 @@ const Footer: React.FC = () => {
           {/* Shop Links - 2 columns */}
           <div className="lg:col-span-2">
             <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
-              Kategori
-            </h3>
-            <ul className="space-y-2.5">
-              {shopLinks.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-gray-400 hover:text-orange-500 text-sm transition-colors duration-200 inline-block"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-
-            <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4 mt-8">
               Bantuan
             </h3>
             <ul className="space-y-2.5">
@@ -182,11 +145,11 @@ const Footer: React.FC = () => {
                 rel="noopener noreferrer"
                 className="flex items-start space-x-3 text-gray-400 hover:text-orange-500 transition-colors duration-200 group"
               >
-                <LuMapPin className="w-5 h-5 flex-shrink-0 mt-0.5 text-orange-500" />
+                <LuMapPin className="w-5 h-5 shrink-0 mt-0.5 text-orange-500" />
                 <span className="text-sm">
-                  Jl. Streetwear No. 123
+                  Jln. Raya Pegangsaan Timur No.29H
                   <br />
-                  Surabaya, Jawa Timur 60123
+                  Kelapa Gading Jakarta
                 </span>
               </a>
 
@@ -194,15 +157,15 @@ const Footer: React.FC = () => {
                 href="mailto:hello@distrozone.id"
                 className="flex items-center space-x-3 text-gray-400 hover:text-orange-500 transition-colors duration-200 group"
               >
-                <IoMdMail className="w-5 h-5 flex-shrink-0 text-orange-500" />
-                <span className="text-sm">hello@distrozone.id</span>
+                <IoMdMail className="w-5 h-5 shrink-0 text-orange-500" />
+                <span className="text-sm">distrozone@mail.com</span>
               </a>
 
               <a
                 href="tel:+628123456789"
                 className="flex items-center space-x-3 text-gray-400 hover:text-orange-500 transition-colors duration-200 group"
               >
-                <FaPhoneAlt className="w-5 h-5 flex-shrink-0 text-orange-500" />
+                <FaPhoneAlt className="w-5 h-5 shrink-0 text-orange-500" />
                 <span className="text-sm">+62 812-3456-7890</span>
               </a>
             </div>

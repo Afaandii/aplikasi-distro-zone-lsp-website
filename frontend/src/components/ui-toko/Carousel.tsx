@@ -70,7 +70,7 @@ export default function Carousel() {
   };
 
   return (
-    <div className="relative w-full max-w-[1240px] mx-auto px-4 sm:px-6 py-6">
+    <div className="relative bg-white w-full mx-auto px-4 sm:px-6 pt-20">
       <div className="relative overflow-hidden rounded-2xl shadow-2xl">
         {/* Slides Container */}
         <div
@@ -108,7 +108,7 @@ export default function Carousel() {
                 <div className="absolute top-1/4 right-1/3 w-72 h-72 bg-green-300 rounded-full blur-3xl opacity-15 hidden sm:block"></div>
 
                 {/* Content */}
-                <div className="relative flex items-center justify-between px-4 sm:px-8 md:px-16 py-4 sm:py-6 md:py-8 min-h-[250px] sm:min-h-[300px]">
+                <div className="relative flex items-center justify-between px-4 sm:px-8 md:px-16 py-4 sm:py-6 md:py-8 min-h-62.5 sm:min-h-75">
                   {/* Left Content */}
                   <div className="flex-1 text-white space-y-2 sm:space-y-4">
                     <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold drop-shadow-lg">
