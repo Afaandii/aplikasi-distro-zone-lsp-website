@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronCircleRight, FaChevronLeft, FaStar } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaStar } from "react-icons/fa";
 import { MdFormatQuote } from "react-icons/md";
 
 interface Testimonial {
@@ -174,11 +174,11 @@ const TestimonialsSection: React.FC = () => {
         <div className="text-center mb-16">
           <div className="inline-block">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="h-px w-8 bg-gradient-to-r from-transparent to-orange-500" />
+              <div className="h-px w-8 bg-linear-to-r from-transparent to-orange-500" />
               <span className="text-orange-500 font-bold text-sm tracking-wider uppercase">
                 Customer Reviews
               </span>
-              <div className="h-px w-8 bg-gradient-to-l from-transparent to-orange-500" />
+              <div className="h-px w-8 bg-linear-to-l from-transparent to-orange-500" />
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">
               APA KATA MEREKA?
@@ -209,7 +209,7 @@ const TestimonialsSection: React.FC = () => {
                 {testimonials.map((testimonial) => (
                   <div
                     key={testimonial.id}
-                    className="flex-shrink-0 px-3"
+                    className="shrink-0 px-3"
                     style={{ width: `${100 / itemsToShow}%` }}
                   >
                     <div className="group relative bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8 hover:border-orange-500/50 transition-all duration-300 h-full flex flex-col">
@@ -221,7 +221,7 @@ const TestimonialsSection: React.FC = () => {
                       {/* Avatar & Info */}
                       <div className="flex items-center space-x-4 mb-4 relative z-10">
                         <div
-                          className={`flex-shrink-0 w-14 h-14 ${getAvatarColor(
+                          className={`shrink-0 w-14 h-14 ${getAvatarColor(
                             testimonial.name
                           )} rounded-full flex items-center justify-center text-white font-bold text-lg`}
                         >
@@ -275,7 +275,7 @@ const TestimonialsSection: React.FC = () => {
                   className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 xl:translate-x-12 w-12 h-12 bg-orange-500 hover:bg-orange-600 text-white rounded-full items-center justify-center transition-all duration-300 hover:scale-110 shadow-xl z-10"
                   aria-label="Next testimonials"
                 >
-                  <FaChevronCircleRight className="w-6 h-6" />
+                  <FaChevronRight className="w-6 h-6" />
                 </button>
               </>
             )}

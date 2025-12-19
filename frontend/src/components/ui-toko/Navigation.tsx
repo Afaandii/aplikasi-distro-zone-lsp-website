@@ -1,27 +1,234 @@
-import React, { useState, useEffect } from "react";
-import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  FaSearch,
+  FaShoppingCart,
+  FaUser,
+  FaChevronDown,
+} from "react-icons/fa";
 import { IoMenu } from "react-icons/io5";
 import { MdClose } from "react-icons/md";
 
+// ============================================================================
+// TYPES
+// ============================================================================
 interface NavItem {
   label: string;
   href: string;
+  hasMegaMenu?: boolean;
 }
 
+interface CategoryItem {
+  label: string;
+  href: string;
+  image?: string;
+}
+
+// ============================================================================
+// MENU DATA
+// ============================================================================
+const categoryData: CategoryItem[] = [
+  {
+    label: "Semua Produk",
+    href: "/produk-list",
+  },
+  {
+    label: "Kaos",
+    href: "/produk?kategori=kaos",
+    image: "kaos-category",
+  },
+  {
+    label: "Kemeja",
+    href: "/produk?kategori=kemeja",
+    image: "kemeja-category",
+  },
+  {
+    label: "Jaket",
+    href: "/produk?kategori=jaket",
+    image: "jaket-category",
+  },
+  {
+    label: "Celana",
+    href: "/produk?kategori=celana",
+    image: "celana-category",
+  },
+  {
+    label: "Aksesoris",
+    href: "/produk?kategori=aksesoris",
+    image: "aksesoris-category",
+  },
+];
+
+const menuData: NavItem[] = [
+  { label: "Produk", href: "#", hasMegaMenu: true },
+  { label: "Tentang Distrozone", href: "/about-us" },
+  { label: "Blog", href: "/blog" },
+];
+
+// ============================================================================
+// MEGA MENU COMPONENT (DESKTOP)
+// ============================================================================
+const MegaMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
+  isOpen,
+  onClose,
+}) => {
+  if (!isOpen) return null;
+
+  const visualCategories = categoryData.filter((cat) => cat.image);
+
+  return (
+    <>
+      {/* Overlay */}
+      <div
+        className="fixed inset-0 top-20 bg-black/30 z-40"
+        onClick={onClose}
+      />
+
+      {/* Mega Menu Wrapper */}
+      <div className="fixed top-20 left-0 right-0 z-50">
+        <div
+          className="
+            bg-white 
+            w-full 
+            h-[calc(100vh-5rem)] 
+            shadow-xl
+            animate-megaIn
+          "
+        >
+          {/* Inner Container */}
+          <div className="max-w-7xl mx-auto h-full grid grid-cols-[280px_1fr]">
+            {/* LEFT: CATEGORY LIST */}
+            <aside className="border-r border-gray-200 p-8 overflow-y-auto">
+              <h3 className="text-xs font-bold text-gray-500 uppercase mb-6">
+                Kategori
+              </h3>
+              <nav className="space-y-2">
+                {categoryData.map((cat) => (
+                  <a
+                    key={cat.label}
+                    href={cat.href}
+                    onClick={onClose}
+                    className="block text-sm font-medium text-gray-700 hover:text-orange-500 transition"
+                  >
+                    {cat.label}
+                  </a>
+                ))}
+              </nav>
+            </aside>
+
+            {/* RIGHT: VISUAL GRID */}
+            <section className="p-10 overflow-y-auto">
+              <h3 className="text-xs font-bold text-gray-500 uppercase mb-8">
+                Koleksi
+              </h3>
+
+              <div className="grid grid-cols-3 gap-6">
+                {visualCategories.map((cat) => (
+                  <a
+                    key={cat.label}
+                    href={cat.href}
+                    onClick={onClose}
+                    className="group relative aspect-4/5 overflow-hidden bg-zinc-100"
+                  >
+                    {/* Fake image background */}
+                    <div className="absolute inset-0 bg-linear-to-br from-zinc-200 to-zinc-300" />
+
+                    {/* Dark overlay */}
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition" />
+
+                    {/* Text */}
+                    <div className="absolute bottom-6 left-6">
+                      <h4 className="text-white text-lg font-bold">
+                        {cat.label}
+                      </h4>
+                      <span className="text-white/80 text-sm">
+                        Lihat Koleksi →
+                      </span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// ============================================================================
+// MOBILE ACCORDION COMPONENT
+// ============================================================================
+const MobileAccordion: React.FC<{
+  item: NavItem;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+}> = ({ item, isOpen, onToggle, onClose }) => {
+  if (!item.hasMegaMenu) {
+    return (
+      <a
+        href={item.href}
+        onClick={onClose}
+        className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+      >
+        {item.label}
+      </a>
+    );
+  }
+
+  return (
+    <div>
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+      >
+        <span>{item.label}</span>
+        <FaChevronDown
+          className={`w-4 h-4 transition-transform duration-300 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {/* Accordion Content */}
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-96" : "max-h-0"
+        }`}
+      >
+        <div className="pl-4 py-2 space-y-1">
+          {categoryData.map((category, index) => (
+            <a
+              key={index}
+              href={category.href}
+              onClick={onClose}
+              className="block px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
+            >
+              {category.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// MAIN NAVBAR COMPONENT
+// ============================================================================
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [openMobileAccordion, setOpenMobileAccordion] = useState<string | null>(
+    null
+  );
   const [cartCount] = useState(3);
 
-  const navItems: NavItem[] = [
-    { label: "Home", href: "#home" },
-    { label: "Tentang Distrozone", href: "#about" },
-    { label: "Produk", href: "/produk-list" },
-    { label: "Kategori", href: "#categories" },
-    { label: "Kontak", href: "#contact" },
-  ];
+  const megaMenuRef = useRef<HTMLDivElement>(null);
 
+  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -31,6 +238,7 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -38,6 +246,15 @@ const Navbar: React.FC = () => {
       document.body.style.overflow = "unset";
     }
   }, [isMobileMenuOpen]);
+
+  const closeMegaMenu = () => {
+    setMegaMenuOpen(false);
+  };
+
+  // Mobile Accordion Handler
+  const handleMobileAccordionToggle = (label: string) => {
+    setOpenMobileAccordion(openMobileAccordion === label ? null : label);
+  };
 
   return (
     <>
@@ -50,7 +267,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <div className="shrink-0">
-              <a href="#home" className="flex items-center group">
+              <a href="/" className="flex items-center group">
                 <div className="text-2xl md:text-3xl font-black tracking-tighter">
                   <span className="text-white">DISTRO</span>
                   <span className="text-orange-500 group-hover:text-orange-400 transition-colors">
@@ -62,14 +279,34 @@ const Navbar: React.FC = () => {
 
             {/* Desktop Menu - Center */}
             <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
-              {navItems.map((item) => (
-                <a
+              {menuData.map((item) => (
+                <div
                   key={item.label}
-                  href={item.href}
-                  className="px-3 lg:px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                  className="relative"
+                  ref={item.hasMegaMenu ? megaMenuRef : null}
                 >
-                  {item.label}
-                </a>
+                  {item.hasMegaMenu ? (
+                    <button
+                      type="button"
+                      onClick={() => setMegaMenuOpen((prev) => !prev)}
+                      className="flex items-center space-x-1 px-3 lg:px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition"
+                    >
+                      <span>{item.label}</span>
+                      <FaChevronDown
+                        className={`w-3 h-3 transition-transform ${
+                          megaMenuOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                  ) : (
+                    <a
+                      href={item.href}
+                      className="px-3 lg:px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition"
+                    >
+                      {item.label}
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
 
@@ -139,6 +376,11 @@ const Navbar: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Mega Menu (Desktop Only) */}
+        <div>
+          <MegaMenu isOpen={megaMenuOpen} onClose={closeMegaMenu} />
+        </div>
       </nav>
 
       {/* Mobile Menu Overlay */}
@@ -152,15 +394,14 @@ const Navbar: React.FC = () => {
             <div className="flex flex-col h-full">
               {/* Mobile Menu Items */}
               <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                {navItems.map((item) => (
-                  <a
+                {menuData.map((item) => (
+                  <MobileAccordion
                     key={item.label}
-                    href={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
-                  >
-                    {item.label}
-                  </a>
+                    item={item}
+                    isOpen={openMobileAccordion === item.label}
+                    onToggle={() => handleMobileAccordionToggle(item.label)}
+                    onClose={() => setIsMobileMenuOpen(false)}
+                  />
                 ))}
 
                 {/* User Login Link - Mobile Only */}

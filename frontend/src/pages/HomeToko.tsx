@@ -1,4 +1,3 @@
-import AboutSection from "../components/ui-toko/About";
 import CategoriesSection from "../components/ui-toko/CategoriesSection";
 import ContactForm from "../components/ui-toko/Contact";
 import FeaturedProducts from "../components/ui-toko/FeaturedProduct";
@@ -17,9 +16,6 @@ export default function HomeToko() {
       <main className="pt-14 bg-white min-h-screen">
         {/* carousel banner */}
         <Demo />
-        {/* carousel category */}
-        <AboutSection />
-        {/* card produk */}
         <FeaturedProducts />
         <FeaturesSection />
         <CategoriesSection />
