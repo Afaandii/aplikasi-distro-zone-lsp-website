@@ -59,13 +59,12 @@ const Footer: React.FC = () => {
           <div className="lg:col-span-4">
             {/* Logo */}
             <div className="mb-4">
-              <a href="#home" className="inline-block group">
-                <div className="text-2xl md:text-3xl font-black tracking-tighter">
-                  <span className="text-white">DISTRO</span>
-                  <span className="text-orange-500 group-hover:text-orange-400 transition-colors">
-                    ZONE
-                  </span>
-                </div>
+              <a href="/" className="inline-block group">
+                <img
+                  src="images/distro-zone.png"
+                  alt="DistroZone"
+                  className="h-16 w-56 object-contain -mt-3"
+                />
               </a>
             </div>
 

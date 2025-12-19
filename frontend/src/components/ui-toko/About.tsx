@@ -40,7 +40,6 @@ const AboutSection: React.FC = () => {
 
   return (
     <>
-      <Navbar />
       <section
         id="about"
         className="relative py-20 md:py-32 bg-zinc-900 overflow-hidden"
@@ -55,13 +54,6 @@ const AboutSection: React.FC = () => {
           {/* Section Header */}
           <div className="text-center mb-16">
             <div className="inline-block">
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                <div className="h-px w-8 bg-linear-to-r from-transparent to-orange-500" />
-                <span className="text-orange-500 font-bold text-sm tracking-wider uppercase">
-                  About Us
-                </span>
-                <div className="h-px w-8 bg-linear-to-l from-transparent to-orange-500" />
-              </div>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4">
                 TENTANG DISTROZONE
               </h2>
@@ -122,7 +114,7 @@ const AboutSection: React.FC = () => {
                 </p>
 
                 <p className="text-base md:text-lg text-gray-400 leading-relaxed">
-                  Dimulai dari garasi kecil di 2020, kami percaya bahwa fashion
+                  Dimulai dari garasi kecil di 2025, kami percaya bahwa fashion
                   bukan hanya soal pakaian—tapi tentang{" "}
                   <span className="text-white font-semibold">
                     identitas, ekspresi diri, dan komunitas
@@ -195,29 +187,6 @@ const AboutSection: React.FC = () => {
                 <div className="absolute inset-0 bg-linear-to-br from-orange-500/0 to-orange-500/0 group-hover:from-orange-500/5 group-hover:to-transparent rounded-xl transition-all duration-300 pointer-events-none" />
               </div>
             ))}
-          </div>
-
-          {/* Bottom CTA */}
-          <div className="text-center mt-16">
-            <p className="text-gray-400 mb-6">
-              Siap bergabung dengan komunitas streetwear lokal?
-            </p>
-            <button className="group inline-flex items-center space-x-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-4 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/50">
-              <span>Explore Koleksi Kami</span>
-              <svg
-                className="w-5 h-5 group-hover:translate-x-1 transition-transform"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </button>
           </div>
         </div>
       </section>
