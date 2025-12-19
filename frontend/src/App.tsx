@@ -49,6 +49,7 @@ import CreateRoles from "./pages/Roles/CreateRoles";
 import EditRoles from "./pages/Roles/EditRoles";
 import ProductsPage from "./components/ui-toko/ProductCard";
 import AboutSection from "./components/ui-toko/About";
+import CategoriesSection from "./components/ui-toko/CategoriesSection";
 
 export default function App() {
   return (
@@ -159,6 +160,7 @@ export default function App() {
           <Route path="/cart-produk" element={<CartProduct />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/produk-list" element={<ProductsPage />} />
+          <Route path="/kategori-list" element={<CategoriesSection />} />
           <Route path="/about-us" element={<AboutSection />} />
           {/* Route halaman toko end */}
 

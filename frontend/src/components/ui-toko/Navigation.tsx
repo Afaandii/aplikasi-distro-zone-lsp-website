@@ -98,9 +98,11 @@ const MegaMenu: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           <div className="max-w-7xl mx-auto h-full grid grid-cols-[280px_1fr]">
             {/* LEFT: CATEGORY LIST */}
             <aside className="border-r border-gray-200 p-8 overflow-y-auto">
-              <h3 className="text-xs font-bold text-gray-500 uppercase mb-6">
-                Kategori
-              </h3>
+              <h1 className="text-xs font-bold text-gray-500 uppercase mb-6">
+                <a href="/kategori-list" className="mb-6">
+                  Kategori
+                </a>
+              </h1>
               <nav className="space-y-2">
                 {categoryData.map((cat) => (
                   <a
