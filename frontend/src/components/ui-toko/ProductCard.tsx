@@ -30,13 +30,13 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   };
 
   return (
-    <div className="group relative bg-zinc-900 rounded-xl overflow-hidden border border-white/10 hover:border-orange-500/50 transition-all duration-300">
+    <div className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-orange-500 transition-all duration-300 shadow-sm hover:shadow-md">
       {/* Product Image */}
-      <div className="relative aspect-square bg-linear-to-br from-zinc-800 to-zinc-900 overflow-hidden">
+      <div className="relative aspect-square bg-gray-100 overflow-hidden">
         {/* Image Placeholder */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div
-            className="absolute inset-0 opacity-10"
+            className="absolute inset-0 opacity-5"
             style={{
               backgroundImage: `repeating-linear-gradient(
                 45deg,
@@ -48,10 +48,10 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
             }}
           />
           <div className="text-center z-10">
-            <div className="text-4xl font-black text-white/20 mb-2">
+            <div className="text-4xl font-black text-gray-300 mb-2">
               {product.nama.split(" ")[0]}
             </div>
-            <div className="text-xs text-gray-600">{product.gambar}</div>
+            <div className="text-xs text-gray-400">{product.gambar}</div>
           </div>
         </div>
 
@@ -67,7 +67,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         </div>
 
         {/* Product Name */}
-        <h3 className="text-white font-bold text-base mb-2 line-clamp-1">
+        <h3 className="text-gray-900 font-bold text-base mb-2 line-clamp-1">
           {product.nama}
         </h3>
 
@@ -77,7 +77,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
             {product.colors.map((color, index) => (
               <button
                 key={index}
-                className="w-5 h-5 rounded-full border-2 border-white/20 hover:border-orange-500 transition-colors duration-200"
+                className="w-5 h-5 rounded-full border-2 border-gray-300 hover:border-orange-500 transition-colors duration-200"
                 style={{ backgroundColor: color }}
               />
             ))}
@@ -91,14 +91,14 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
               {formatPrice(product.harga)}
             </div>
             {product.hargaOri && (
-              <div className="text-gray-600 text-xs line-through">
+              <div className="text-gray-400 text-xs line-through">
                 {formatPrice(product.hargaOri)}
               </div>
             )}
           </div>
 
           {product.hargaOri && (
-            <div className="bg-red-500/20 text-red-500 text-xs font-bold px-2 py-1 rounded">
+            <div className="bg-red-50 text-red-500 text-xs font-bold px-2 py-1 rounded">
               -
               {Math.round(
                 ((product.hargaOri - product.harga) / product.hargaOri) * 100
@@ -139,7 +139,7 @@ const ProductFilter: React.FC<{
     <>
       {/* Tipe */}
       <div className="mb-8">
-        <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
+        <h3 className="text-gray-900 font-bold text-sm uppercase tracking-wider mb-4">
           Tipe Kaos
         </h3>
         <div className="space-y-2">
@@ -152,9 +152,9 @@ const ProductFilter: React.FC<{
                 type="checkbox"
                 checked={filters.categories.includes(tipe)}
                 onChange={() => toggleTipe(tipe)}
-                className="w-5 h-5 rounded border-2 border-white/20 bg-transparent checked:bg-orange-500 checked:border-orange-500 transition-colors cursor-pointer"
+                className="w-5 h-5 rounded border-2 border-gray-300 bg-white checked:bg-orange-500 checked:border-orange-500 transition-colors cursor-pointer"
               />
-              <span className="text-gray-400 group-hover:text-white transition-colors text-sm">
+              <span className="text-gray-600 group-hover:text-gray-900 transition-colors text-sm">
                 {tipe}
               </span>
             </label>
@@ -164,7 +164,7 @@ const ProductFilter: React.FC<{
 
       {/* Price Range */}
       <div>
-        <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
+        <h3 className="text-gray-900 font-bold text-sm uppercase tracking-wider mb-4">
           Harga
         </h3>
         <div className="space-y-2">
@@ -180,9 +180,9 @@ const ProductFilter: React.FC<{
                 onChange={() =>
                   onFilterChange({ ...filters, priceRange: range.value })
                 }
-                className="w-5 h-5 border-2 border-white/20 bg-transparent checked:border-orange-500 transition-colors cursor-pointer"
+                className="w-5 h-5 border-2 border-gray-300 bg-white checked:border-orange-500 transition-colors cursor-pointer"
               />
-              <span className="text-gray-400 group-hover:text-white transition-colors text-sm">
+              <span className="text-gray-600 group-hover:text-gray-900 transition-colors text-sm">
                 {range.label}
               </span>
             </label>
@@ -193,7 +193,7 @@ const ProductFilter: React.FC<{
       {/* Reset Button */}
       <button
         onClick={() => onFilterChange({ categories: [], priceRange: "all" })}
-        className="mt-8 w-full bg-white/5 hover:bg-white/10 border border-white/20 text-white font-bold py-3 rounded-lg transition-colors duration-200"
+        className="mt-8 w-full bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 font-bold py-3 rounded-lg transition-colors duration-200"
       >
         Reset Filter
       </button>
@@ -204,18 +204,18 @@ const ProductFilter: React.FC<{
     return (
       <div className="fixed inset-0 z-50 lg:hidden">
         <div
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           onClick={onClose}
         />
-        <div className="absolute right-0 top-0 bottom-0 w-80 max-w-full bg-zinc-900 shadow-xl overflow-y-auto">
+        <div className="absolute right-0 top-0 bottom-0 w-80 max-w-full bg-white shadow-xl overflow-y-auto">
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-black text-white">FILTER</h2>
+              <h2 className="text-xl font-black text-gray-900">FILTER</h2>
               <button
                 onClick={onClose}
-                className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors"
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <MdClose className="w-6 h-6 text-white" />
+                <MdClose className="w-6 h-6 text-gray-900" />
               </button>
             </div>
             {FilterContent}
@@ -226,8 +226,8 @@ const ProductFilter: React.FC<{
   }
 
   return (
-    <div className="hidden lg:block bg-zinc-900 rounded-xl border border-white/10 p-6 sticky top-34">
-      <h2 className="text-xl font-black text-white mb-6">FILTER</h2>
+    <div className="hidden lg:block bg-white rounded-xl border border-gray-200 p-6 sticky top-34 shadow-sm">
+      <h2 className="text-xl font-black text-gray-900 mb-6">FILTER</h2>
       {FilterContent}
     </div>
   );
@@ -254,7 +254,7 @@ const ProductSort: React.FC<{
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 bg-zinc-900 border border-white/10 hover:border-orange-500/50 px-4 py-2.5 rounded-lg transition-colors duration-200 text-sm font-medium text-white"
+        className="flex items-center space-x-2 bg-white border border-gray-300 hover:border-orange-500 px-4 py-2.5 rounded-lg transition-colors duration-200 text-sm font-medium text-gray-900"
       >
         <span>{selectedLabel}</span>
         <FaChevronDown
@@ -270,7 +270,7 @@ const ProductSort: React.FC<{
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-white/10 rounded-lg shadow-xl overflow-hidden z-20">
+          <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-20">
             {sortOptions.map((option) => (
               <button
                 key={option.value}
@@ -281,10 +281,10 @@ const ProductSort: React.FC<{
                 className={`w-full text-left px-4 py-3 text-sm transition-colors ${
                   value === option.value
                     ? "bg-orange-500 text-white"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 }`}
               >
-                {option.label}
+                {option.value}
               </button>
             ))}
           </div>
@@ -341,7 +341,7 @@ const Pagination: React.FC<{
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-white/10 hover:border-orange-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-white"
+        className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 hover:border-orange-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-gray-900"
       >
         ‹
       </button>
@@ -354,13 +354,13 @@ const Pagination: React.FC<{
             className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition-colors ${
               currentPage === page
                 ? "bg-orange-500 text-white"
-                : "bg-zinc-900 border border-white/10 hover:border-orange-500 text-gray-400"
+                : "bg-white border border-gray-300 hover:border-orange-500 text-gray-600"
             }`}
           >
             {page}
           </button>
         ) : (
-          <span key={index} className="text-gray-600 px-2">
+          <span key={index} className="text-gray-400 px-2">
             {page}
           </span>
         )
@@ -369,7 +369,7 @@ const Pagination: React.FC<{
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-white/10 hover:border-orange-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-white"
+        className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 hover:border-orange-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-gray-900"
       >
         ›
       </button>
@@ -579,12 +579,12 @@ const ProductsPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
       <Navbar />
 
       {/* Page Content */}
-      <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-16">
+      <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filter - Desktop */}
           <aside className="lg:w-64 shrink-0">
@@ -597,7 +597,7 @@ const ProductsPage: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               {/* Header */}
               <div>
-                <p className="text-gray-400">
+                <p className="text-gray-600">
                   Menampilkan {paginatedProducts.length} dari{" "}
                   {sortedProducts.length} produk
                 </p>
@@ -606,7 +606,7 @@ const ProductsPage: React.FC = () => {
               {/* Mobile Filter Button */}
               <button
                 onClick={() => setIsMobileFilterOpen(true)}
-                className="lg:hidden flex items-center space-x-2 bg-zinc-900 border border-white/10 hover:border-orange-500/50 px-4 py-2.5 rounded-lg transition-colors duration-200 text-sm font-medium text-white"
+                className="lg:hidden flex items-center space-x-2 bg-white border border-gray-300 hover:border-orange-500 px-4 py-2.5 rounded-lg transition-colors duration-200 text-sm font-medium text-gray-900"
               >
                 <FaFilter className="w-4 h-4" />
                 <span>Filter</span>
