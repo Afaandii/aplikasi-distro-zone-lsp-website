@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaChevronDown, FaFilter } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import Navbar from "./Navigation";
+import axios from "axios";
 
 // Types
 interface Product {
@@ -33,30 +34,27 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
     <div className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-orange-500 transition-all duration-300 shadow-sm hover:shadow-md">
       {/* Product Image */}
       <div className="relative aspect-square bg-gray-100 overflow-hidden">
-        {/* Image Placeholder */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className="absolute inset-0 opacity-5"
-            style={{
-              backgroundImage: `repeating-linear-gradient(
-                45deg,
-                #f97316,
-                #f97316 10px,
-                transparent 10px,
-                transparent 20px
-              )`,
-            }}
+        {/* Real Image */}
+        {product.gambar ? (
+          <img
+            src={product.gambar}
+            alt={product.nama}
+            className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
           />
-          <div className="text-center z-10">
-            <div className="text-4xl font-black text-gray-300 mb-2">
-              {product.nama.split(" ")[0]}
+        ) : (
+          // Fallback jika gambar tidak ada
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <div className="text-center">
+              <div className="text-4xl font-black text-gray-300 mb-2">
+                {product.nama.split(" ")[0]}
+              </div>
+              <div className="text-xs text-gray-400">No Image</div>
             </div>
-            <div className="text-xs text-gray-400">{product.gambar}</div>
           </div>
-        </div>
+        )}
 
-        {/* Zoom Effect on Image */}
-        <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-700" />
+        {/* Overlay for hover effect (optional) */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
       </div>
 
       {/* Product Info */}
@@ -72,17 +70,20 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         </h3>
 
         {/* Colors */}
-        {product.colors && (
-          <div className="flex items-center space-x-2 mb-3">
-            {product.colors.map((color, index) => (
-              <button
-                key={index}
-                className="w-5 h-5 rounded-full border-2 border-gray-300 hover:border-orange-500 transition-colors duration-200"
-                style={{ backgroundColor: color }}
-              />
-            ))}
-          </div>
-        )}
+        {/* Colors */}
+        {product.colors &&
+          Array.isArray(product.colors) &&
+          product.colors.length > 0 && (
+            <div className="flex items-center space-x-2 mb-3">
+              {product.colors.map((color, index) => (
+                <button
+                  key={index}
+                  className="w-5 h-5 rounded-full border-2 border-gray-300 hover:border-orange-500 transition-colors duration-200"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          )}
 
         {/* Price */}
         <div className="flex items-center justify-between">
@@ -387,8 +388,74 @@ const ProductsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  // State untuk menyimpan data produk dan foto dari API
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const itemsPerPage = 12;
 
+  // Fungsi untuk mengambil data produk dan foto produk
+  const fetchProductsAndPhotos = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Ambil produk
+      const productsResponse = await axios.get<{ data: any[] }>(
+        "http://localhost:8080/api/v1/produk"
+      );
+
+      // Ambil foto produk
+      const photosResponse = await axios.get<{ data: any[] }>(
+        "http://localhost:8080/api/v1/foto-produk"
+      );
+
+      // Map foto produk berdasarkan id_produk
+      const photoMap: Record<number, string[]> = {};
+      photosResponse.data.forEach((photo: any) => {
+        if (!photoMap[photo.id_produk]) {
+          photoMap[photo.id_produk] = [];
+        }
+        photoMap[photo.id_produk].push(photo.url_foto);
+      });
+
+      // Transformasi data produk: tambahkan `gambar` (foto pertama) dan `colors` (jika ada)
+      const transformedProducts = productsResponse.data.map((p: any) => {
+        // Gunakan foto pertama sebagai gambar utama, atau placeholder jika tidak ada
+        const firstPhoto = photoMap[p.id_produk]
+          ? photoMap[p.id_produk][1]
+          : "";
+
+        // Asumsikan colors belum ada di API, jadi kita buat default atau kosong
+        // Jika API mengirim colors, ganti [] dengan p.colors
+        const colors = p.colors || []; // Sesuaikan jika API kirim field 'colors'
+
+        return {
+          id: p.id_produk,
+          nama: p.nama_kaos,
+          tipe: p.id_tipe === 1 ? "Lengan Panjang" : "Lengan Pendek", // Sesuaikan mapping tipe
+          harga: p.harga_jual,
+          hargaOri: p.harga_pokok, // Jika harga pokok lebih tinggi, jadikan hargaOri
+          gambar: firstPhoto, // Ganti dengan URL default jika tidak ada foto
+          colors: colors.length > 0 ? colors : undefined, // Biarkan undefined jika tidak ada warna
+        };
+      });
+
+      setProducts(transformedProducts);
+    } catch (err) {
+      console.error("Error fetching products or photos:", err);
+      setError("Gagal memuat produk. Silakan coba lagi nanti.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Efek untuk memuat data saat komponen dimount
+  useEffect(() => {
+    fetchProductsAndPhotos();
+  }, []);
+
+  // Handle perubahan filter atau sort
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
     setCurrentPage(1);
@@ -399,143 +466,8 @@ const ProductsPage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // Dummy Products Data
-  const allProducts: Product[] = [
-    {
-      id: 1,
-      nama: "Urban Street Tee Black",
-      tipe: "Lengan Panjang",
-      harga: 149000,
-      hargaOri: 199000,
-      gambar: "tshirt-1",
-      colors: ["#000000", "#FFFFFF", "#DC2626"],
-    },
-    {
-      id: 2,
-      nama: "Oversized Hoodie Premium",
-      tipe: "Lengan Panjang",
-      harga: 299000,
-      gambar: "hoodie-1",
-      colors: ["#000000", "#374151", "#7C3AED"],
-    },
-    {
-      id: 3,
-      nama: "Classic Logo Tee White",
-      tipe: "Lengan Pendek",
-      harga: 139000,
-      gambar: "tshirt-2",
-      colors: ["#FFFFFF", "#000000", "#F97316"],
-    },
-    {
-      id: 4,
-      nama: "Vintage Denim Jacket",
-      tipe: "Lengan Pendek",
-      harga: 449000,
-      gambar: "jacket-1",
-      colors: ["#1F2937", "#78716C"],
-    },
-    {
-      id: 5,
-      nama: "Graphic Tee Vol.2",
-      tipe: "Lengan Panjang",
-      harga: 159000,
-      gambar: "tshirt-3",
-      colors: ["#000000", "#FFFFFF", "#0EA5E9"],
-    },
-    {
-      id: 6,
-      nama: "Zipper Hoodie Grey",
-      tipe: "Lengan Panjang",
-      harga: 319000,
-      gambar: "hoodie-2",
-      colors: ["#6B7280", "#000000"],
-    },
-    {
-      id: 7,
-      nama: "Minimal Logo Tee",
-      tipe: "Lengan Pendek",
-      harga: 129000,
-      gambar: "tshirt-4",
-      colors: ["#000000", "#FFFFFF", "#10B981"],
-    },
-    {
-      id: 8,
-      nama: "Premium Crewneck",
-      tipe: "Lengan Pendek",
-      harga: 279000,
-      gambar: "sweater-1",
-      colors: ["#000000", "#9CA3AF", "#DC2626"],
-    },
-    {
-      id: 9,
-      nama: "Bomber Jacket Black",
-      tipe: "Lengan Panjang",
-      harga: 499000,
-      gambar: "jacket-2",
-      colors: ["#000000", "#1F2937"],
-    },
-    {
-      id: 10,
-      nama: "Distro Cap Original",
-      tipe: "Lengan Panjang",
-      harga: 89000,
-      gambar: "cap-1",
-      colors: ["#000000", "#FFFFFF", "#F97316"],
-    },
-    {
-      id: 11,
-      nama: "Streetwear Backpack",
-      tipe: "Lengan Pendek",
-      harga: 249000,
-      gambar: "bag-1",
-      colors: ["#000000", "#1F2937"],
-    },
-    {
-      id: 12,
-      nama: "Oversized Tee Premium",
-      tipe: "Lengan Pendek",
-      harga: 169000,
-      hargaOri: 219000,
-      gambar: "tshirt-5",
-      colors: ["#000000", "#FFFFFF", "#7C3AED"],
-    },
-    {
-      id: 13,
-      nama: "Pullover Hoodie Navy",
-      tipe: "Lengan Panjang",
-      harga: 289000,
-      gambar: "hoodie-3",
-      colors: ["#1E3A8A", "#000000"],
-    },
-    {
-      id: 14,
-      nama: "Canvas Tote Bag",
-      tipe: "Lengan Panjang",
-      harga: 129000,
-      gambar: "bag-2",
-      colors: ["#F5F5DC", "#000000"],
-    },
-    {
-      id: 15,
-      nama: "Windbreaker Jacket",
-      tipe: "Lengan Pendek",
-      harga: 399000,
-      gambar: "jacket-3",
-      colors: ["#000000", "#DC2626", "#F97316"],
-    },
-    {
-      id: 16,
-      nama: "Basic Crew Tee Pack",
-      tipe: "Lengan Pendek",
-      harga: 349000,
-      hargaOri: 447000,
-      gambar: "tshirt-pack",
-      colors: ["#000000", "#FFFFFF", "#6B7280"],
-    },
-  ];
-
-  // Filter products
-  const filteredProducts = allProducts.filter((product) => {
+  // Fungsi untuk memfilter produk
+  const filteredProducts = products.filter((product) => {
     // Category filter
     if (
       filters.categories.length > 0 &&
@@ -555,7 +487,7 @@ const ProductsPage: React.FC = () => {
     return true;
   });
 
-  // Sort products
+  // Fungsi untuk mengurutkan produk
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case "price-asc":
@@ -577,6 +509,44 @@ const ProductsPage: React.FC = () => {
     startIndex,
     startIndex + itemsPerPage
   );
+
+  // Jika sedang loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <aside className="lg:w-64 shrink-0">
+              <ProductFilter filters={filters} onFilterChange={setFilters} />
+            </aside>
+            <main className="flex-1">
+              <div className="text-center py-16">Memuat produk...</div>
+            </main>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Jika error
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <aside className="lg:w-64 shrink-0">
+              <ProductFilter filters={filters} onFilterChange={setFilters} />
+            </aside>
+            <main className="flex-1">
+              <div className="text-center py-16 text-red-500">{error}</div>
+            </main>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -51,7 +51,7 @@ export default function EditProduk() {
           id_tipe: String(produk.id_tipe ?? ""),
           id_ukuran: String(produk.id_ukuran ?? ""),
           id_warna: String(produk.id_warna ?? ""),
-          nama_kaos: produk.nama_kaos ?? "",
+          nama_kaos: String(produk.nama_kaos ?? ""),
           harga_jual: String(produk.harga_jual ?? ""),
           harga_pokok: String(produk.harga_pokok ?? ""),
           stok_kaos: String(produk.stok_kaos ?? ""),
@@ -242,15 +242,15 @@ export default function EditProduk() {
             {/* Nama Produk */}
             <div className="mb-4">
               <label
-                htmlFor="nama_produk"
+                htmlFor="nama_kaos"
                 className="block text-sm font-medium text-white mb-1"
               >
                 Nama Produk
               </label>
               <input
                 type="text"
-                id="nama_produk"
-                name="nama_produk"
+                id="nama_kaos"
+                name="nama_kaos"
                 value={formData.nama_kaos}
                 onChange={handleChange}
                 placeholder="Masukan nama produk"

@@ -94,10 +94,7 @@ export default function App() {
             {/* Produk Page */}
             <Route path="/produk" element={<Produk />} />
             <Route path="/create-produk" element={<CreateProduk />} />
-            <Route
-              path="/edit-produk/:id_foto_produk"
-              element={<EditProduk />}
-            />
+            <Route path="/edit-produk/:id_produk" element={<EditProduk />} />
             {/* Produk Gambar */}
             <Route path="/foto-produk" element={<GambarProduk />} />
             <Route
