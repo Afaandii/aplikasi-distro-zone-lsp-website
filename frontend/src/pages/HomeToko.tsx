@@ -1,11 +1,7 @@
-import CategoriesSection from "../components/ui-toko/CategoriesSection";
-import ContactForm from "../components/ui-toko/Contact";
-import FeaturedProducts from "../components/ui-toko/FeaturedProduct";
-import FeaturesSection from "../components/ui-toko/FeaturedSection";
+import Carousel from "../components/ui-toko/Carousel";
 import Footer from "../components/ui-toko/Footer";
-import Demo from "../components/ui-toko/Hero";
 import Navigation from "../components/ui-toko/Navigation";
-import TestimonialsSection from "../components/ui-toko/Testimonials";
+import ProductsPage from "../components/ui-toko/ProductCard";
 
 export default function HomeToko() {
   return (
@@ -15,11 +11,8 @@ export default function HomeToko() {
 
       <main className="pt-14 bg-white min-h-screen">
         {/* carousel banner */}
-        <Demo />
-        <FeaturedProducts />
-        <FeaturesSection />
-        <TestimonialsSection />
-        <ContactForm />
+        <Carousel />
+        <ProductsPage />
       </main>
       {/* footer */}
       <Footer />

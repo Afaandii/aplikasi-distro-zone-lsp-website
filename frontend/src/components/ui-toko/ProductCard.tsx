@@ -1,22 +1,16 @@
 import React, { useState } from "react";
-import {
-  FaChevronDown,
-  FaFilter,
-  FaHeart,
-  FaShoppingCart,
-} from "react-icons/fa";
+import { FaChevronDown, FaFilter } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import Navbar from "./Navigation";
 
 // Types
 interface Product {
   id: number;
-  name: string;
-  category: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  badge?: "NEW" | "BEST SELLER";
+  nama: string;
+  tipe: string;
+  harga: number;
+  hargaOri?: number;
+  gambar: string;
   colors?: string[];
 }
 
@@ -27,18 +21,12 @@ interface FilterState {
 
 // Product Card Component
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
-  const [isLiked, setIsLiked] = useState(false);
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(price);
-  };
-
-  const getBadgeColor = (badge: string) => {
-    return badge === "NEW" ? "bg-orange-500" : "bg-green-500";
   };
 
   return (
@@ -61,46 +49,9 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           />
           <div className="text-center z-10">
             <div className="text-4xl font-black text-white/20 mb-2">
-              {product.name.split(" ")[0]}
+              {product.nama.split(" ")[0]}
             </div>
-            <div className="text-xs text-gray-600">{product.image}</div>
-          </div>
-        </div>
-
-        {/* Badge */}
-        {product.badge && (
-          <div className="absolute top-3 left-3 z-10">
-            <span
-              className={`${getBadgeColor(
-                product.badge
-              )} text-white text-xs font-bold px-3 py-1 rounded-full`}
-            >
-              {product.badge}
-            </span>
-          </div>
-        )}
-
-        {/* Like Button */}
-        <button
-          onClick={() => setIsLiked(!isLiked)}
-          className="absolute top-3 right-3 z-10 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 transition-all duration-300"
-        >
-          <FaHeart
-            className={`w-5 h-5 transition-all duration-300 ${
-              isLiked ? "fill-red-500 text-red-500 scale-110" : "text-white"
-            }`}
-          />
-        </button>
-
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center space-x-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-            <button className="bg-white hover:bg-orange-500 text-black hover:text-white font-bold px-4 py-2 rounded-lg transition-colors duration-200 text-sm">
-              Detail
-            </button>
-            <button className="w-10 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-lg flex items-center justify-center transition-colors duration-200">
-              <FaShoppingCart className="w-4 h-4" />
-            </button>
+            <div className="text-xs text-gray-600">{product.gambar}</div>
           </div>
         </div>
 
@@ -112,12 +63,12 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
       <div className="p-4">
         {/* Category */}
         <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-          {product.category}
+          {product.tipe}
         </div>
 
         {/* Product Name */}
         <h3 className="text-white font-bold text-base mb-2 line-clamp-1">
-          {product.name}
+          {product.nama}
         </h3>
 
         {/* Colors */}
@@ -137,22 +88,20 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         <div className="flex items-center justify-between">
           <div>
             <div className="text-orange-500 font-black text-lg">
-              {formatPrice(product.price)}
+              {formatPrice(product.harga)}
             </div>
-            {product.originalPrice && (
+            {product.hargaOri && (
               <div className="text-gray-600 text-xs line-through">
-                {formatPrice(product.originalPrice)}
+                {formatPrice(product.hargaOri)}
               </div>
             )}
           </div>
 
-          {product.originalPrice && (
+          {product.hargaOri && (
             <div className="bg-red-500/20 text-red-500 text-xs font-bold px-2 py-1 rounded">
               -
               {Math.round(
-                ((product.originalPrice - product.price) /
-                  product.originalPrice) *
-                  100
+                ((product.hargaOri - product.harga) / product.hargaOri) * 100
               )}
               %
             </div>
@@ -170,7 +119,7 @@ const ProductFilter: React.FC<{
   onClose?: () => void;
   isMobile?: boolean;
 }> = ({ filters, onFilterChange, onClose, isMobile }) => {
-  const categories = ["T-Shirt", "Hoodie", "Jaket", "Sweater", "Aksesoris"];
+  const tipe = ["Lengan Panjang", "Lengan Pendek"];
   const priceRanges = [
     { label: "Semua Harga", value: "all" },
     { label: "Di bawah 100k", value: "0-100000" },
@@ -179,34 +128,34 @@ const ProductFilter: React.FC<{
     { label: "Di atas 300k", value: "300000-999999" },
   ];
 
-  const toggleCategory = (category: string) => {
-    const newCategories = filters.categories.includes(category)
-      ? filters.categories.filter((c) => c !== category)
-      : [...filters.categories, category];
+  const toggleTipe = (tipe: string) => {
+    const newCategories = filters.categories.includes(tipe)
+      ? filters.categories.filter((c) => c !== tipe)
+      : [...filters.categories, tipe];
     onFilterChange({ ...filters, categories: newCategories });
   };
 
   const FilterContent = (
     <>
-      {/* Categories */}
+      {/* Tipe */}
       <div className="mb-8">
         <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
-          Kategori
+          Tipe Kaos
         </h3>
         <div className="space-y-2">
-          {categories.map((category) => (
+          {tipe.map((tipe) => (
             <label
-              key={category}
+              key={tipe}
               className="flex items-center space-x-3 cursor-pointer group"
             >
               <input
                 type="checkbox"
-                checked={filters.categories.includes(category)}
-                onChange={() => toggleCategory(category)}
+                checked={filters.categories.includes(tipe)}
+                onChange={() => toggleTipe(tipe)}
                 className="w-5 h-5 rounded border-2 border-white/20 bg-transparent checked:bg-orange-500 checked:border-orange-500 transition-colors cursor-pointer"
               />
               <span className="text-gray-400 group-hover:text-white transition-colors text-sm">
-                {category}
+                {tipe}
               </span>
             </label>
           ))}
@@ -277,7 +226,7 @@ const ProductFilter: React.FC<{
   }
 
   return (
-    <div className="hidden lg:block bg-zinc-900 rounded-xl border border-white/10 p-6 sticky top-24">
+    <div className="hidden lg:block bg-zinc-900 rounded-xl border border-white/10 p-6 sticky top-34">
       <h2 className="text-xl font-black text-white mb-6">FILTER</h2>
       {FilterContent}
     </div>
@@ -440,144 +389,147 @@ const ProductsPage: React.FC = () => {
 
   const itemsPerPage = 12;
 
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (newSort: string) => {
+    setSortBy(newSort);
+    setCurrentPage(1);
+  };
+
   // Dummy Products Data
   const allProducts: Product[] = [
     {
       id: 1,
-      name: "Urban Street Tee Black",
-      category: "T-Shirt",
-      price: 149000,
-      originalPrice: 199000,
-      image: "tshirt-1",
-      badge: "BEST SELLER",
+      nama: "Urban Street Tee Black",
+      tipe: "Lengan Panjang",
+      harga: 149000,
+      hargaOri: 199000,
+      gambar: "tshirt-1",
       colors: ["#000000", "#FFFFFF", "#DC2626"],
     },
     {
       id: 2,
-      name: "Oversized Hoodie Premium",
-      category: "Hoodie",
-      price: 299000,
-      image: "hoodie-1",
-      badge: "NEW",
+      nama: "Oversized Hoodie Premium",
+      tipe: "Lengan Panjang",
+      harga: 299000,
+      gambar: "hoodie-1",
       colors: ["#000000", "#374151", "#7C3AED"],
     },
     {
       id: 3,
-      name: "Classic Logo Tee White",
-      category: "T-Shirt",
-      price: 139000,
-      image: "tshirt-2",
+      nama: "Classic Logo Tee White",
+      tipe: "Lengan Pendek",
+      harga: 139000,
+      gambar: "tshirt-2",
       colors: ["#FFFFFF", "#000000", "#F97316"],
     },
     {
       id: 4,
-      name: "Vintage Denim Jacket",
-      category: "Jaket",
-      price: 449000,
-      image: "jacket-1",
+      nama: "Vintage Denim Jacket",
+      tipe: "Lengan Pendek",
+      harga: 449000,
+      gambar: "jacket-1",
       colors: ["#1F2937", "#78716C"],
     },
     {
       id: 5,
-      name: "Graphic Tee Vol.2",
-      category: "T-Shirt",
-      price: 159000,
-      image: "tshirt-3",
-      badge: "NEW",
+      nama: "Graphic Tee Vol.2",
+      tipe: "Lengan Panjang",
+      harga: 159000,
+      gambar: "tshirt-3",
       colors: ["#000000", "#FFFFFF", "#0EA5E9"],
     },
     {
       id: 6,
-      name: "Zipper Hoodie Grey",
-      category: "Hoodie",
-      price: 319000,
-      image: "hoodie-2",
+      nama: "Zipper Hoodie Grey",
+      tipe: "Lengan Panjang",
+      harga: 319000,
+      gambar: "hoodie-2",
       colors: ["#6B7280", "#000000"],
     },
     {
       id: 7,
-      name: "Minimal Logo Tee",
-      category: "T-Shirt",
-      price: 129000,
-      image: "tshirt-4",
+      nama: "Minimal Logo Tee",
+      tipe: "Lengan Pendek",
+      harga: 129000,
+      gambar: "tshirt-4",
       colors: ["#000000", "#FFFFFF", "#10B981"],
     },
     {
       id: 8,
-      name: "Premium Crewneck",
-      category: "Sweater",
-      price: 279000,
-      image: "sweater-1",
-      badge: "BEST SELLER",
+      nama: "Premium Crewneck",
+      tipe: "Lengan Pendek",
+      harga: 279000,
+      gambar: "sweater-1",
       colors: ["#000000", "#9CA3AF", "#DC2626"],
     },
     {
       id: 9,
-      name: "Bomber Jacket Black",
-      category: "Jaket",
-      price: 499000,
-      image: "jacket-2",
+      nama: "Bomber Jacket Black",
+      tipe: "Lengan Panjang",
+      harga: 499000,
+      gambar: "jacket-2",
       colors: ["#000000", "#1F2937"],
     },
     {
       id: 10,
-      name: "Distro Cap Original",
-      category: "Aksesoris",
-      price: 89000,
-      image: "cap-1",
-      badge: "NEW",
+      nama: "Distro Cap Original",
+      tipe: "Lengan Panjang",
+      harga: 89000,
+      gambar: "cap-1",
       colors: ["#000000", "#FFFFFF", "#F97316"],
     },
     {
       id: 11,
-      name: "Streetwear Backpack",
-      category: "Aksesoris",
-      price: 249000,
-      image: "bag-1",
+      nama: "Streetwear Backpack",
+      tipe: "Lengan Pendek",
+      harga: 249000,
+      gambar: "bag-1",
       colors: ["#000000", "#1F2937"],
     },
     {
       id: 12,
-      name: "Oversized Tee Premium",
-      category: "T-Shirt",
-      price: 169000,
-      originalPrice: 219000,
-      image: "tshirt-5",
-      badge: "BEST SELLER",
+      nama: "Oversized Tee Premium",
+      tipe: "Lengan Pendek",
+      harga: 169000,
+      hargaOri: 219000,
+      gambar: "tshirt-5",
       colors: ["#000000", "#FFFFFF", "#7C3AED"],
     },
     {
       id: 13,
-      name: "Pullover Hoodie Navy",
-      category: "Hoodie",
-      price: 289000,
-      image: "hoodie-3",
+      nama: "Pullover Hoodie Navy",
+      tipe: "Lengan Panjang",
+      harga: 289000,
+      gambar: "hoodie-3",
       colors: ["#1E3A8A", "#000000"],
     },
     {
       id: 14,
-      name: "Canvas Tote Bag",
-      category: "Aksesoris",
-      price: 129000,
-      image: "bag-2",
-      badge: "NEW",
+      nama: "Canvas Tote Bag",
+      tipe: "Lengan Panjang",
+      harga: 129000,
+      gambar: "bag-2",
       colors: ["#F5F5DC", "#000000"],
     },
     {
       id: 15,
-      name: "Windbreaker Jacket",
-      category: "Jaket",
-      price: 399000,
-      image: "jacket-3",
+      nama: "Windbreaker Jacket",
+      tipe: "Lengan Pendek",
+      harga: 399000,
+      gambar: "jacket-3",
       colors: ["#000000", "#DC2626", "#F97316"],
     },
     {
       id: 16,
-      name: "Basic Crew Tee Pack",
-      category: "T-Shirt",
-      price: 349000,
-      originalPrice: 447000,
-      image: "tshirt-pack",
+      nama: "Basic Crew Tee Pack",
+      tipe: "Lengan Pendek",
+      harga: 349000,
+      hargaOri: 447000,
+      gambar: "tshirt-pack",
       colors: ["#000000", "#FFFFFF", "#6B7280"],
     },
   ];
@@ -587,7 +539,7 @@ const ProductsPage: React.FC = () => {
     // Category filter
     if (
       filters.categories.length > 0 &&
-      !filters.categories.includes(product.category)
+      !filters.categories.includes(product.tipe)
     ) {
       return false;
     }
@@ -595,7 +547,7 @@ const ProductsPage: React.FC = () => {
     // Price filter
     if (filters.priceRange !== "all") {
       const [min, max] = filters.priceRange.split("-").map(Number);
-      if (product.price < min || product.price > max) {
+      if (product.harga < min || product.harga > max) {
         return false;
       }
     }
@@ -607,11 +559,11 @@ const ProductsPage: React.FC = () => {
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case "price-asc":
-        return a.price - b.price;
+        return a.harga - b.harga;
       case "price-desc":
-        return b.price - a.price;
+        return b.harga - a.harga;
       case "name-asc":
-        return a.name.localeCompare(b.name);
+        return a.nama.localeCompare(b.nama);
       case "newest":
       default:
         return b.id - a.id;
@@ -627,12 +579,12 @@ const ProductsPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen">
       {/* Navbar */}
       <Navbar />
 
       {/* Page Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+      <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-16">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filter - Desktop */}
           <aside className="lg:w-64 shrink-0">
@@ -662,7 +614,7 @@ const ProductsPage: React.FC = () => {
 
               {/* Sort Dropdown */}
               <div className="ml-auto">
-                <ProductSort value={sortBy} onChange={setSortBy} />
+                <ProductSort value={sortBy} onChange={handleSortChange} />
               </div>
             </div>
 
@@ -689,7 +641,7 @@ const ProductsPage: React.FC = () => {
       {isMobileFilterOpen && (
         <ProductFilter
           filters={filters}
-          onFilterChange={setFilters}
+          onFilterChange={handleFilterChange}
           onClose={() => setIsMobileFilterOpen(false)}
           isMobile
         />
