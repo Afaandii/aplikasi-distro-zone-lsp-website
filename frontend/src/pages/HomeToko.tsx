@@ -18,7 +18,6 @@ export default function HomeToko() {
         <Demo />
         <FeaturedProducts />
         <FeaturesSection />
-        <CategoriesSection />
         <TestimonialsSection />
         <ContactForm />
       </main>
