@@ -127,7 +127,7 @@ export default function Navigation() {
             <div className="flex items-center">
               <a href="/">
                 <img
-                  src="/images/new-logo.png"
+                  src="/images/distro-zone.png"
                   alt="DistroZone"
                   className="w-46 h-14"
                 />
@@ -204,14 +204,14 @@ export default function Navigation() {
       {/* Mobile Navigation (md ke bawah) */}
       <div className="md:hidden">
         {/* Top Fixed Bar */}
-        <div className="fixed top-0 left-0 right-0 bg-white text-gray-800 px-2 py-3 z-50 shadow-sm">
+        <div className="fixed top-0 left-0 right-0 bg-white text-gray-800 px-2 py-3 z-50">
           <div className="flex items-center justify-between gap-2">
             {/* Logo */}
             <div className="shrink-0">
               <a href="/">
                 <img
-                  src="/images/no-teks-logo.png"
-                  alt="Goshop"
+                  src="/images/distro-zone-bag.png"
+                  alt="DistroZone"
                   className="w-10 h-10"
                 />
               </a>
