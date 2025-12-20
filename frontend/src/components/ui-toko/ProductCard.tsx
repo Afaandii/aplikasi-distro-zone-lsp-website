@@ -9,10 +9,11 @@ interface Product {
   id: number;
   nama: string;
   tipe: string;
+  idTipe: number;
   harga: number;
   hargaOri?: number;
   gambar: string;
-  colors?: string[];
+  allPhotos: string[]; // Semua foto produk
 }
 
 interface FilterState {
@@ -20,8 +21,16 @@ interface FilterState {
   priceRange: string;
 }
 
+interface Tipe {
+  id_tipe: number;
+  nama_tipe: string;
+}
+
+// Product Card Component
 // Product Card Component
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
+  const [currentImage, setCurrentImage] = useState(product.gambar);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -30,19 +39,22 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
     }).format(price);
   };
 
+  // Reset ke gambar awal saat product berubah
+  useEffect(() => {
+    setCurrentImage(product.gambar);
+  }, [product.gambar]);
+
   return (
     <div className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-orange-500 transition-all duration-300 shadow-sm hover:shadow-md">
       {/* Product Image */}
       <div className="relative aspect-square bg-gray-100 overflow-hidden">
-        {/* Real Image */}
-        {product.gambar ? (
+        {currentImage ? (
           <img
-            src={product.gambar}
+            src={currentImage}
             alt={product.nama}
             className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
           />
         ) : (
-          // Fallback jika gambar tidak ada
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
             <div className="text-center">
               <div className="text-4xl font-black text-gray-300 mb-2">
@@ -52,60 +64,46 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
             </div>
           </div>
         )}
-
-        {/* Overlay for hover effect (optional) */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
       </div>
 
       {/* Product Info */}
       <div className="p-4">
-        {/* Category */}
         <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
           {product.tipe}
         </div>
 
-        {/* Product Name */}
+        {/* Colors - Mini Gallery */}
+        {product.allPhotos.length > 1 && (
+          <div className="flex items-center space-x-1 mb-3">
+            {product.allPhotos.slice(0, 4).map((photoUrl, index) => (
+              <div
+                key={index}
+                className="w-8 h-8 border border-gray-300 rounded-sm overflow-hidden cursor-pointer hover:border-orange-500 transition-colors duration-200 relative group"
+                onClick={() => setCurrentImage(photoUrl)}
+                onMouseEnter={() => setCurrentImage(photoUrl)}
+              >
+                <img
+                  src={photoUrl}
+                  alt={`Varian ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+              </div>
+            ))}
+          </div>
+        )}
+
         <h3 className="text-gray-900 font-bold text-base mb-2 line-clamp-1">
           {product.nama}
         </h3>
 
-        {/* Colors */}
-        {product.colors &&
-          Array.isArray(product.colors) &&
-          product.colors.length > 0 && (
-            <div className="flex items-center space-x-2 mb-3">
-              {product.colors.map((color, index) => (
-                <button
-                  key={index}
-                  className="w-5 h-5 rounded-full border-2 border-gray-300 hover:border-orange-500 transition-colors duration-200"
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
-          )}
-
-        {/* Price */}
         <div className="flex items-center justify-between">
           <div>
             <div className="text-orange-500 font-black text-lg">
               {formatPrice(product.harga)}
             </div>
-            {product.hargaOri && (
-              <div className="text-gray-400 text-xs line-through">
-                {formatPrice(product.hargaOri)}
-              </div>
-            )}
           </div>
-
-          {product.hargaOri && (
-            <div className="bg-red-50 text-red-500 text-xs font-bold px-2 py-1 rounded">
-              -
-              {Math.round(
-                ((product.hargaOri - product.harga) / product.hargaOri) * 100
-              )}
-              %
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -118,8 +116,8 @@ const ProductFilter: React.FC<{
   onFilterChange: (filters: FilterState) => void;
   onClose?: () => void;
   isMobile?: boolean;
-}> = ({ filters, onFilterChange, onClose, isMobile }) => {
-  const tipe = ["Lengan Panjang", "Lengan Pendek"];
+  types: Tipe[];
+}> = ({ filters, onFilterChange, onClose, isMobile, types }) => {
   const priceRanges = [
     { label: "Semua Harga", value: "all" },
     { label: "Di bawah 100k", value: "0-100000" },
@@ -128,41 +126,40 @@ const ProductFilter: React.FC<{
     { label: "Di atas 300k", value: "300000-999999" },
   ];
 
-  const toggleTipe = (tipe: string) => {
-    const newCategories = filters.categories.includes(tipe)
-      ? filters.categories.filter((c) => c !== tipe)
-      : [...filters.categories, tipe];
+  const toggleTipe = (typeId: number) => {
+    const typeIdStr = typeId.toString();
+    const newCategories = filters.categories.includes(typeIdStr)
+      ? filters.categories.filter((c) => c !== typeIdStr)
+      : [...filters.categories, typeIdStr];
     onFilterChange({ ...filters, categories: newCategories });
   };
 
   const FilterContent = (
     <>
-      {/* Tipe */}
       <div className="mb-8">
         <h3 className="text-gray-900 font-bold text-sm uppercase tracking-wider mb-4">
           Tipe Kaos
         </h3>
         <div className="space-y-2">
-          {tipe.map((tipe) => (
+          {types.map((tipe) => (
             <label
-              key={tipe}
+              key={tipe.id_tipe}
               className="flex items-center space-x-3 cursor-pointer group"
             >
               <input
                 type="checkbox"
-                checked={filters.categories.includes(tipe)}
-                onChange={() => toggleTipe(tipe)}
+                checked={filters.categories.includes(tipe.id_tipe.toString())}
+                onChange={() => toggleTipe(tipe.id_tipe)}
                 className="w-5 h-5 rounded border-2 border-gray-300 bg-white checked:bg-orange-500 checked:border-orange-500 transition-colors cursor-pointer"
               />
               <span className="text-gray-600 group-hover:text-gray-900 transition-colors text-sm">
-                {tipe}
+                {tipe.nama_tipe}
               </span>
             </label>
           ))}
         </div>
       </div>
 
-      {/* Price Range */}
       <div>
         <h3 className="text-gray-900 font-bold text-sm uppercase tracking-wider mb-4">
           Harga
@@ -190,7 +187,6 @@ const ProductFilter: React.FC<{
         </div>
       </div>
 
-      {/* Reset Button */}
       <button
         onClick={() => onFilterChange({ categories: [], priceRange: "all" })}
         className="mt-8 w-full bg-red-400 hover:bg-red-700 border border-gray-300 text-gray-900 font-bold py-3 rounded-lg transition-colors duration-200"
@@ -384,59 +380,72 @@ const ProductsPage: React.FC = () => {
     priceRange: "all",
   });
   const [sortBy, setSortBy] = useState("newest");
+  const [types, setTypes] = useState<Tipe[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  // State untuk menyimpan data produk dan foto dari API
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const itemsPerPage = 12;
 
-  // Fungsi untuk mengambil data produk dan foto produk
+  const fetchTypes = async () => {
+    try {
+      const response = await axios.get<{ data: any[] }>(
+        "http://localhost:8080/api/v1/tipe"
+      );
+      setTypes(
+        response.data.map((t: any) => ({
+          id_tipe: t.id_tipe,
+          nama_tipe: t.nama_tipe,
+        }))
+      );
+    } catch (err) {
+      console.error("Error fetching types:", err);
+    }
+  };
+
   const fetchProductsAndPhotos = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Ambil produk
       const productsResponse = await axios.get<{ data: any[] }>(
         "http://localhost:8080/api/v1/produk"
       );
-
-      // Ambil foto produk
       const photosResponse = await axios.get<{ data: any[] }>(
         "http://localhost:8080/api/v1/foto-produk"
       );
 
-      // Map foto produk berdasarkan id_produk
-      const photoMap: Record<number, string[]> = {};
+      // Kelompokkan SEMUA foto per produk (tanpa butuh id_warna)
+      const photosByProduct: Record<number, string[]> = {};
       photosResponse.data.forEach((photo: any) => {
-        if (!photoMap[photo.id_produk]) {
-          photoMap[photo.id_produk] = [];
+        if (!photosByProduct[photo.id_produk]) {
+          photosByProduct[photo.id_produk] = [];
         }
-        photoMap[photo.id_produk].push(photo.url_foto);
+        if (photo.url_foto) {
+          photosByProduct[photo.id_produk].push(photo.url_foto);
+        }
       });
 
-      // Transformasi data produk: tambahkan `gambar` (foto pertama) dan `colors` (jika ada)
       const transformedProducts = productsResponse.data.map((p: any) => {
-        // Gunakan foto pertama sebagai gambar utama, atau placeholder jika tidak ada
-        const firstPhoto = photoMap[p.id_produk]
-          ? photoMap[p.id_produk][1]
-          : "";
+        const tipeObj = types.find((t) => t.id_tipe === p.id_tipe);
+        const tipeNama = tipeObj
+          ? tipeObj.nama_tipe
+          : p.Tipe?.nama_tipe || "Unknown Type";
 
-        // Asumsikan colors belum ada di API, jadi kita buat default atau kosong
-        // Jika API mengirim colors, ganti [] dengan p.colors
-        const colors = p.colors || []; // Sesuaikan jika API kirim field 'colors'
+        const allPhotos = photosByProduct[p.id_produk] || [];
+        const firstPhoto = allPhotos[0] || "";
 
         return {
           id: p.id_produk,
           nama: p.nama_kaos,
-          tipe: p.id_tipe === 1 ? "Lengan Panjang" : "Lengan Pendek", // Sesuaikan mapping tipe
+          tipe: tipeNama,
+          idTipe: p.id_tipe,
           harga: p.harga_jual,
-          hargaOri: p.harga_pokok, // Jika harga pokok lebih tinggi, jadikan hargaOri
-          gambar: firstPhoto, // Ganti dengan URL default jika tidak ada foto
-          colors: colors.length > 0 ? colors : undefined, // Biarkan undefined jika tidak ada warna
+          hargaOri: p.harga_pokok,
+          gambar: firstPhoto,
+          allPhotos: allPhotos,
         };
       });
 
@@ -449,12 +458,12 @@ const ProductsPage: React.FC = () => {
     }
   };
 
-  // Efek untuk memuat data saat komponen dimount
   useEffect(() => {
-    fetchProductsAndPhotos();
+    fetchTypes().then(() => {
+      fetchProductsAndPhotos();
+    });
   }, []);
 
-  // Handle perubahan filter atau sort
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
     setCurrentPage(1);
@@ -465,17 +474,14 @@ const ProductsPage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // Fungsi untuk memfilter produk
   const filteredProducts = products.filter((product) => {
-    // Category filter
     if (
       filters.categories.length > 0 &&
-      !filters.categories.includes(product.tipe)
+      !filters.categories.includes(product.idTipe.toString())
     ) {
       return false;
     }
 
-    // Price filter
     if (filters.priceRange !== "all") {
       const [min, max] = filters.priceRange.split("-").map(Number);
       if (product.harga < min || product.harga > max) {
@@ -486,7 +492,6 @@ const ProductsPage: React.FC = () => {
     return true;
   });
 
-  // Fungsi untuk mengurutkan produk
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case "price-asc":
@@ -501,7 +506,6 @@ const ProductsPage: React.FC = () => {
     }
   });
 
-  // Pagination
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = sortedProducts.slice(
@@ -509,7 +513,6 @@ const ProductsPage: React.FC = () => {
     startIndex + itemsPerPage
   );
 
-  // Jika sedang loading
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -517,7 +520,11 @@ const ProductsPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
           <div className="flex flex-col lg:flex-row gap-8">
             <aside className="lg:w-64 shrink-0">
-              <ProductFilter filters={filters} onFilterChange={setFilters} />
+              <ProductFilter
+                filters={filters}
+                onFilterChange={setFilters}
+                types={types}
+              />
             </aside>
             <main className="flex-1">
               <div className="text-center py-16">Memuat produk...</div>
@@ -528,7 +535,6 @@ const ProductsPage: React.FC = () => {
     );
   }
 
-  // Jika error
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -536,7 +542,11 @@ const ProductsPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
           <div className="flex flex-col lg:flex-row gap-8">
             <aside className="lg:w-64 shrink-0">
-              <ProductFilter filters={filters} onFilterChange={setFilters} />
+              <ProductFilter
+                filters={filters}
+                onFilterChange={setFilters}
+                types={types}
+              />
             </aside>
             <main className="flex-1">
               <div className="text-center py-16 text-red-500">{error}</div>
@@ -549,22 +559,19 @@ const ProductsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
       <Navbar />
-
-      {/* Page Content */}
       <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Filter - Desktop */}
           <aside className="lg:w-64 shrink-0">
-            <ProductFilter filters={filters} onFilterChange={setFilters} />
+            <ProductFilter
+              filters={filters}
+              onFilterChange={setFilters}
+              types={types}
+            />
           </aside>
 
-          {/* Main Content */}
           <main className="flex-1">
-            {/* Controls */}
             <div className="flex items-center justify-between mb-6">
-              {/* Header */}
               <div>
                 <p className="text-gray-600">
                   Menampilkan {paginatedProducts.length} dari{" "}
@@ -572,7 +579,6 @@ const ProductsPage: React.FC = () => {
                 </p>
               </div>
 
-              {/* Mobile Filter Button */}
               <button
                 onClick={() => setIsMobileFilterOpen(true)}
                 className="lg:hidden flex items-center space-x-2 bg-white border border-gray-300 hover:border-orange-500 px-4 py-2.5 rounded-lg transition-colors duration-200 text-sm font-medium text-gray-900"
@@ -581,20 +587,17 @@ const ProductsPage: React.FC = () => {
                 <span>Filter</span>
               </button>
 
-              {/* Sort Dropdown */}
               <div className="ml-auto">
                 <ProductSort value={sortBy} onChange={handleSortChange} />
               </div>
             </div>
 
-            {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {paginatedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
@@ -606,13 +609,13 @@ const ProductsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Filter Overlay */}
       {isMobileFilterOpen && (
         <ProductFilter
           filters={filters}
           onFilterChange={handleFilterChange}
           onClose={() => setIsMobileFilterOpen(false)}
           isMobile
+          types={types}
         />
       )}
     </div>
