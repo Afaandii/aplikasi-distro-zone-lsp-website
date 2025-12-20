@@ -54,6 +54,7 @@ var (
 	WarnaNotFoundError           = func(id interface{}) error { return NewNotFoundError("warna", id) }
 	ProdukNotFoundError          = func(id interface{}) error { return NewNotFoundError("produk", id) }
 	ProdukImageNotFoundError     = func(id interface{}) error { return NewNotFoundError("produk image", id) }
+	VarianNotFoundError          = func(id interface{}) error { return NewNotFoundError("varian", id) }
 	JamOperasionalNotFoundError  = func(id interface{}) error { return NewNotFoundError("jam operasional image", id) }
 	TarifPengirimanNotFoundError = func(id interface{}) error { return NewNotFoundError("tarif pengiriman image", id) }
 	UsernameAlreadyExistsError   = func(username string) error { return NewNotFoundError("username already exists", username) }

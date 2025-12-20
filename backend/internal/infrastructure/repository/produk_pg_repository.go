@@ -18,7 +18,7 @@ func NewProdukPGRepository(db *gorm.DB) repo.ProdukRepository {
 
 func (p *produkPGRepository) FindAll() ([]entities.Produk, error) {
 	var list []entities.Produk
-	if err := p.db.Preload("Merk").Preload("Tipe").Preload("Ukuran").Preload("Warna").Order("id_produk").Find(&list).Error; err != nil {
+	if err := p.db.Preload("Merk").Preload("Tipe").Order("id_produk").Find(&list).Error; err != nil {
 		return nil, err
 	}
 	return list, nil
@@ -26,7 +26,7 @@ func (p *produkPGRepository) FindAll() ([]entities.Produk, error) {
 
 func (p *produkPGRepository) FindByID(idProduk int) (*entities.Produk, error) {
 	var pro entities.Produk
-	if err := p.db.Preload("Merk").Preload("Tipe").Preload("Ukuran").Preload("Warna").First(&pro, idProduk).Error; err != nil {
+	if err := p.db.Preload("Merk").Preload("Tipe").First(&pro, idProduk).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -45,12 +45,11 @@ func (p *produkPGRepository) Update(u *entities.Produk) error {
 		Updates(map[string]interface{}{
 			"id_merk":     u.MerkRef,
 			"id_tipe":     u.TipeRef,
-			"id_ukuran":   u.UkuranRef,
-			"id_warna":    u.WarnaRef,
 			"nama_kaos":   u.NamaKaos,
 			"harga_jual":  u.HargaJual,
 			"harga_pokok": u.HargaPokok,
-			"stok_kaos":   u.StokKaos,
+			"deskripsi":   u.Deskripsi,
+			"spesifikasi": u.Spesifikasi,
 		})
 	if result.Error != nil {
 		return result.Error

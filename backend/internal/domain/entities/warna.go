@@ -10,7 +10,7 @@ type Warna struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 
 	// hasmany ke produk
-	Produk []Produk `gorm:"foreignKey:WarnaRef;references:IDWarna"`
+	Varian []Varian `gorm:"foreignKey:WarnaRef;references:IDWarna"`
 }
 
 func (Warna) TableName() string {

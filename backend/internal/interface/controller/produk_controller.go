@@ -43,14 +43,13 @@ func (p *ProdukController) GetByID(w http.ResponseWriter, r *http.Request, idPro
 
 func (p *ProdukController) Create(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
-		IdMerk     int    `json:"id_merk"`
-		IdTipe     int    `json:"id_tipe"`
-		IdUkuran   int    `json:"id_ukuran"`
-		IdWarna    int    `json:"id_warna"`
-		NamaKaos   string `json:"nama_kaos"`
-		HargaJual  int    `json:"harga_jual"`
-		HargaPokok int    `json:"harga_pokok"`
-		StokKaos   int    `json:"stok_kaos"`
+		IdMerk      int    `json:"id_merk"`
+		IdTipe      int    `json:"id_tipe"`
+		NamaKaos    string `json:"nama_kaos"`
+		HargaJual   int    `json:"harga_jual"`
+		HargaPokok  int    `json:"harga_pokok"`
+		Deskripsi   string `json:"deskripsi"`
+		Spesifikasi string `json:"spesifikasi"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid payload"})
@@ -59,12 +58,11 @@ func (p *ProdukController) Create(w http.ResponseWriter, r *http.Request) {
 	created, err := p.UC.Create(
 		payload.IdMerk,
 		payload.IdTipe,
-		payload.IdUkuran,
-		payload.IdWarna,
 		strings.TrimSpace(payload.NamaKaos),
 		payload.HargaJual,
 		payload.HargaPokok,
-		payload.StokKaos,
+		payload.Deskripsi,
+		payload.Spesifikasi,
 	)
 	if err != nil {
 		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
@@ -75,14 +73,13 @@ func (p *ProdukController) Create(w http.ResponseWriter, r *http.Request) {
 
 func (p *ProdukController) Update(w http.ResponseWriter, r *http.Request, idProduk int) {
 	var payload struct {
-		IdMerk     int    `json:"id_merk"`
-		IdTipe     int    `json:"id_tipe"`
-		IdUkuran   int    `json:"id_ukuran"`
-		IdWarna    int    `json:"id_warna"`
-		NamaKaos   string `json:"nama_kaos"`
-		HargaJual  int    `json:"harga_jual"`
-		HargaPokok int    `json:"harga_pokok"`
-		StokKaos   int    `json:"stok_kaos"`
+		IdMerk      int    `json:"id_merk"`
+		IdTipe      int    `json:"id_tipe"`
+		NamaKaos    string `json:"nama_kaos"`
+		HargaJual   int    `json:"harga_jual"`
+		HargaPokok  int    `json:"harga_pokok"`
+		Deskripsi   string `json:"deskripsi"`
+		Spesifikasi string `json:"spesifikasi"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid payload"})
@@ -92,12 +89,11 @@ func (p *ProdukController) Update(w http.ResponseWriter, r *http.Request, idProd
 		idProduk,
 		payload.IdMerk,
 		payload.IdTipe,
-		payload.IdUkuran,
-		payload.IdWarna,
 		strings.TrimSpace(payload.NamaKaos),
 		payload.HargaJual,
 		payload.HargaPokok,
-		payload.StokKaos,
+		payload.Deskripsi,
+		payload.Spesifikasi,
 	)
 	if err != nil {
 		var notFoundErr *helperPkg.NotFoundError

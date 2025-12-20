@@ -30,6 +30,7 @@ func main() {
 	db.AutoMigrate(&entities.Warna{})
 	db.AutoMigrate(&entities.Produk{})
 	db.AutoMigrate(&entities.FotoProduk{})
+	db.AutoMigrate(&entities.Varian{})
 	db.AutoMigrate(&entities.JamOperasional{})
 	db.AutoMigrate(&entities.TarifPengiriman{})
 	db.AutoMigrate(&entities.ChatCS{})
@@ -71,6 +72,9 @@ func main() {
 	jamOperasionalUc := usecase.NewJamOperasionalUsecase(jamOperasionalRepo)
 	jamOperasionalCtrl := controller.NewJamOperasionalController(jamOperasionalUc)
 	masterDataCtrl := controller.NewMasterDataController(merkUc, tipeUc, ukuranUc, warnaUc)
+	varianRepo := repo.NewVarianPGRepository(db)
+	varianUc := usecase.NewVarianUsecase(varianRepo)
+	varianCtrl := controller.NewVarianController(varianUc)
 
 	server.RegisterRoleRoutes(roleCtrl)
 	server.RegisterUserRoutes(userCtrl)
@@ -82,6 +86,7 @@ func main() {
 	server.RegisterFotoProdukRoutes(fotoProdukCtrl)
 	server.RegisterTarifPengirimanRoutes(tarifPengirimanCtrl)
 	server.RegisterJamOperasionalRoutes(jamOperasionalCtrl)
+	server.RegisterVarianRoutes(varianCtrl)
 
 	port := os.Getenv("PORT")
 	handleCors := config.CorsMiddleware(http.DefaultServeMux)
