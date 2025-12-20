@@ -2,24 +2,22 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "../../components/form/Select";
 import axios from "axios";
+import TextArea from "../../components/form/input/TextArea";
 
 export default function CreateProduk() {
   const [merk, setMerk] = useState<{ value: string; label: string }[]>([]);
   const [tipe, setTipe] = useState<{ value: string; label: string }[]>([]);
-  const [ukuran, setUkuran] = useState<{ value: string; label: string }[]>([]);
-  const [warna, setWarna] = useState<{ value: string; label: string }[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     id_merk: "",
     id_tipe: "",
-    id_ukuran: "",
-    id_warna: "",
     nama_kaos: "",
     harga_jual: "",
     harga_pokok: "",
-    stok_kaos: "",
+    deskripsi: "",
+    spesifikasi: "",
   });
 
   const getToken = () => {
@@ -54,22 +52,8 @@ export default function CreateProduk() {
             label: tp.nama_tipe || "N/A",
           }));
 
-          // Format Ukuran
-          const formattedUkuran = data.ukuran.map((ukr: any) => ({
-            value: ukr.id_ukuran.toString(),
-            label: ukr.nama_ukuran || "N/A",
-          }));
-
-          // Format Warna
-          const formattedWarna = data.warna.map((wrn: any) => ({
-            value: wrn.id_warna.toString(),
-            label: wrn.nama_warna || "N/A",
-          }));
-
           setMerk(formattedMerk);
           setTipe(formattedTipe);
-          setUkuran(formattedUkuran);
-          setWarna(formattedWarna);
         } else {
           console.error("Gagal memuat data. Silakan coba lagi.");
         }
@@ -99,12 +83,11 @@ export default function CreateProduk() {
     if (
       !formData.id_merk ||
       !formData.id_tipe ||
-      !formData.id_ukuran ||
-      !formData.id_warna ||
       !formData.nama_kaos ||
       !formData.harga_jual ||
       !formData.harga_pokok ||
-      !formData.stok_kaos
+      !formData.deskripsi ||
+      !formData.spesifikasi
     ) {
       alert("Harap lengkapi semua field wajib.");
       return;
@@ -115,12 +98,11 @@ export default function CreateProduk() {
       const payload = {
         id_merk: parseInt(formData.id_merk),
         id_tipe: parseInt(formData.id_tipe),
-        id_ukuran: parseInt(formData.id_ukuran),
-        id_warna: parseInt(formData.id_warna),
         nama_kaos: formData.nama_kaos,
         harga_jual: parseInt(formData.harga_jual),
         harga_pokok: parseInt(formData.harga_pokok),
-        stok_kaos: parseInt(formData.stok_kaos),
+        deskripsi: formData.deskripsi,
+        spesifikasi: formData.spesifikasi,
       };
 
       const response = await axios.post(
@@ -137,12 +119,11 @@ export default function CreateProduk() {
         setFormData({
           id_merk: "",
           id_tipe: "",
-          id_ukuran: "",
-          id_warna: "",
           nama_kaos: "",
           harga_jual: "",
           harga_pokok: "",
-          stok_kaos: "",
+          deskripsi: "",
+          spesifikasi: "",
         });
 
         navigate("/produk");
@@ -220,7 +201,7 @@ export default function CreateProduk() {
               />
             </div>
 
-            {/* Ukuran */}
+            {/* Ukuran
             <div className="mb-4">
               <label
                 htmlFor="id_ukuran"
@@ -238,7 +219,6 @@ export default function CreateProduk() {
               />
             </div>
 
-            {/* Warna */}
             <div className="mb-4">
               <label
                 htmlFor="id_warna"
@@ -254,7 +234,8 @@ export default function CreateProduk() {
                 id="id_warna"
                 name="id_warna"
               />
-            </div>
+            </div> 
+            {/* Ukuran */}
 
             {/* Nama Produk */}
             <div className="mb-4">
@@ -317,7 +298,7 @@ export default function CreateProduk() {
             </div>
 
             {/* Stok Kaos */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label
                 htmlFor="stok_kaos"
                 className="block text-sm font-medium text-white mb-1"
@@ -335,6 +316,48 @@ export default function CreateProduk() {
                 placeholder="Masukan stok produk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
+              />
+            </div> */}
+
+            {/* Deskripsi Produk */}
+            <div className="mb-4">
+              <label
+                htmlFor="deskripsi"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Deskripsi Produk
+              </label>
+              <TextArea
+                rows={6}
+                value={formData.deskripsi}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    deskripsi: value,
+                  }))
+                }
+                placeholder="Masukan Deskripsi Produk"
+              />
+            </div>
+
+            {/* Spesifikasi produk */}
+            <div className="mb-6">
+              <label
+                htmlFor="spesifikasi"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Spesifikasi Produk
+              </label>
+              <TextArea
+                rows={6}
+                value={formData.spesifikasi}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    spesifikasi: value,
+                  }))
+                }
+                placeholder="Masukan Spesifikasi Produk"
               />
             </div>
 

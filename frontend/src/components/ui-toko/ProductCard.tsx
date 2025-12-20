@@ -70,7 +70,6 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         </h3>
 
         {/* Colors */}
-        {/* Colors */}
         {product.colors &&
           Array.isArray(product.colors) &&
           product.colors.length > 0 && (

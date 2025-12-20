@@ -7,18 +7,15 @@ type Produk = {
   id_produk: number;
   id_merk: number;
   id_tipe: number;
-  id_ukuran: number;
-  id_warna: number;
   nama_kaos: string;
   harga_jual: number;
   harga_pokok: number;
-  stok_kaos: number;
+  deskripsi: string;
+  spesifikasi: string;
 
   // ambil data relasi
   Merk?: { id_merk: number; nama_merk: string };
   Tipe?: { id_tipe: number; nama_tipe: string };
-  Ukuran?: { id_ukuran: number; nama_ukuran: string };
-  Warna?: { id_warna: number; nama_warna: string };
 };
 
 export default function Produk() {
@@ -75,11 +72,11 @@ export default function Produk() {
   };
 
   // crop teks panjang spesifikasi dan informasi produk
-  // const truncateText = (text: string | null, maxLength: number = 100) => {
-  //   if (!text) return "-";
-  //   if (text.length <= maxLength) return text;
-  //   return text.substring(0, maxLength) + "...";
-  // };
+  const truncateText = (text: string | null, maxLength: number = 100) => {
+    if (!text) return "-";
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
 
   return (
     <>
@@ -153,18 +150,6 @@ export default function Produk() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Id Ukuran
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-                    >
-                      Id Warna
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-                    >
                       Nama Produk
                     </th>
                     <th
@@ -183,7 +168,13 @@ export default function Produk() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Stok Kaos
+                      Deskripsi Produk
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      Spesifikasi Produk
                     </th>
                     <th
                       scope="col"
@@ -206,12 +197,6 @@ export default function Produk() {
                         {prod.Tipe?.nama_tipe}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {prod.Ukuran?.nama_ukuran}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {prod.Warna?.nama_warna}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
                         {prod.nama_kaos}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
@@ -221,14 +206,11 @@ export default function Produk() {
                         {prod.harga_pokok}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
-                        {prod.stok_kaos}
+                        {truncateText(prod.deskripsi)}
                       </td>
-                      {/* <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                        {truncateText(product.spesification_product)}
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-white">
+                        {truncateText(prod.spesifikasi)}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                        {truncateText(product.information_product)}
-                      </td> */}
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         {/* Tombol Edit */}
                         <Link
