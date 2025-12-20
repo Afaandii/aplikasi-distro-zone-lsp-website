@@ -71,7 +71,7 @@ func main() {
 	jamOperasionalRepo := repo.NewJamOperasionalPGRepository(db)
 	jamOperasionalUc := usecase.NewJamOperasionalUsecase(jamOperasionalRepo)
 	jamOperasionalCtrl := controller.NewJamOperasionalController(jamOperasionalUc)
-	masterDataCtrl := controller.NewMasterDataController(merkUc, tipeUc, ukuranUc, warnaUc)
+	masterDataCtrl := controller.NewMasterDataController(produkUc, merkUc, tipeUc, ukuranUc, warnaUc)
 	varianRepo := repo.NewVarianPGRepository(db)
 	varianUc := usecase.NewVarianUsecase(varianRepo)
 	varianCtrl := controller.NewVarianController(varianUc)
