@@ -43,7 +43,7 @@ export default function CreateTarifPengiriman() {
       setFormData({ wilayah: "", harga_per_kg: "" });
       if (response.status === 201) {
         setSuccessMessage("Tarif pengiriman berhasil ditambahkan.");
-        navigate("/tarif-pengiriman");
+        setTimeout(() => navigate("/tarif-pengiriman"), 1000);
       }
     } catch (error: any) {
       console.error("Error creating tarif pengiriman:", error);

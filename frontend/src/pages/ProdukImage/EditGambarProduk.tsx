@@ -123,7 +123,7 @@ export default function EditGambarProduk() {
         }
       );
 
-      navigate("/foto-produk");
+      setTimeout(() => navigate("/foto-produk"), 1000);
     } catch (err: any) {
       console.error("Error saat menyimpan:", err);
       if (err.response?.data?.message) {

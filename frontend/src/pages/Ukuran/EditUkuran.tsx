@@ -65,7 +65,7 @@ export default function EditUkuran() {
 
       if (response.status === 200) {
         setSuccessMessage("Ukuran berhasil diperbarui.");
-        navigate("/ukuran");
+        setTimeout(() => navigate("/ukuran"), 1000);
       }
     } catch (error) {
       console.error("Error updating ukuran:", error);

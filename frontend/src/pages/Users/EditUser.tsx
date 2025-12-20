@@ -115,7 +115,7 @@ export default function EditUser() {
         },
       });
 
-      navigate("/user");
+      setTimeout(() => navigate("/user"), 1000);
     } catch (err) {
       console.error(err);
       setError("Gagal mengupdate user");

@@ -40,10 +40,13 @@ export default function CreateMerk() {
         }
       );
 
-      setFormData({ nama_merk: "", keterangan: "" });
+      setFormData({
+        nama_merk: "",
+        keterangan: "",
+      });
       if (response.status === 201) {
         setSuccessMessage("Merk berhasil ditambahkan.");
-        navigate("/merk");
+        setTimeout(() => navigate("/merk"), 1000);
       }
     } catch (error: any) {
       console.error("Error creating merk:", error);

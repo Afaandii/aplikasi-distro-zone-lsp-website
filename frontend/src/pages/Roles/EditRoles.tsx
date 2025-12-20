@@ -63,7 +63,7 @@ export default function EditRoles() {
 
       if (response.status === 200) {
         setSuccessMessage("Role berhasil diperbarui.");
-        navigate("/role");
+        setTimeout(() => navigate("/role"), 1000);
       }
     } catch (error) {
       console.error("Error updating roles:", error);

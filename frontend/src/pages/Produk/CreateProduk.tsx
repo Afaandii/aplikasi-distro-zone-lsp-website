@@ -126,7 +126,7 @@ export default function CreateProduk() {
           spesifikasi: "",
         });
 
-        navigate("/produk");
+        setTimeout(() => navigate("/produk"), 1000);
         setMessage("Produk berhasil ditambahkan.");
       } else {
         setMessage("Gagal menambahkan produk.");

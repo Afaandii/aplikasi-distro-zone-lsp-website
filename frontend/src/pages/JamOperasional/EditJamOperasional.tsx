@@ -74,7 +74,7 @@ export default function EditJamOperasional() {
 
       if (response.status === 200) {
         setSuccessMessage("Jam Operasional berhasil diperbarui.");
-        navigate("/jam-operasional");
+        setTimeout(() => navigate("/jam-operasional"), 1000);
       }
     } catch (error) {
       console.error("Error updating jam operasional:", error);

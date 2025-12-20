@@ -42,7 +42,7 @@ export default function CreateRoles() {
       setFormData({ nama_role: "", keterangan: "" });
       if (response.status === 201) {
         setSuccessMessage("Roles berhasil ditambahkan.");
-        navigate("/role");
+        setTimeout(() => navigate("/role"), 1000);
       }
     } catch (error: any) {
       console.error("Error creating category:", error);

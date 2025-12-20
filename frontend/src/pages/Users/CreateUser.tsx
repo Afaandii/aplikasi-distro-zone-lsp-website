@@ -97,14 +97,13 @@ export default function CreateUser() {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            // ❗ JANGAN set Content-Type manual
           },
         }
       );
 
       if (response.status === 201) {
         setSuccessMessage("User berhasil ditambahkan.");
-        navigate("/user");
+        setTimeout(() => navigate("/user"), 1000);
       }
     } catch (error: any) {
       console.error("Error creating user:", error);
