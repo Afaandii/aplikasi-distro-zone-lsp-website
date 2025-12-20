@@ -8,6 +8,7 @@ import (
 )
 
 type MasterDataController struct {
+	ProdukUsecase usecase.ProdukUsecase
 	MerkUsecase   usecase.MerkUsecase
 	TipeUsecase   usecase.TipeUsecase
 	UkuranUsecase usecase.UkuranUsecase
@@ -15,12 +16,14 @@ type MasterDataController struct {
 }
 
 func NewMasterDataController(
+	produkUc usecase.ProdukUsecase,
 	merkUc usecase.MerkUsecase,
 	tipeUc usecase.TipeUsecase,
 	ukuranUc usecase.UkuranUsecase,
 	warnaUc usecase.WarnaUsecase,
 ) *MasterDataController {
 	return &MasterDataController{
+		ProdukUsecase: produkUc,
 		MerkUsecase:   merkUc,
 		TipeUsecase:   tipeUc,
 		UkuranUsecase: ukuranUc,
@@ -31,12 +34,22 @@ func NewMasterDataController(
 // GetProdukMasterData mengembalikan semua data master yang dibutuhkan untuk form produk
 func (c *MasterDataController) GetProdukMasterData(w http.ResponseWriter, r *http.Request) {
 	// Ambil semua data master secara paralel di backend
+	produkChan := make(chan []entities.Produk, 1)
 	merkChan := make(chan []entities.Merk, 1)
 	tipeChan := make(chan []entities.Tipe, 1)
 	ukuranChan := make(chan []entities.Ukuran, 1)
 	warnaChan := make(chan []entities.Warna, 1)
 
-	errChan := make(chan error, 4)
+	errChan := make(chan error, 5)
+
+	go func() {
+		data, err := c.ProdukUsecase.GetAll()
+		if err != nil {
+			errChan <- err
+			return
+		}
+		produkChan <- data
+	}()
 
 	go func() {
 		data, err := c.MerkUsecase.GetAll()
@@ -76,11 +89,13 @@ func (c *MasterDataController) GetProdukMasterData(w http.ResponseWriter, r *htt
 
 	// Tunggu semua proses selesai
 	masterData := make(map[string]interface{})
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 5; i++ {
 		select {
 		case err := <-errChan:
 			helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			return
+		case produk := <-produkChan:
+			masterData["produk"] = produk
 		case merk := <-merkChan:
 			masterData["merk"] = merk
 		case tipe := <-tipeChan:
