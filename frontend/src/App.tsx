@@ -50,6 +50,9 @@ import EditRoles from "./pages/Roles/EditRoles";
 import ProductsPage from "./components/ui-toko/ProductCard";
 import AboutSection from "./components/ui-toko/About";
 import ContactPage from "./components/ui-toko/Contact";
+import Varian from "./pages/Varian/Varian";
+import CreateVarian from "./pages/Varian/CreateVarian";
+import EditVarian from "./pages/Varian/EditVarian";
 
 export default function App() {
   return (
@@ -105,6 +108,10 @@ export default function App() {
               path="/edit-foto-produk/:id_foto_produk"
               element={<EditGambarProduk />}
             />
+            {/* Varian */}
+            <Route path="/varian" element={<Varian />} />
+            <Route path="/create-varian" element={<CreateVarian />} />
+            <Route path="/edit-varian/:id_varian" element={<EditVarian />} />
             {/* Tarif Pengiriman */}
             <Route path="/tarif-pengiriman" element={<TarifPengiriman />} />
             <Route

@@ -43,7 +43,7 @@ export default function CreateWarna() {
       setFormData({ nama_warna: "", keterangan: "" });
       if (response.status === 201) {
         setSuccessMessage("Warna berhasil ditambahkan.");
-        navigate("/warna");
+        setTimeout(() => navigate("/warna"), 1000);
       }
     } catch (error: any) {
       console.error("Error creating warna:", error);

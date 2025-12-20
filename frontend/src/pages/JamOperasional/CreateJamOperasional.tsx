@@ -57,7 +57,7 @@ export default function CreateJamOperasional() {
       });
       if (response.status === 201) {
         setSuccessMessage("Jam operasional berhasil ditambahkan.");
-        navigate("/jam-operasional");
+        setTimeout(() => navigate("/jam-operasional"), 1000);
       }
     } catch (error: any) {
       console.error("Error creating jam operasional:", error);

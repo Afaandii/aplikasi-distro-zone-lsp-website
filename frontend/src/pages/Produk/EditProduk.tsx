@@ -70,20 +70,6 @@ export default function EditProduk() {
             label: t.nama_tipe,
           }))
         );
-
-        // setUkuran(
-        //   master.ukuran.map((u: any) => ({
-        //     value: String(u.id_ukuran),
-        //     label: u.nama_ukuran,
-        //   }))
-        // );
-
-        // setWarna(
-        //   master.warna.map((w: any) => ({
-        //     value: String(w.id_warna),
-        //     label: w.nama_warna,
-        //   }))
-        // );
       } catch (err) {
         console.error("Fetch error:", err);
       }
@@ -138,7 +124,7 @@ export default function EditProduk() {
       );
 
       setMessage("Produk berhasil diperbarui.");
-      setTimeout(() => navigate("/produk"), 1500);
+      setTimeout(() => navigate("/produk"), 1000);
     } catch (err: any) {
       console.error("Error updating produk:", err);
     }
@@ -202,40 +188,6 @@ export default function EditProduk() {
               />
             </div>
 
-            {/* Ukuran */}
-            {/* <div className="mb-4">
-              <label
-                htmlFor="id_ukuran"
-                className="block text-sm font-medium text-white mb-1"
-              >
-                Ukuran
-              </label>
-              <Select
-                options={ukuran}
-                placeholder="Pilih Ukuran"
-                defaultValue={formData.id_ukuran}
-                onChange={handleSelectChange("id_ukuran")}
-                id="id_ukuran"
-              />
-            </div> */}
-
-            {/* Warna */}
-            {/* <div className="mb-4">
-              <label
-                htmlFor="id_warna"
-                className="block text-sm font-medium text-white mb-1"
-              >
-                Warna
-              </label>
-              <Select
-                options={warna}
-                placeholder="Pilih Warna"
-                defaultValue={formData.id_warna}
-                onChange={handleSelectChange("id_warna")}
-                id="id_warna"
-              />
-            </div> */}
-
             {/* Nama Produk */}
             <div className="mb-4">
               <label
@@ -295,28 +247,6 @@ export default function EditProduk() {
                 required
               />
             </div>
-
-            {/* Stok Kaos */}
-            {/* <div className="mb-4">
-              <label
-                htmlFor="stok_kaos"
-                className="block text-sm font-medium text-white mb-1"
-              >
-                Stok Produk
-              </label>
-              <input
-                type="number"
-                step={0.1}
-                inputMode="decimal"
-                id="stok_kaos"
-                name="stok_kaos"
-                value={formData.stok_kaos}
-                onChange={handleChange}
-                placeholder="Masukan stok produk"
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div> */}
 
             {/* Deskripsi Produk */}
             <div className="mb-4">

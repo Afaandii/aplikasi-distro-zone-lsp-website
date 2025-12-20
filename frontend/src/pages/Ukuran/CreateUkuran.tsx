@@ -45,7 +45,7 @@ export default function CreateUkuran() {
       });
       if (response.status === 201) {
         setSuccessMessage("Ukuran berhasil ditambahkan.");
-        navigate("/ukuran");
+        setTimeout(() => navigate("/ukuran"), 1000);
       }
     } catch (error: any) {
       console.error("Error creating ukuran:", error);

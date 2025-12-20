@@ -65,7 +65,7 @@ export default function EditTipe() {
 
       if (response.status === 200) {
         setSuccessMessage("Tipe berhasil diperbarui.");
-        navigate("/tipe");
+        setTimeout(() => navigate("/tipe"), 1000);
       }
     } catch (error) {
       console.error("Error updating tipe:", error);

@@ -65,7 +65,7 @@ export default function EditWarna() {
 
       if (response.status === 200) {
         setSuccessMessage("Warna berhasil diperbarui.");
-        navigate("/warna");
+        setTimeout(() => navigate("/warna"), 1000);
       }
     } catch (error) {
       console.error("Error updating warna:", error);

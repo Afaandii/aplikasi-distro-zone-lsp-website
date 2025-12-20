@@ -42,7 +42,7 @@ export default function CreateTipe() {
       setFormData({ nama_tipe: "", keterangan: "" });
       if (response.status === 201) {
         setSuccessMessage("Tipe berhasil ditambahkan.");
-        navigate("/tipe");
+        setTimeout(() => navigate("/tipe"), 1000);
       }
     } catch (error: any) {
       console.error("Error creating tipe:", error);

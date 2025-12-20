@@ -65,7 +65,7 @@ export default function EditTarifPengiriman() {
 
       if (response.status === 200) {
         setSuccessMessage("Tarif pengiriman berhasil diperbarui.");
-        navigate("/tarif-pengiriman");
+        setTimeout(() => navigate("/tarif-pengiriman"), 1000);
       }
     } catch (error) {
       console.error("Error updating tarif pengiriman:", error);

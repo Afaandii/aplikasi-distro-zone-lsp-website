@@ -65,7 +65,7 @@ export default function EditMerk() {
 
       if (response.status === 200) {
         setSuccessMessage("Merk berhasil diperbarui.");
-        navigate("/merk");
+        setTimeout(() => navigate("/merk"), 1000);
       }
     } catch (error) {
       console.error("Error updating merk:", error);
