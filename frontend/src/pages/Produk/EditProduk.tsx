@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Select from "../../components/form/Select";
 import axios from "axios";
+import TextArea from "../../components/form/input/TextArea";
 
 export default function EditProduk() {
   const { id_produk } = useParams<{ id_produk: string }>();
@@ -9,19 +10,18 @@ export default function EditProduk() {
 
   const [merk, setMerk] = useState<{ value: string; label: string }[]>([]);
   const [tipe, setTipe] = useState<{ value: string; label: string }[]>([]);
-  const [ukuran, setUkuran] = useState<{ value: string; label: string }[]>([]);
-  const [warna, setWarna] = useState<{ value: string; label: string }[]>([]);
+  // const [ukuran, setUkuran] = useState<{ value: string; label: string }[]>([]);
+  // const [warna, setWarna] = useState<{ value: string; label: string }[]>([]);
   const [message, setMessage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     id_merk: "",
     id_tipe: "",
-    id_ukuran: "",
-    id_warna: "",
     nama_kaos: "",
     harga_jual: "",
     harga_pokok: "",
-    stok_kaos: "",
+    deskripsi: "",
+    spesifikasi: "",
   });
 
   const getToken = () => {
@@ -49,12 +49,11 @@ export default function EditProduk() {
         setFormData({
           id_merk: String(produk.id_merk ?? ""),
           id_tipe: String(produk.id_tipe ?? ""),
-          id_ukuran: String(produk.id_ukuran ?? ""),
-          id_warna: String(produk.id_warna ?? ""),
           nama_kaos: String(produk.nama_kaos ?? ""),
           harga_jual: String(produk.harga_jual ?? ""),
           harga_pokok: String(produk.harga_pokok ?? ""),
-          stok_kaos: String(produk.stok_kaos ?? ""),
+          deskripsi: String(produk.deskripsi ?? ""),
+          spesifikasi: String(produk.spesifikasi ?? ""),
         });
 
         // options dari MASTER TABLE
@@ -72,19 +71,19 @@ export default function EditProduk() {
           }))
         );
 
-        setUkuran(
-          master.ukuran.map((u: any) => ({
-            value: String(u.id_ukuran),
-            label: u.nama_ukuran,
-          }))
-        );
+        // setUkuran(
+        //   master.ukuran.map((u: any) => ({
+        //     value: String(u.id_ukuran),
+        //     label: u.nama_ukuran,
+        //   }))
+        // );
 
-        setWarna(
-          master.warna.map((w: any) => ({
-            value: String(w.id_warna),
-            label: w.nama_warna,
-          }))
-        );
+        // setWarna(
+        //   master.warna.map((w: any) => ({
+        //     value: String(w.id_warna),
+        //     label: w.nama_warna,
+        //   }))
+        // );
       } catch (err) {
         console.error("Fetch error:", err);
       }
@@ -109,12 +108,11 @@ export default function EditProduk() {
     if (
       !formData.id_merk ||
       !formData.id_tipe ||
-      !formData.id_ukuran ||
-      !formData.id_warna ||
       !formData.nama_kaos ||
       !formData.harga_jual ||
       !formData.harga_pokok ||
-      !formData.stok_kaos
+      !formData.deskripsi ||
+      !formData.spesifikasi
     ) {
       setMessage("Harap lengkapi semua field wajib.");
       return;
@@ -124,12 +122,11 @@ export default function EditProduk() {
       const payload = {
         id_merk: parseInt(formData.id_merk),
         id_tipe: parseInt(formData.id_tipe),
-        id_ukuran: parseInt(formData.id_ukuran),
-        id_warna: parseInt(formData.id_warna),
         nama_kaos: formData.nama_kaos,
         harga_jual: parseInt(formData.harga_jual),
         harga_pokok: parseInt(formData.harga_pokok),
-        stok_kaos: parseInt(formData.stok_kaos),
+        deskripsi: formData.deskripsi,
+        spesifikasi: formData.spesifikasi,
       };
 
       await axios.put(
@@ -206,7 +203,7 @@ export default function EditProduk() {
             </div>
 
             {/* Ukuran */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label
                 htmlFor="id_ukuran"
                 className="block text-sm font-medium text-white mb-1"
@@ -220,10 +217,10 @@ export default function EditProduk() {
                 onChange={handleSelectChange("id_ukuran")}
                 id="id_ukuran"
               />
-            </div>
+            </div> */}
 
             {/* Warna */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label
                 htmlFor="id_warna"
                 className="block text-sm font-medium text-white mb-1"
@@ -237,7 +234,7 @@ export default function EditProduk() {
                 onChange={handleSelectChange("id_warna")}
                 id="id_warna"
               />
-            </div>
+            </div> */}
 
             {/* Nama Produk */}
             <div className="mb-4">
@@ -300,7 +297,7 @@ export default function EditProduk() {
             </div>
 
             {/* Stok Kaos */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label
                 htmlFor="stok_kaos"
                 className="block text-sm font-medium text-white mb-1"
@@ -318,6 +315,48 @@ export default function EditProduk() {
                 placeholder="Masukan stok produk"
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
+              />
+            </div> */}
+
+            {/* Deskripsi Produk */}
+            <div className="mb-4">
+              <label
+                htmlFor="deksripsi"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Deskripsi Produk
+              </label>
+              <TextArea
+                rows={6}
+                value={formData.deskripsi}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    deskripsi: value,
+                  }))
+                }
+                placeholder="Masukan Deskripsi Produk"
+              />
+            </div>
+
+            {/* Spesifikasi Produk */}
+            <div className="mb-4">
+              <label
+                htmlFor="spesifikasi"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Spesifikasi Produk
+              </label>
+              <TextArea
+                rows={6}
+                value={formData.spesifikasi}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    spesifikasi: value,
+                  }))
+                }
+                placeholder="Masukan Spesifikasi Produk"
               />
             </div>
 
