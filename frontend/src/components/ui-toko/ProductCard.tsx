@@ -27,7 +27,6 @@ interface Tipe {
 }
 
 // Product Card Component
-// Product Card Component
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const [currentImage, setCurrentImage] = useState(product.gambar);
 
@@ -47,25 +46,27 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   return (
     <div className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-orange-500 transition-all duration-300 shadow-sm hover:shadow-md">
       {/* Product Image */}
-      <div className="relative aspect-square bg-gray-100 overflow-hidden">
-        {currentImage ? (
-          <img
-            src={currentImage}
-            alt={product.nama}
-            className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-            <div className="text-center">
-              <div className="text-4xl font-black text-gray-300 mb-2">
-                {product.nama.split(" ")[0]}
+      <a href={`/detail-produk/${product.id}`}>
+        <div className="relative aspect-square bg-gray-100 overflow-hidden">
+          {currentImage ? (
+            <img
+              src={currentImage}
+              alt={product.nama}
+              className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div className="text-center">
+                <div className="text-4xl font-black text-gray-300 mb-2">
+                  {product.nama.split(" ")[0]}
+                </div>
+                <div className="text-xs text-gray-400">No Image</div>
               </div>
-              <div className="text-xs text-gray-400">No Image</div>
             </div>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
-      </div>
+          )}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+        </div>
+      </a>
 
       {/* Product Info */}
       <div className="p-4">
@@ -94,9 +95,11 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           </div>
         )}
 
-        <h3 className="text-gray-900 font-bold text-base mb-2 line-clamp-1">
-          {product.nama}
-        </h3>
+        <a href={`/detail-produk/${product.id}`}>
+          <h3 className="text-gray-900 font-bold text-base mb-2 line-clamp-1">
+            {product.nama}
+          </h3>
+        </a>
 
         <div className="flex items-center justify-between">
           <div>

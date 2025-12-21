@@ -9,36 +9,130 @@ import {
 } from "react-icons/fa";
 import Navigation from "./Navigation";
 import Footer from "./Footer";
-import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+
+type ImageType = {
+  url: string;
+  alt: string;
+};
+
+type VariantType = {
+  id: number;
+  id_ukuran: number;
+  id_warna: number;
+  stok: number;
+  ukuran: string;
+  warna: string;
+};
 
 export default function CardDetailProduct() {
-  // All hooks must be at the top, in the same order on every render
+  const { id_produk } = useParams<{ id_produk: string }>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState(0);
+  const [description, setDescription] = useState("");
+  const [specification, setSpecification] = useState("");
+  const [category, setCategory] = useState("");
+  const [images, setImages] = useState<ImageType[]>([]);
+  const [variants, setVariants] = useState<VariantType[]>([]);
+  const [warnaTouched, setWarnaTouched] = useState(false);
+  const [ukuranTouched, setUkuranTouched] = useState(false);
+  const [stock, setStock] = useState(0);
   const thumbnailRef = useRef<HTMLDivElement>(null);
-  const { nama, id } = useParams<{ nama: string; id: string }>();
-  const navigate = useNavigate();
   const [showPrevButton, setShowPrevButton] = useState(false);
   const [showNextButton, setShowNextButton] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
-
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-
-  // State untuk data produk
-  const [productData, setProductData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // State untuk interaksi UI
+  const [selectedWarna, setSelectedWarna] = useState<number | null>(null);
+  const [selectedUkuran, setSelectedUkuran] = useState<number | null>(null);
+  const [activeVariant, setActiveVariant] = useState<VariantType | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("detail");
   const [mainImage, setMainImage] = useState<string>("");
-  const [showFullTitle, setShowFullTitle] = useState(false);
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-  });
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
-  // Update tombol scroll
+  const rating = 4.9;
+  const totalReviews = "11,5rb rating";
+  const sold = "10 rb+";
+  const condition = "Baru";
+  const minOrder = 1;
+  const features: string[] = [];
+
+  useEffect(() => {
+    const fetchDetailProduk = async () => {
+      try {
+        setLoading(true);
+
+        const res = await axios.get(
+          `http://localhost:8080/api/v1/detail-produk/${id_produk}`
+        );
+
+        const data = res.data;
+
+        // ===== BASIC INFO =====
+        setTitle(data.nama_kaos);
+        setPrice(data.harga_jual);
+        setDescription(data.deskripsi);
+        setSpecification(data.spesifikasi);
+        setCategory(data.Tipe?.nama_tipe || "");
+
+        // ===== FOTO PRODUK =====
+        const mappedImages: ImageType[] = data.FotoProduk.map(
+          (foto: any, index: number) => ({
+            url: foto.url_foto,
+            alt: `Foto produk ${index + 1}`,
+          })
+        );
+
+        setImages(mappedImages);
+        setMainImage(mappedImages[0]?.url || "");
+
+        // ===== VARIAN (UKURAN + WARNA) =====
+        const mappedVariants: VariantType[] = data.Varian.map((v: any) => ({
+          id: v.id_varian,
+          id_ukuran: v.id_ukuran,
+          id_warna: v.id_warna,
+          stok: v.stok_kaos,
+          ukuran: v.Ukuran?.nama_ukuran,
+          warna: v.Warna?.nama_warna,
+        }));
+
+        setVariants(mappedVariants);
+      } catch (err) {
+        setError("Gagal memuat detail produk" + err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetailProduk();
+  }, [id_produk]);
+
+  useEffect(() => {
+    if (variants.length === 0) return;
+
+    const first = variants[0];
+    setActiveVariant(first);
+    setStock(first.stok);
+  }, [variants]);
+
+  useEffect(() => {
+    if (!selectedWarna || !selectedUkuran) return;
+
+    const found = variants.find(
+      (v) => v.id_warna === selectedWarna && v.id_ukuran === selectedUkuran
+    );
+
+    if (found) {
+      setActiveVariant(found);
+      setStock(found.stok);
+      setQuantity(1);
+    }
+  }, [selectedWarna, selectedUkuran, variants]);
+
+  // Update tombol berdasarkan scroll position
   const updateScrollButtons = () => {
     if (!thumbnailRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = thumbnailRef.current;
@@ -46,72 +140,6 @@ export default function CardDetailProduct() {
     setShowNextButton(scrollLeft + clientWidth < scrollWidth - 1);
   };
 
-  const getToken = () => {
-    return localStorage.getItem("token") || sessionStorage.getItem("token");
-  };
-
-  const triggerCartUpdate = () => {
-    const event = new CustomEvent("cartUpdated", {
-      detail: { timestamp: Date.now() },
-    });
-    window.dispatchEvent(event);
-  };
-
-  const showNotification = (
-    message: string,
-    type: "success" | "error" = "success"
-  ) => {
-    const event = new CustomEvent("showNotification", {
-      detail: { message, type },
-    });
-    window.dispatchEvent(event);
-  };
-
-  const addToCart = async () => {
-    if (!productData) return;
-
-    setIsAddingToCart(true);
-
-    const token = getToken();
-    try {
-      const response = await fetch(
-        "http://localhost:8000/api/v1/cart-product-store",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            product_id: productData.id,
-            quantity: quantity,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Gagal menambahkan produk ke keranjang");
-      }
-
-      const data = await response.json();
-
-      if (data.status === "success") {
-        showNotification(data.message, "success");
-        // TRIGGER EVENT CUSTOM UNTUK MEMPERBARUI BADGE CART
-        triggerCartUpdate();
-      } else {
-        throw new Error(
-          data.message || "Gagal menambahkan produk ke keranjang"
-        );
-      }
-    } catch (err: any) {
-      showNotification(err.message, "error");
-    } finally {
-      setIsAddingToCart(false);
-    }
-  };
-
-  // Effect for thumbnail scrolling
   useEffect(() => {
     const ref = thumbnailRef.current;
     if (!ref) return;
@@ -129,84 +157,6 @@ export default function CardDetailProduct() {
     };
   }, []);
 
-  // Effect for fetching product data
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        if (!nama || !id) {
-          throw new Error("Nama atau ID tidak ditemukan di URL");
-        }
-
-        const response = await fetch(
-          `http://localhost:8000/api/v1/product-detail-shop/${nama}/${id}`
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Respons bukan JSON");
-        }
-
-        const data = await response.json();
-
-        if (data.status !== "success") {
-          throw new Error(data.message || "Gagal mengambil data produk");
-        }
-
-        setProductData(data.data);
-        if (data.data.images && data.data.images.length > 0) {
-          setMainImage(data.data.images[0].url);
-        }
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [nama, id]);
-
-  // Effect for ensuring mainImage has a value
-  useEffect(() => {
-    if (productData?.images && productData.images.length > 0 && !mainImage) {
-      setMainImage(productData.images[0].url);
-    }
-  }, [productData, mainImage]);
-
-  // ambil data user yang lagi login
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const token = getToken();
-      if (!token) return;
-
-      try {
-        const response = await fetch("http://localhost:8000/api/v1/auth/user", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.status === "Ok") {
-            setUserData({
-              name: data.data.name,
-              email: data.data.email,
-            });
-          }
-        }
-      } catch (err: any) {
-        console.error("Gagal mengambil data user:", err);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
   const scrollThumbnails = (direction: "left" | "right") => {
     if (thumbnailRef.current) {
       const scrollAmount = 120;
@@ -218,6 +168,7 @@ export default function CardDetailProduct() {
     }
   };
 
+  // Update posisi zoom saat hover
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } =
       e.currentTarget.getBoundingClientRect();
@@ -227,7 +178,7 @@ export default function CardDetailProduct() {
   };
 
   const handleQuantityChange = (type: "increment" | "decrement") => {
-    if (type === "increment" && quantity < productData?.stock) {
+    if (type === "increment" && quantity < stock) {
       setQuantity(quantity + 1);
     } else if (type === "decrement" && quantity > 1) {
       setQuantity(quantity - 1);
@@ -238,122 +189,42 @@ export default function CardDetailProduct() {
     return `Rp${price.toLocaleString("id-ID")}`;
   };
 
-  // Tampilkan loading state
+  // ukuran yang tersedia berdasarkan warna terpilih
+  const availableUkuran = selectedWarna
+    ? variants
+        .filter((v) => v.id_warna === selectedWarna)
+        .map((v) => v.id_ukuran)
+    : [];
+
+  // warna yang tersedia berdasarkan ukuran terpilih
+  const availableWarna = selectedUkuran
+    ? variants
+        .filter((v) => v.id_ukuran === selectedUkuran)
+        .map((v) => v.id_warna)
+    : [];
+
+  const currentVariant = variants.find(
+    (v) => v.id_warna === selectedWarna && v.id_ukuran === selectedUkuran
+  );
+
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <div className="text-center py-20">Loading...</div>;
   }
 
-  // Tampilkan error state
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6 sm:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div
-            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <strong className="font-bold">Error! </strong>
-            <span className="block sm:inline">{error}</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="text-center py-20 text-red-500">{error}</div>;
   }
-
-  // Jika data belum tersedia
-  if (!productData) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6 sm:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-            Produk tidak ditemukan.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Destructure product data
-  const {
-    title,
-    price,
-    rating,
-    stock,
-    images,
-    condition,
-    minOrder,
-    category,
-    description,
-    features,
-  } = productData;
-
-  // handle transaksi midtrans
-  const handleBuyNow = async () => {
-    const token = getToken();
-
-    if (!token) {
-      const currentUrl = window.location.pathname;
-      navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
-      return;
-    }
-
-    if (!productData) return;
-
-    try {
-      // 1. Hit API Laravel → dapatkan snap token
-      const response = await fetch("http://localhost:8000/api/v1/payment", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: productData.price * quantity,
-          name: userData.name,
-          email: userData.email,
-          product_id: productData.id,
-          quantity: quantity,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!data.token) {
-        alert("Gagal membuat invoice Midtrans, token tidak ada!");
-        return;
-      }
-
-      window.snap.pay(data.token, {
-        onSuccess: function (result: any) {
-          console.log("Success:", result);
-        },
-        onPending: function (result: any) {
-          console.log("Pending:", result);
-        },
-        onError: function (result: any) {
-          console.log("Error:", result);
-        },
-        onClose: function () {},
-      });
-    } catch (err) {
-      console.error(err);
-      alert("Ups! kesalahan saat memulai pembayaran");
-    }
-  };
 
   return (
     <>
       <Navigation />
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-[1100px] mx-auto px-2 sm:px-4 mt-20 sm:mt-6 lg:mt-32 mb-10">
+        <div className="max-w-275 mx-auto px-2 sm:px-4 mt-4 sm:mt-6 lg:mt-40 mb-10">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Left Column - Product Images */}
-            <div className="w-full lg:w-[280px] lg:sticky lg:top-32 lg:h-[calc(100vh-10rem)]">
-              <div className="bg-white rounded-lg overflow-hidden">
+            <div className="w-full lg:w-70 lg:sticky lg:top-32 lg:h-[calc(100vh-10rem)]">
+              <div className="bg-white rounded-lg overflow-hidden shadow-sm">
+                {/* Main Image with Zoom */}
                 <div
                   className="aspect-square relative bg-gray-100 overflow-hidden"
                   onMouseEnter={() => setIsHovering(true)}
@@ -367,6 +238,7 @@ export default function CardDetailProduct() {
                       isHovering ? "blur-sm" : ""
                     }`}
                   />
+                  {/* Zoom Overlay */}
                   {isHovering && (
                     <div
                       className="absolute inset-0 pointer-events-none z-10"
@@ -379,6 +251,7 @@ export default function CardDetailProduct() {
                   )}
                 </div>
 
+                {/* Thumbnail Container */}
                 <div className="relative p-2">
                   {showPrevButton && (
                     <button
@@ -399,7 +272,7 @@ export default function CardDetailProduct() {
                       WebkitOverflowScrolling: "touch",
                     }}
                   >
-                    {images.map((img: any, index: number) => (
+                    {images.map((img, index) => (
                       <button
                         key={index}
                         onClick={() => setMainImage(img.url)}
@@ -437,13 +310,20 @@ export default function CardDetailProduct() {
                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900 mb-2">
                   {title}
                 </h1>
-
-                {/* Rating Only — Terjual dan Total Reviews Dihapus */}
                 <div className="flex items-center gap-3 sm:gap-4 mb-4">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs sm:text-sm">Terjual</span>
+                    <span className="font-semibold text-xs sm:text-sm">
+                      {sold}
+                    </span>
+                  </div>
                   <div className="flex items-center gap-1">
                     <FaStar className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400" />
                     <span className="font-semibold text-xs sm:text-sm">
                       {rating}
+                    </span>
+                    <span className="text-gray-500 text-xs sm:text-sm">
+                      ({totalReviews})
                     </span>
                   </div>
                 </div>
@@ -451,6 +331,102 @@ export default function CardDetailProduct() {
                 <div className="mb-4 sm:mb-6">
                   <div className="text-2xl sm:text-3xl font-bold text-gray-900">
                     {formatPrice(price)}
+                  </div>
+                </div>
+
+                <div className="mb-4 sm:mb-6">
+                  <label className="block text-xs sm:text-sm font-semibold mb-2 sm:mb-3">
+                    Pilih Warna:{" "}
+                    <span className="font-normal text-gray-600">
+                      {currentVariant?.warna ||
+                        variants.find((v) => v.id_warna === selectedWarna)
+                          ?.warna ||
+                        activeVariant?.warna}
+                    </span>
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      ...new Map(variants.map((v) => [v.id_warna, v])).values(),
+                    ].map((v) => {
+                      const disabled =
+                        ukuranTouched &&
+                        selectedUkuran !== null &&
+                        !availableWarna.includes(v.id_warna);
+
+                      return (
+                        <button
+                          key={v.id_warna}
+                          disabled={disabled}
+                          onClick={() => {
+                            setSelectedWarna(v.id_warna);
+                            setWarnaTouched(true);
+                          }}
+                          className={`px-3 py-2 border-2 rounded-lg transition
+                      ${
+                        selectedWarna === v.id_warna
+                          ? "border-green-500 bg-green-50"
+                          : "border-gray-200"
+                      }
+                      ${
+                        disabled
+                          ? "opacity-40 cursor-not-allowed"
+                          : "hover:border-green-400"
+                      }
+                    `}
+                        >
+                          {v.warna}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="mb-4 sm:mb-6">
+                  <label className="block text-xs sm:text-sm font-semibold mb-2 sm:mb-3">
+                    Pilih Ukuran:{" "}
+                    <span className="font-normal text-gray-600">
+                      {currentVariant?.ukuran ||
+                        variants.find((v) => v.id_ukuran === selectedUkuran)
+                          ?.ukuran ||
+                        activeVariant?.ukuran}
+                    </span>
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      ...new Map(
+                        variants.map((v) => [v.id_ukuran, v])
+                      ).values(),
+                    ].map((v) => {
+                      const disabled =
+                        warnaTouched &&
+                        selectedWarna !== null &&
+                        !availableUkuran.includes(v.id_ukuran);
+
+                      return (
+                        <button
+                          key={v.id_ukuran}
+                          disabled={disabled}
+                          onClick={() => {
+                            setSelectedUkuran(v.id_ukuran);
+                            setUkuranTouched(true);
+                          }}
+                          className={`px-3 py-2 border-2 rounded-lg transition
+                        ${
+                          selectedUkuran === v.id_ukuran
+                            ? "border-green-500 bg-green-50"
+                            : "border-gray-200"
+                        }
+                        ${
+                          disabled
+                            ? "opacity-40 cursor-not-allowed"
+                            : "hover:border-green-400"
+                        }
+                      `}
+                        >
+                          {v.ukuran}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -464,7 +440,7 @@ export default function CardDetailProduct() {
                           : "border-transparent text-gray-500"
                       }`}
                     >
-                      Spesifikasi Produk
+                      Deskripsi Produk
                     </button>
                     <button
                       onClick={() => setActiveTab("info")}
@@ -474,89 +450,70 @@ export default function CardDetailProduct() {
                           : "border-transparent text-gray-500"
                       }`}
                     >
-                      Informasi Produk
+                      Spesifikasi Produk
                     </button>
                   </div>
 
-                  {/* Tab Spesifikasi Produk */}
                   {activeTab === "detail" && (
-                    <div className="space-y-4 sm:space-y-5">
-                      {/* Informasi Dasar (Kondisi, Min Pemesanan, Etalase) */}
-                      <div className="space-y-2 sm:space-y-3">
-                        <div className="flex justify-between text-xs sm:text-base">
-                          <span className="text-gray-600">Kondisi:</span>
-                          <span className="font-semibold">{condition}</span>
-                        </div>
-                        <div className="flex justify-between text-xs sm:text-base">
-                          <span className="text-gray-600">Min. Pemesanan:</span>
-                          <span className="font-semibold">{minOrder} Buah</span>
-                        </div>
-                        <div className="flex justify-between text-xs sm:text-base">
-                          <span className="text-gray-600">Etalase:</span>
-                          <span className="font-semibold text-green-600">
-                            {category}
-                          </span>
-                        </div>
+                    <div className="space-y-2 sm:space-y-3">
+                      <div className="flex justify-between text-xs sm:text-base">
+                        <span className="text-gray-600">Kondisi:</span>
+                        <span className="font-semibold">{condition}</span>
                       </div>
-
-                      {/* Spesifikasi Produk data */}
-                      <div className="pt-3 sm:pt-4 border-t">
-                        <div className="text-xs sm:text-base text-gray-700">
-                          {features && features.length > 0 ? (
-                            <ul className="list-disc pl-5 space-y-1">
-                              {features.map(
-                                (feature: string, index: number) => (
-                                  <li key={index}>{feature}</li>
-                                )
-                              )}
-                            </ul>
-                          ) : (
-                            "Tidak ada spesifikasi produk."
-                          )}
-                        </div>
+                      <div className="flex justify-between text-xs sm:text-base">
+                        <span className="text-gray-600">Min. Pemesanan:</span>
+                        <span className="font-semibold">{minOrder} Buah</span>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Tab Informasi Produk */}
-                  {activeTab === "info" && (
-                    <div className="space-y-4 sm:space-y-5">
-                      {/* Informasi Produk data */}
-                      <div className="text-xs sm:text-base text-gray-700">
-                        {description ? (
-                          <p>{description}</p>
-                        ) : (
-                          "Tidak ada informasi produk."
-                        )}
+                      <div className="flex justify-between text-xs sm:text-base">
+                        <span className="text-gray-600">Etalase:</span>
+                        <span className="font-semibold text-green-600">
+                          {category}
+                        </span>
                       </div>
                     </div>
                   )}
                 </div>
+
+                <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
+                  <div
+                    className={`text-gray-700 text-xs sm:text-base ${
+                      !showFullDescription ? "line-clamp-4" : ""
+                    }`}
+                  >
+                    <p className="mb-2 sm:mb-3">{description}</p>
+                    {features.length > 0 && (
+                      <div className="space-y-1 sm:space-y-2">
+                        {features.map((feature, index) => (
+                          <p key={index} className="text-xs sm:text-sm">
+                            • {feature}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="text-green-600 font-medium text-xs sm:text-sm mt-2 hover:underline"
+                  >
+                    {showFullDescription
+                      ? "Lihat Lebih Sedikit"
+                      : "Lihat Selengkapnya"}
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Right Column - Purchase Card (Updated) */}
-            <div className="w-full lg:w-[300px] lg:sticky lg:top-32 lg:h-[400px]">
+            {/* Right Column - Purchase Card */}
+            <div className="w-full lg:w-75 lg:sticky lg:top-32 lg:h-100">
               <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm lg:h-full flex flex-col justify-between border border-gray-100">
                 <div className="mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3">
-                  {/* Gambar produk */}
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg shrink-0 overflow-hidden border border-gray-200">
-                    <img
-                      src={mainImage}
-                      alt={title}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-green-50 rounded-lg flex items-center justify-center shrink-0">
+                    <span className="text-lg sm:text-xl">
+                      <img src={mainImage} alt={title} />
+                    </span>
                   </div>
                   <div>
-                    {/* Judul produk - bisa diklik untuk lihat full */}
-                    <div
-                      onClick={() => setShowFullTitle(!showFullTitle)}
-                      className={`font-semibold text-gray-900 text-sm sm:text-base cursor-pointer ${
-                        showFullTitle ? "whitespace-normal" : "line-clamp-1"
-                      }`}
-                      title={title}
-                      aria-label={title}
-                    >
+                    <div className="font-semibold text-gray-900 text-sm sm:text-base">
                       {title}
                     </div>
                   </div>
@@ -564,7 +521,7 @@ export default function CardDetailProduct() {
 
                 <div className="mb-4 sm:mb-5">
                   <label className="block text-xs text-gray-600 mb-1 font-medium">
-                    Atur jumlah
+                    Atur jumlah dan catatan
                   </label>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center border-2 border-gray-200 rounded-lg">
@@ -613,17 +570,10 @@ export default function CardDetailProduct() {
                 </div>
 
                 <div className="space-y-2 sm:space-y-3">
-                  <button
-                    onClick={addToCart}
-                    disabled={isAddingToCart}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-sm sm:text-base py-2 rounded-xl transition-colors shadow-md disabled:bg-gray-400"
-                  >
-                    {isAddingToCart ? "Menambahkan..." : "+ Keranjang"}
+                  <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-sm sm:text-base py-2 rounded-xl transition-colors shadow-md">
+                    + Keranjang
                   </button>
-                  <button
-                    onClick={handleBuyNow}
-                    className="w-full border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold text-sm sm:text-base py-2 rounded-xl transition-colors"
-                  >
+                  <button className="w-full border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold text-sm sm:text-base py-2 rounded-xl transition-colors">
                     Beli Langsung
                   </button>
                 </div>
