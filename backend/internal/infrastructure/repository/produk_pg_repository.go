@@ -78,6 +78,7 @@ func (p *produkPGRepository) FindDetailByID(idProduk int) (*entities.Produk, err
 	err := p.db.Preload("Merk").
 		Preload("Tipe").
 		Preload("FotoProduk").
+		Preload("FotoProduk.Warna").
 		Preload("Varian.Ukuran").
 		Preload("Varian.Warna").
 		Preload("Varian.Produk").
