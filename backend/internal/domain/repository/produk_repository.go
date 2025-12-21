@@ -8,4 +8,5 @@ type ProdukRepository interface {
 	Create(p *entities.Produk) error
 	Update(p *entities.Produk) error
 	Delete(idProduk int) error
+	FindDetailByID(idProduk int) (*entities.Produk, error)
 }

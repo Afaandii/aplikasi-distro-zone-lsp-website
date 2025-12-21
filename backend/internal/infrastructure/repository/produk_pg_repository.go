@@ -72,3 +72,22 @@ func (r *produkPGRepository) Delete(idProduk int) error {
 	}
 	return nil
 }
+
+func (p *produkPGRepository) FindDetailByID(idProduk int) (*entities.Produk, error) {
+	var pro entities.Produk
+	err := p.db.Preload("Merk").
+		Preload("Tipe").
+		Preload("FotoProduk").
+		Preload("Varian.Ukuran").
+		Preload("Varian.Warna").
+		Preload("Varian.Produk").
+		First(&pro, "id_produk = ?", idProduk).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &pro, nil
+}

@@ -12,6 +12,7 @@ type ProdukUsecase interface {
 	Create(id_merk int, id_tipe int, nama_kaos string, harga_jual int, harga_pokok int, deskripsi string, spesifikasi string) (*entities.Produk, error)
 	Update(idProduk int, id_merk int, id_tipe int, nama_kaos string, harga_jual int, harga_pokok int, deskripsi string, spesifikasi string) (*entities.Produk, error)
 	Delete(idProduk int) error
+	GetProductDetailByID(idProduk int) (*entities.Produk, error)
 }
 
 type produkUsecase struct {
@@ -28,6 +29,17 @@ func (u *produkUsecase) GetAll() ([]entities.Produk, error) {
 
 func (u *produkUsecase) GetByID(idProduk int) (*entities.Produk, error) {
 	p, err := u.repo.FindByID(idProduk)
+	if err != nil {
+		return nil, err
+	}
+	if p == nil {
+		return nil, helper.ProdukNotFoundError(idProduk)
+	}
+	return p, nil
+}
+
+func (u *produkUsecase) GetProductDetailByID(idProduk int) (*entities.Produk, error) {
+	p, err := u.repo.FindDetailByID(idProduk)
 	if err != nil {
 		return nil, err
 	}
