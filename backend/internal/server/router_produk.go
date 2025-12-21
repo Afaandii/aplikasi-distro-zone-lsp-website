@@ -51,4 +51,20 @@ func RegisterProdukRoutes(c *controller.ProdukController, ms *controller.MasterD
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
+
+	http.HandleFunc("/api/v1/detail-produk/", func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/api/v1/detail-produk/")
+		id, err := strconv.Atoi(path)
+		if err != nil || id <= 0 {
+			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			c.GetProductDetailByID(w, r, id)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
 }

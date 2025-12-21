@@ -120,3 +120,18 @@ func (p *ProdukController) Delete(w http.ResponseWriter, r *http.Request, idProd
 	}
 	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "deleted successfully!"})
 }
+
+func (p *ProdukController) GetProductDetailByID(w http.ResponseWriter, r *http.Request, idProduk int) {
+	produk, err := p.UC.GetProductDetailByID(idProduk)
+	if err != nil {
+		var notFoundErr *helperPkg.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			helper.WriteJSON(w, http.StatusNotFound, map[string]string{"error": "produk not found"})
+			return
+		}
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, produk)
+}
