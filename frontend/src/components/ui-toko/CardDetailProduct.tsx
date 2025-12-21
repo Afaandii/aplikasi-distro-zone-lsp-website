@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 type ImageType = {
   url: string;
   alt: string;
+  id_warna: number;
 };
 
 type VariantType = {
@@ -51,6 +52,7 @@ export default function CardDetailProduct() {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("detail");
   const [mainImage, setMainImage] = useState<string>("");
+  const [hoverImage, setHoverImage] = useState<string | null>(null);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const rating = 4.9;
@@ -79,12 +81,11 @@ export default function CardDetailProduct() {
         setCategory(data.Tipe?.nama_tipe || "");
 
         // ===== FOTO PRODUK =====
-        const mappedImages: ImageType[] = data.FotoProduk.map(
-          (foto: any, index: number) => ({
-            url: foto.url_foto,
-            alt: `Foto produk ${index + 1}`,
-          })
-        );
+        const mappedImages = data.FotoProduk.map((foto: any) => ({
+          url: foto.url_foto,
+          alt: foto.Warna?.nama_warna || "Foto produk",
+          id_warna: foto.id_warna,
+        }));
 
         setImages(mappedImages);
         setMainImage(mappedImages[0]?.url || "");
@@ -206,6 +207,10 @@ export default function CardDetailProduct() {
   const currentVariant = variants.find(
     (v) => v.id_warna === selectedWarna && v.id_ukuran === selectedUkuran
   );
+  const getImageByWarna = (idWarna: number | null) => {
+    if (!idWarna) return null;
+    return images.find((img) => img.id_warna === idWarna)?.url || null;
+  };
 
   if (loading) {
     return <div className="text-center py-20">Loading...</div>;
@@ -232,7 +237,7 @@ export default function CardDetailProduct() {
                   onMouseMove={handleMouseMove}
                 >
                   <img
-                    src={mainImage}
+                    src={hoverImage || mainImage}
                     alt={title}
                     className={`w-full h-full rounded-lg object-cover transition-all duration-200 ${
                       isHovering ? "blur-sm" : ""
@@ -278,8 +283,6 @@ export default function CardDetailProduct() {
                         onClick={() => setMainImage(img.url)}
                         className={`shrink-0 w-16 h-16 rounded border-2 overflow-hidden ${
                           mainImage === img.url
-                            ? "border-green-500"
-                            : "border-gray-200"
                         }`}
                       >
                         <img
@@ -360,21 +363,37 @@ export default function CardDetailProduct() {
                           onClick={() => {
                             setSelectedWarna(v.id_warna);
                             setWarnaTouched(true);
+
+                            const img = getImageByWarna(v.id_warna);
+                            if (img) {
+                              setMainImage(img);
+                              setHoverImage(null);
+                            }
                           }}
-                          className={`px-3 py-2 border-2 rounded-lg transition
-                      ${
-                        selectedWarna === v.id_warna
-                          ? "border-green-500 bg-green-50"
-                          : "border-gray-200"
-                      }
-                      ${
-                        disabled
-                          ? "opacity-40 cursor-not-allowed"
-                          : "hover:border-green-400"
-                      }
-                    `}
+                          onMouseEnter={() => {
+                            const img = getImageByWarna(v.id_warna);
+                            if (img) setHoverImage(img);
+                          }}
+                          className={`px-3 py-2 border-2 rounded-lg transition flex items-center gap-2
+                            ${
+                              selectedWarna === v.id_warna
+                                ? "border-green-500 bg-green-50"
+                                : "border-gray-200"
+                            }
+                            ${
+                              disabled
+                                ? "opacity-40 cursor-not-allowed"
+                                : "hover:border-green-400"
+                            }
+                          `}
                         >
-                          {v.warna}
+                          <img
+                            src={getImageByWarna(v.id_warna) || mainImage}
+                            alt={v.warna}
+                            className="w-6 h-6 rounded object-cover"
+                          />
+
+                          <span className="text-sm">{v.warna}</span>
                         </button>
                       );
                     })}
@@ -472,34 +491,47 @@ export default function CardDetailProduct() {
                       </div>
                     </div>
                   )}
+                  {activeTab === "info" && (
+                    <div>
+                      <p className="text-xs sm:text-base text-gray-700 whitespace-pre-line">
+                        {specification}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
-                  <div
-                    className={`text-gray-700 text-xs sm:text-base ${
-                      !showFullDescription ? "line-clamp-4" : ""
-                    }`}
-                  >
-                    <p className="mb-2 sm:mb-3">{description}</p>
-                    {features.length > 0 && (
-                      <div className="space-y-1 sm:space-y-2">
-                        {features.map((feature, index) => (
-                          <p key={index} className="text-xs sm:text-sm">
-                            • {feature}
-                          </p>
-                        ))}
-                      </div>
-                    )}
+                {activeTab === "detail" && (
+                  <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
+                    <div
+                      className={`text-gray-700 text-xs sm:text-base ${
+                        !showFullDescription ? "line-clamp-4" : ""
+                      }`}
+                    >
+                      <p className="mb-2 sm:mb-3">{description}</p>
+
+                      {features.length > 0 && (
+                        <div className="space-y-1 sm:space-y-2">
+                          {features.map((feature, index) => (
+                            <p key={index} className="text-xs sm:text-sm">
+                              • {feature}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        setShowFullDescription(!showFullDescription)
+                      }
+                      className="text-green-600 font-medium text-xs sm:text-sm mt-2 hover:underline"
+                    >
+                      {showFullDescription
+                        ? "Lihat Lebih Sedikit"
+                        : "Lihat Selengkapnya"}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setShowFullDescription(!showFullDescription)}
-                    className="text-green-600 font-medium text-xs sm:text-sm mt-2 hover:underline"
-                  >
-                    {showFullDescription
-                      ? "Lihat Lebih Sedikit"
-                      : "Lihat Selengkapnya"}
-                  </button>
-                </div>
+                )}
               </div>
             </div>
 
