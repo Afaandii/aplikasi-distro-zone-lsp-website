@@ -54,7 +54,7 @@ export default function UserInfoCard() {
       const token = getToken();
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/v1/auth/user",
+          "http://localhost:8080/api/v1/auth/user",
           {
             headers: {
               Authorization: `Bearer ${token}`,

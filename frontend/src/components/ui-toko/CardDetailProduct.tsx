@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  FaStar,
-  FaHeart,
-  FaShareAlt,
-  FaCommentAlt,
-  FaChevronRight,
-  FaChevronLeft,
-} from "react-icons/fa";
+import { FaStar, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import Navigation from "./Navigation";
 import Footer from "./Footer";
 import axios from "axios";
@@ -608,23 +601,6 @@ export default function CardDetailProduct() {
                   <button className="w-full border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold text-sm sm:text-base py-2 rounded-xl transition-colors">
                     Beli Langsung
                   </button>
-                </div>
-
-                <div className="pt-3 sm:pt-4 border-t mt-auto">
-                  <div className="flex gap-3 sm:gap-4 justify-center sm:justify-start">
-                    <button className="flex items-center gap-1 text-gray-600 hover:text-gray-900 text-xs">
-                      <FaCommentAlt className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      <span>Chat</span>
-                    </button>
-                    <button className="flex items-center gap-1 text-gray-600 hover:text-gray-900 text-xs">
-                      <FaHeart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      <span>Wishlist</span>
-                    </button>
-                    <button className="flex items-center gap-1 text-gray-600 hover:text-gray-900 text-xs">
-                      <FaShareAlt className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      <span>Share</span>
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
