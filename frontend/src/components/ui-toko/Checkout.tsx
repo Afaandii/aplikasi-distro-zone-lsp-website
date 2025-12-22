@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiMapPin, FiShoppingBag, FiAlertCircle } from "react-icons/fi";
+import { useLocation } from "react-router-dom";
 import Navigation from "./Navigation";
 import Footer from "./Footer";
 
@@ -21,7 +22,9 @@ interface Product {
 }
 
 const Checkout: React.FC = () => {
-  // Dummy Data
+  const location = useLocation();
+
+  // Dummy Data address
   const dummyAddress: Address = {
     id: "1",
     name: "Budi Santoso",
@@ -30,28 +33,7 @@ const Checkout: React.FC = () => {
       "Jl. Raya Darmo No. 123, Darmo, Wonokromo, Surabaya, Jawa Timur 60241",
   };
 
-  const dummyProducts: Product[] = [
-    {
-      id: "1",
-      name: "Kaos Oversize Premium Cotton",
-      image:
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&h=200&fit=crop",
-      color: "Hitam",
-      size: "L",
-      quantity: 2,
-      price: 150000,
-    },
-    {
-      id: "2",
-      name: "Hoodie Distro Original",
-      image:
-        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&h=200&fit=crop",
-      color: "Abu-abu",
-      size: "XL",
-      quantity: 1,
-      price: 250000,
-    },
-  ];
+  const products: Product[] = location.state?.products || [];
 
   // States
   const [selectedAddress] = useState<Address | null>(dummyAddress);
@@ -60,20 +42,20 @@ const Checkout: React.FC = () => {
 
   // Calculate subtotal
   useEffect(() => {
-    const calculatedSubtotal = dummyProducts.reduce(
+    const calculatedSubtotal = products.reduce(
       (acc, product) => acc + product.price * product.quantity,
       0
     );
     setSubtotal(calculatedSubtotal);
     setTotal(calculatedSubtotal);
-  }, []);
+  }, [products]);
 
   // Handle checkout
   const handleCheckout = () => {
     console.log("Checkout clicked");
     console.log({
       address: selectedAddress,
-      products: dummyProducts,
+      products: products,
       total,
     });
   };
@@ -86,6 +68,18 @@ const Checkout: React.FC = () => {
       minimumFractionDigits: 0,
     }).format(amount);
   };
+
+  if (!products.length) {
+    return (
+      <>
+        <Navigation />
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-gray-600">Tidak ada produk untuk checkout</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -152,7 +146,7 @@ const Checkout: React.FC = () => {
                 </div>
 
                 <div className="space-y-4">
-                  {dummyProducts.map((product) => (
+                  {products.map((product) => (
                     <div
                       key={product.id}
                       className="flex items-start border border-gray-200 rounded-lg p-4"
