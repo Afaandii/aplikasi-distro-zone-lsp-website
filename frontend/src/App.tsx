@@ -53,6 +53,7 @@ import ContactPage from "./components/ui-toko/Contact";
 import Varian from "./pages/Varian/Varian";
 import CreateVarian from "./pages/Varian/CreateVarian";
 import EditVarian from "./pages/Varian/EditVarian";
+import Checkout from "./components/ui-toko/Checkout";
 
 export default function App() {
   return (
@@ -166,6 +167,7 @@ export default function App() {
           <Route path="/produk-list" element={<ProductsPage />} />
           <Route path="/kontak-kami" element={<ContactPage />} />
           <Route path="/about-us" element={<AboutSection />} />
+          <Route path="/checkout-page" element={<Checkout />} />
           {/* Route halaman toko end */}
 
           {/* Fallback Route If Not Found Page */}
