@@ -53,7 +53,7 @@ export default function EditTarifPengiriman() {
         `http://localhost:8080/api/v1/tarif-pengiriman/${id_tarif_pengiriman}`,
         {
           wilayah: formData.wilayah,
-          harga_per_kg: formData.harga_per_kg,
+          harga_per_kg: parseInt(formData.harga_per_kg),
         },
         {
           headers: {
