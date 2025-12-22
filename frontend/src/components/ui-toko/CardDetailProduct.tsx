@@ -3,7 +3,7 @@ import { FaStar, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import Navigation from "./Navigation";
 import Footer from "./Footer";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type ImageType = {
   url: string;
@@ -47,6 +47,7 @@ export default function CardDetailProduct() {
   const [mainImage, setMainImage] = useState<string>("");
   const [hoverImage, setHoverImage] = useState<string | null>(null);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const navigate = useNavigate();
 
   const rating = 4.9;
   const totalReviews = "11,5rb rating";
@@ -203,6 +204,30 @@ export default function CardDetailProduct() {
   const getImageByWarna = (idWarna: number | null) => {
     if (!idWarna) return null;
     return images.find((img) => img.id_warna === idWarna)?.url || null;
+  };
+
+  // handling  data payload buat ke halaman checkout
+  const handleBuyNow = () => {
+    if (!currentVariant || !selectedUkuran || !selectedWarna) {
+      alert("Pilih warna dan ukuran terlebih dahulu");
+      return;
+    }
+
+    navigate("/checkout-produk-page", {
+      state: {
+        products: [
+          {
+            id: id_produk,
+            name: title,
+            image: mainImage,
+            color: currentVariant.warna,
+            size: currentVariant.ukuran,
+            quantity: quantity,
+            price: price,
+          },
+        ],
+      },
+    });
   };
 
   if (loading) {
@@ -598,7 +623,10 @@ export default function CardDetailProduct() {
                   <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-sm sm:text-base py-2 rounded-xl transition-colors shadow-md">
                     + Keranjang
                   </button>
-                  <button className="w-full border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold text-sm sm:text-base py-2 rounded-xl transition-colors">
+                  <button
+                    onClick={handleBuyNow}
+                    className="w-full border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold text-sm sm:text-base py-2 rounded-xl transition-colors"
+                  >
                     Beli Langsung
                   </button>
                 </div>

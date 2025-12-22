@@ -167,7 +167,7 @@ export default function App() {
           <Route path="/produk-list" element={<ProductsPage />} />
           <Route path="/kontak-kami" element={<ContactPage />} />
           <Route path="/about-us" element={<AboutSection />} />
-          <Route path="/checkout-page" element={<Checkout />} />
+          <Route path="/checkout-produk-page" element={<Checkout />} />
           {/* Route halaman toko end */}
 
           {/* Fallback Route If Not Found Page */}
