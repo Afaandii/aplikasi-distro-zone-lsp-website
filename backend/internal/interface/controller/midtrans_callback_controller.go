@@ -4,7 +4,6 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"encoding/json"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -66,7 +65,6 @@ func mapMetodePembayaran(notif map[string]interface{}) string {
 }
 
 func (c *MidtransCallbackController) Handle(w http.ResponseWriter, r *http.Request) {
-	log.Println("MIDTRANS CALLBACK MASUK")
 	var payload map[string]interface{}
 
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
