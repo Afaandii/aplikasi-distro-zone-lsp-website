@@ -12,7 +12,7 @@ type Pesanan struct {
 	Berat              int       `json:"berat" gorm:"type:int"`
 	BiayaOngkir        int       `json:"biaya_ongkir" gorm:"type:int"`
 	TotalBayar         int       `json:"total_bayar" gorm:"type:int"`
-	KotaTujuan         string    `json:"kota_tujuan" gorm:"type:varchar(255)"`
+	AlamatPengiriman   string    `json:"alamat_pengiriman" gorm:"type:varchar(255)"`
 	BuktiPembayaran    string    `json:"bukti_pembayaran" gorm:"type:text"`
 	StatusPembayaran   string    `json:"status_pembayaran" gorm:"type:varchar(255)"`
 	StatusPesanan      string    `json:"status_pesanan" gorm:"type:varchar(255)"`

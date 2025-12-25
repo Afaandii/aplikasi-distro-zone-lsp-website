@@ -9,6 +9,7 @@ type Produk struct {
 	NamaKaos    string    `json:"nama_kaos" gorm:"type:varchar(255)"`
 	HargaJual   int       `json:"harga_jual" gorm:"type:int"`
 	HargaPokok  int       `json:"harga_pokok" gorm:"type:int"`
+	Berat       float64   `json:"berat" gorm:"type:numeric(5,2);not null;default:0"`
 	Deskripsi   string    `json:"deskripsi" gorm:"type:text"`
 	Spesifikasi string    `json:"spesifikasi" gorm:"type:text"`
 	CreatedAt   time.Time `json:"created_at"`
