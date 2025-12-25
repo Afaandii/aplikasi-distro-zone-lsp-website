@@ -3,6 +3,8 @@ package usecase
 import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
+	"errors"
+	"math"
 	"strings"
 
 	"github.com/google/uuid"
@@ -47,15 +49,19 @@ func (u *PembayaranUsecase) CreatePembayaran(
 	items []ItemRequest,
 ) (string, error) {
 
-	// 1. Ambil user (alamat & kota)
+	if len(items) == 0 {
+		return "", errors.New("item tidak boleh kosong")
+	}
+
+	// 1. Ambil user
 	user, err := u.UserRepo.FindByID(userID)
 	if err != nil {
 		return "", err
 	}
 
-	// 2. Hitung subtotal & berat
+	// 2. Hitung subtotal & total berat (GRAM)
 	var subtotal int
-	var totalBerat float64
+	var totalBeratGram float64
 
 	for _, item := range items {
 		produk, err := u.ProdukRepo.FindByID(item.ID)
@@ -63,31 +69,42 @@ func (u *PembayaranUsecase) CreatePembayaran(
 			return "", err
 		}
 
+		// VALIDASI WAJIB
+		if produk.Berat <= 0 {
+			return "", errors.New("berat produk tidak valid")
+		}
+
 		subtotal += produk.HargaJual * item.Quantity
-		totalBerat += produk.Berat * float64(item.Quantity)
+		totalBeratGram += produk.Berat * float64(item.Quantity)
 	}
 
-	// 3. Tentukan wilayah dari kota user
-	wilayah := mapKotaKeWilayah(user.Kota)
+	// 3. Konversi gram → kg (WAJIB CEIL)
+	totalBeratKg := int(math.Ceil(totalBeratGram / 1000))
+	if totalBeratKg <= 0 {
+		totalBeratKg = 1 // pengaman terakhir
+	}
 
-	// 4. Ambil tarif dari DB
+	// 4. Tentukan wilayah
+	wilayah := mapKotaKeWilayah(strings.ToLower(user.Kota))
+
+	// 5. Ambil tarif pengiriman
 	tarif, err := u.TarifRepo.FindByWilayah(wilayah)
 	if err != nil {
 		return "", err
 	}
 
-	// 5. Hitung ongkir dinamis
-	ongkir := int(totalBerat * float64(tarif.HargaPerKg))
+	// 6. Hitung ongkir
+	ongkir := totalBeratKg * tarif.HargaPerKg
 	total := subtotal + ongkir
 
-	// 6. Simpan pesanan (BENAR)
+	// 7. Simpan pesanan
 	pesanan := entities.Pesanan{
 		PemesanRef:         userID,
-		DiverifikasiRef:    2,
+		DiverifikasiRef:    2, // sementara
 		TarifPengirimanRef: tarif.IDTarifPengiriman,
 		KodePesanan:        "ORD-" + uuid.New().String(),
 		Subtotal:           subtotal,
-		Berat:              int(totalBerat),
+		Berat:              totalBeratKg, // 🔥 FIX PASTI MASUK
 		BiayaOngkir:        ongkir,
 		TotalBayar:         total,
 		AlamatPengiriman:   alamat,
@@ -99,7 +116,7 @@ func (u *PembayaranUsecase) CreatePembayaran(
 		return "", err
 	}
 
-	// 7. Midtrans Snap
+	// 8. Midtrans Snap
 	return u.createMidtransSnap(pesanan)
 }
 
