@@ -179,7 +179,7 @@ func (u *userUsecase) Register(nama string, username string, password string, no
 
 	// Create new user with default role (assuming role 2 is for regular users)
 	user := &entities.User{
-		RoleRef:  2,
+		RoleRef:  3,
 		Nama:     nama,
 		Username: username,
 		Password: string(hashedPassword),

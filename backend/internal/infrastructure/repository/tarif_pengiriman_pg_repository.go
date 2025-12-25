@@ -35,6 +35,23 @@ func (tp *tarifPengirimanPGRepository) FindByID(idTarifPengiriman int) (*entitie
 	return &trfp, nil
 }
 
+func (r *tarifPengirimanPGRepository) FindByWilayah(wilayah string) (*entities.TarifPengiriman, error) {
+	var tp entities.TarifPengiriman
+
+	err := r.db.
+		Where("LOWER(wilayah) = LOWER(?)", wilayah).
+		First(&tp).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("tarif pengiriman tidak ditemukan untuk wilayah: " + wilayah)
+		}
+		return nil, err
+	}
+
+	return &tp, nil
+}
+
 func (tp *tarifPengirimanPGRepository) Create(c *entities.TarifPengiriman) error {
 	return tp.db.Create(c).Error
 }

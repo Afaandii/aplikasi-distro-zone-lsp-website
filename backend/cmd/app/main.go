@@ -8,6 +8,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/interface/controller"
 	"aplikasi-distro-zone-lsp-website/internal/server"
 	config "aplikasi-distro-zone-lsp-website/pkg/config"
+	"aplikasi-distro-zone-lsp-website/pkg/midtrans"
 	"aplikasi-distro-zone-lsp-website/pkg/supabase"
 	"fmt"
 	"log"
@@ -75,6 +76,12 @@ func main() {
 	varianRepo := repo.NewVarianPGRepository(db)
 	varianUc := usecase.NewVarianUsecase(varianRepo)
 	varianCtrl := controller.NewVarianController(varianUc)
+	pesananRepo := repo.NewPesananPGRepository(db)
+	pesananUc := usecase.NewPesananUsecase(pesananRepo)
+	pesananCtrl := controller.NewPesananController(pesananUc)
+	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo}
+	checkoutCtrl := &controller.CheckoutController{PembayaranUC: pembayaranUc}
+	callbackCtrl := &controller.MidtransCallbackController{PesananRepo: pesananRepo}
 
 	server.RegisterRoleRoutes(roleCtrl)
 	server.RegisterUserRoutes(userCtrl)
@@ -87,9 +94,12 @@ func main() {
 	server.RegisterTarifPengirimanRoutes(tarifPengirimanCtrl)
 	server.RegisterJamOperasionalRoutes(jamOperasionalCtrl)
 	server.RegisterVarianRoutes(varianCtrl)
+	server.RegisterPesananRoutes(pesananCtrl)
+	server.RegisterPembayaranRoutes(checkoutCtrl, callbackCtrl)
 
 	port := os.Getenv("PORT")
 	handleCors := config.CorsMiddleware(http.DefaultServeMux)
+	midtrans.Init()
 	if port == "" {
 		port = "8080"
 	}
