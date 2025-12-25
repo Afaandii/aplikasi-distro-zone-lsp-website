@@ -23,22 +23,10 @@ interface Product {
 
 const Checkout: React.FC = () => {
   const location = useLocation();
-
-  // Dummy Data address
-  const dummyAddress: Address = {
-    id: "1",
-    name: "Budi Santoso",
-    phone: "081234567890",
-    fullAddress:
-      "Jl. Raya Darmo No. 123, Darmo, Wonokromo, Surabaya, Jawa Timur 60241",
-  };
-
-  const products: Product[] = location.state?.products || [];
-
-  // States
-  const [selectedAddress] = useState<Address | null>(dummyAddress);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>();
   const [subtotal, setSubtotal] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const products: Product[] = location.state?.products || [];
 
   // Calculate subtotal
   useEffect(() => {
@@ -59,6 +47,28 @@ const Checkout: React.FC = () => {
       total,
     });
   };
+
+  useEffect(() => {
+    const localUser = localStorage.getItem("user");
+    const sessionUser = sessionStorage.getItem("user");
+
+    const userData = localUser
+      ? JSON.parse(localUser)
+      : sessionUser
+      ? JSON.parse(sessionUser)
+      : null;
+
+    if (userData) {
+      const mappedAddress: Address = {
+        id: String(userData.id_user),
+        name: userData.nama,
+        phone: userData.no_hp || "",
+        fullAddress: `${userData.alamat}, ${userData.kota}`,
+      };
+
+      setSelectedAddress(mappedAddress);
+    }
+  }, []);
 
   // Format currency
   const formatCurrency = (amount: number): string => {
