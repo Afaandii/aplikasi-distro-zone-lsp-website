@@ -18,10 +18,17 @@ export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
   const [isMobile, setIsMobile] = useState(false);
 
+  // State untuk data user yang sedang login
   const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    profile_image: "",
+    id_user: 0,
+    id_role: 0,
+    nama: "",
+    username: "",
+    nik: "",
+    alamat: "",
+    kota: "",
+    no_telp: "",
+    foto_profile: "/images/user/default.jpg",
   });
 
   const getToken = () => {
@@ -32,9 +39,14 @@ export default function UserInfoCard() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // State untuk form edit
   const [editFormData, setEditFormData] = useState({
-    name: "",
-    email: "",
+    nama: "",
+    username: "",
+    nik: "",
+    alamat: "",
+    kota: "",
+    no_telp: "",
     password: "",
     profile_image: null as File | null,
   });
@@ -49,54 +61,47 @@ export default function UserInfoCard() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Ambil data user dari localStorage/sessionStorage
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = getToken();
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/api/v1/auth/user",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.data.status === "Ok") {
-          const data = response.data.data;
+    const getUserFromStorage = () => {
+      const storedUser =
+        localStorage.getItem("user") || sessionStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
           setUserData({
-            name: data.name || "",
-            email: data.email || "",
-            profile_image: data.profile_image || "/images/user/default.jpg",
+            id_user: parsedUser.id_user || 0,
+            id_role: parsedUser.id_role || 3,
+            nama: parsedUser.nama || "",
+            username: parsedUser.username || "",
+            nik: parsedUser.nik || "",
+            alamat: parsedUser.alamat || "",
+            kota: parsedUser.kota || "",
+            no_telp: parsedUser.no_telp || "",
+            foto_profile: parsedUser.foto_profile || "/images/user/default.jpg",
           });
 
           setEditFormData({
-            name: data.name || "",
-            email: data.email || "",
+            nama: parsedUser.nama || "",
+            username: parsedUser.username || "",
+            nik: parsedUser.nik || "",
+            alamat: parsedUser.alamat || "",
+            kota: parsedUser.kota || "",
+            no_telp: parsedUser.no_telp || "",
             password: "",
             profile_image: null,
           });
-        } else {
-          throw new Error(response.data.message || "Unknown error");
+        } catch (e) {
+          console.error("Error parsing user data from storage:", e);
+          setError("Data pengguna tidak valid.");
         }
-      } catch (err: any) {
-        if (err.response) {
-          setError(
-            `Server Error: ${err.response.status} - ${
-              err.response.data.message || err.response.statusText
-            }`
-          );
-        } else if (err.request) {
-          setError("No response from server. Check your network or backend.");
-        } else {
-          setError(err.message);
-        }
-      } finally {
-        setLoading(false);
+      } else {
+        setError("Data pengguna tidak ditemukan.");
       }
+      setLoading(false);
     };
 
-    fetchUserData();
+    getUserFromStorage();
   }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,47 +125,80 @@ export default function UserInfoCard() {
       const token = getToken();
 
       const formData = new FormData();
-      formData.append("_method", "PUT");
-      formData.append("name", editFormData.name);
-      formData.append("email", editFormData.email);
+      formData.append("id_role", String(userData.id_role));
+      formData.append("nama", editFormData.nama);
+      formData.append("username", editFormData.username);
+      formData.append("nik", editFormData.nik);
+      formData.append("alamat", editFormData.alamat);
+      formData.append("kota", editFormData.kota);
+      formData.append("no_telp", editFormData.no_telp);
 
       if (editFormData.password) {
         formData.append("password", editFormData.password);
       }
 
       if (editFormData.profile_image) {
-        formData.append("profile_image", editFormData.profile_image);
+        formData.append("foto_profile", editFormData.profile_image);
       }
 
-      const response = await axios.post(
-        "http://localhost:8000/api/v1/auth/user-update",
+      const response = await axios.put(
+        `http://localhost:8080/api/v1/user/${userData.id_user}`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
           },
         }
       );
 
-      if (response.data.status === "success") {
+      if (response.status === 200) {
+        const updatedUser = response.data;
+
         setUserData({
-          name: response.data.data.user.name,
-          email: response.data.data.user.email,
-          profile_image:
-            response.data.data.user.profile_image || "/images/user/default.jpg",
+          id_user: updatedUser.id_user,
+          id_role: updatedUser.id_role,
+          nama: updatedUser.nama,
+          username: updatedUser.username,
+          nik: updatedUser.nik,
+          alamat: updatedUser.alamat,
+          kota: updatedUser.kota,
+          no_telp: updatedUser.no_telp,
+          foto_profile: updatedUser.foto_profile || "/images/user/default.jpg",
         });
 
         setEditFormData({
-          name: response.data.data.user.name,
-          email: response.data.data.user.email,
+          nama: updatedUser.nama,
+          username: updatedUser.username,
+          nik: updatedUser.nik,
+          alamat: updatedUser.alamat,
+          kota: updatedUser.kota,
+          no_telp: updatedUser.no_telp,
           password: "",
           profile_image: null,
         });
 
+        // Update data user di storage setelah sukses update
+        const userToStore = {
+          id_user: updatedUser.id_user,
+          nama: updatedUser.nama,
+          username: updatedUser.username,
+          nik: updatedUser.nik,
+          alamat: updatedUser.alamat,
+          kota: updatedUser.kota,
+          no_telp: updatedUser.no_telp,
+          foto_profile: updatedUser.foto_profile || "/images/user/default.jpg",
+        };
+
+        if (localStorage.getItem("user")) {
+          localStorage.setItem("user", JSON.stringify(userToStore));
+        }
+        if (sessionStorage.getItem("user")) {
+          sessionStorage.setItem("user", JSON.stringify(userToStore));
+        }
+
         closeModal();
       } else {
-        setError(response.data.message || "Update failed");
+        setError(response.data.message || "Gagal memperbarui data.");
       }
     } catch (err: any) {
       if (err.response) {
@@ -170,7 +208,9 @@ export default function UserInfoCard() {
           }`
         );
       } else if (err.request) {
-        setError("No response from server. Check your network or backend.");
+        setError(
+          "Tidak ada respons dari server. Periksa koneksi atau backend."
+        );
       } else {
         setError(err.message);
       }
@@ -215,11 +255,15 @@ export default function UserInfoCard() {
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center mb-4">
-                <div className="w-10 h-10 mr-2">
-                  <img src="/images/no-teks-logo.png" alt="Goshop" />
+                <div className="w-12 h-10">
+                  <img src="/images/distro-zone-bag.png" alt="Goshop" />
                 </div>
-                <span className="text-green-500 font-bold text-xl">Go</span>
-                <span className="text-green-500 text-xl">Shop</span>
+                <span className="text-purple-500 font-bold text-xl pt-4">
+                  Distro
+                </span>
+                <span className="text-purple-500 font-bold text-xl pt-4">
+                  Zone
+                </span>
               </div>
 
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white/90 mb-4">
@@ -230,7 +274,7 @@ export default function UserInfoCard() {
                 Detail profil dan pengaturan di halaman ini akan digunakan di
                 semua aplikasi{" "}
                 <span className="text-green-600 underline cursor-pointer">
-                  Goshop.
+                  DistroZone.
                 </span>
               </p>
             </div>
@@ -243,10 +287,10 @@ export default function UserInfoCard() {
               <div className="flex items-start justify-between mb-8">
                 <div className="flex items-center">
                   <div className="w-20 h-20 rounded-full overflow-hidden bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center mr-6 border-2 border-gray-200 dark:border-gray-700">
-                    {userData.profile_image &&
-                    userData.profile_image !== "/images/user/default.jpg" ? (
+                    {userData.foto_profile &&
+                    userData.foto_profile !== "/images/user/default.jpg" ? (
                       <img
-                        src={userData.profile_image}
+                        src={userData.foto_profile}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
@@ -275,16 +319,52 @@ export default function UserInfoCard() {
                     Nama lengkap
                   </div>
                   <div className="flex-1 font-medium text-gray-900 dark:text-white/90">
-                    {userData.name}
+                    {userData.nama}
                   </div>
                 </div>
 
                 <div className="flex border-b border-gray-100 dark:border-gray-700 pb-4">
                   <div className="w-40 text-gray-600 dark:text-gray-400">
-                    Email
+                    Username
                   </div>
                   <div className="flex-1 font-medium text-gray-900 dark:text-white/90">
-                    {userData.email}
+                    {userData.username}
+                  </div>
+                </div>
+
+                <div className="flex border-b border-gray-100 dark:border-gray-700 pb-4">
+                  <div className="w-40 text-gray-600 dark:text-gray-400">
+                    NIK
+                  </div>
+                  <div className="flex-1 font-medium text-gray-900 dark:text-white/90">
+                    {userData.nik}
+                  </div>
+                </div>
+
+                <div className="flex border-b border-gray-100 dark:border-gray-700 pb-4">
+                  <div className="w-40 text-gray-600 dark:text-gray-400">
+                    Alamat
+                  </div>
+                  <div className="flex-1 font-medium text-gray-900 dark:text-white/90">
+                    {userData.alamat}
+                  </div>
+                </div>
+
+                <div className="flex border-b border-gray-100 dark:border-gray-700 pb-4">
+                  <div className="w-40 text-gray-600 dark:text-gray-400">
+                    Kota
+                  </div>
+                  <div className="flex-1 font-medium text-gray-900 dark:text-white/90">
+                    {userData.kota}
+                  </div>
+                </div>
+
+                <div className="flex border-b border-gray-100 dark:border-gray-700 pb-4">
+                  <div className="w-40 text-gray-600 dark:text-gray-400">
+                    No. Telepon
+                  </div>
+                  <div className="flex-1 font-medium text-gray-900 dark:text-white/90">
+                    {userData.no_telp}
                   </div>
                 </div>
 
@@ -322,6 +402,8 @@ export default function UserInfoCard() {
                   onClick={() => {
                     localStorage.removeItem("token");
                     sessionStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    sessionStorage.removeItem("user");
                     window.location.href = "/";
                   }}
                   className="w-full flex items-center justify-center px-6 lg:px-8 py-5 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700"
@@ -339,36 +421,76 @@ export default function UserInfoCard() {
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
-        className="max-w-[700px] mt-36 lg:mt-32"
+        className="max-w-175 mt-36 lg:mt-32"
       >
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white dark:bg-gray-900 p-4 lg:p-11">
+        <div className="no-scrollbar relative w-full max-w-175 overflow-y-auto rounded-3xl bg-white dark:bg-gray-900 p-4 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
               Edit Personal Information
             </h4>
           </div>
           <form className="flex flex-col">
-            <div className="h-[520px] overflow-hidden px-2 pb-3">
+            <div className="h-130 overflow-hidden px-2 pb-3">
               <div className="mt-7">
                 <div className="space-y-5">
+                  {/* Nama */}
+                  <div>
+                    <Label>Nama Lengkap</Label>
+                    <Input
+                      type="text"
+                      value={editFormData.nama}
+                      onChange={handleInputChange}
+                      name="nama"
+                    />
+                  </div>
                   {/* Username */}
                   <div>
                     <Label>Username</Label>
                     <Input
                       type="text"
-                      value={editFormData.name}
+                      value={editFormData.username}
                       onChange={handleInputChange}
-                      name="name"
+                      name="username"
                     />
                   </div>
-                  {/* Email Address */}
+                  {/* NIK */}
                   <div>
-                    <Label>Email Address</Label>
+                    <Label>NIK</Label>
                     <Input
                       type="text"
-                      value={editFormData.email}
+                      value={editFormData.nik}
                       onChange={handleInputChange}
-                      name="email"
+                      name="nik"
+                    />
+                  </div>
+                  {/* Alamat */}
+                  <div>
+                    <Label>Alamat</Label>
+                    <Input
+                      type="text"
+                      value={editFormData.alamat}
+                      onChange={handleInputChange}
+                      name="alamat"
+                    />
+                  </div>
+                  {/* Kota */}
+                  <div>
+                    <Label>Kota</Label>
+                    <Input
+                      type="text"
+                      value={editFormData.kota}
+                      onChange={handleInputChange}
+                      name="kota"
+                    />
+                  </div>
+                  {/* No. Telepon */}
+                  <div>
+                    <Label>No. Telepon</Label>
+                    <Input
+                      type="text"
+                      value={editFormData.no_telp}
+                      onChange={handleInputChange}
+                      name="no_telp"
                     />
                   </div>
                   {/* Password */}
@@ -376,7 +498,7 @@ export default function UserInfoCard() {
                     <Label>Password</Label>
                     <Input
                       type="password"
-                      placeholder="Enter new password"
+                      placeholder="Enter new password (optional)"
                       value={editFormData.password}
                       onChange={handleInputChange}
                       name="password"
@@ -384,15 +506,15 @@ export default function UserInfoCard() {
                   </div>
                   {/* Image */}
                   <div>
-                    <Label>Image</Label>
+                    <Label>Foto Profil</Label>
                     <FileInput onChange={handleFileChange} />
 
                     {/* Gambar Saat Ini */}
-                    {userData.profile_image && (
+                    {userData.foto_profile && (
                       <div className="mt-4">
                         <div className="w-28 h-28 overflow-hidden border border-gray-300 dark:border-gray-700 rounded-lg">
                           <img
-                            src={userData.profile_image}
+                            src={userData.foto_profile}
                             alt="Current Profile"
                             className="w-full h-full object-cover"
                           />
