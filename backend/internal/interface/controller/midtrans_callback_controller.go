@@ -101,7 +101,7 @@ func (c *MidtransCallbackController) Handle(w http.ResponseWriter, r *http.Reque
 	switch transactionStatus {
 	case "capture", "settlement":
 		statusPembayaran = "paid"
-		statusPesanan = "diproses"
+		statusPesanan = "menunggu_verifikasi_kasir"
 
 	case "expire", "cancel", "deny":
 		statusPembayaran = "failed"
