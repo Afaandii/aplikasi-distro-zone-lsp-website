@@ -6,7 +6,7 @@ import (
 
 type User struct {
 	IDUser      int       `json:"id_user" gorm:"primaryKey;column:id_user;autoIncrement"`
-	RoleRef     int       `json:"id_role" gorm:"column:id_role;not null"`
+	RoleRef     int       `json:"id_role" gorm:"column:id_role"`
 	Nama        string    `json:"nama" gorm:"type:varchar(255)"`
 	Username    string    `json:"username" gorm:"type:varchar(255);unique"`
 	Password    string    `json:"password" gorm:"type:varchar(255)"`

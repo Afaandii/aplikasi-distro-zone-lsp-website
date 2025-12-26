@@ -9,8 +9,8 @@ import (
 type PesananUsecase interface {
 	GetAll() ([]entities.Pesanan, error)
 	GetByID(idPesanan int) (*entities.Pesanan, error)
-	Create(id_pemesan int, diverifikasi_oleh int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error)
-	Update(idPesanan int, id_pemesan int, diverifikasi_oleh int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error)
+	Create(id_pemesan int, diverifikasi_oleh *int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error)
+	Update(idPesanan int, id_pemesan int, diverifikasi_oleh *int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error)
 	Delete(idPesanan int) error
 }
 
@@ -37,7 +37,7 @@ func (u *pesananUsecase) GetByID(idPesanan int) (*entities.Pesanan, error) {
 	return ps, nil
 }
 
-func (u *pesananUsecase) Create(id_pemesan int, diverifikasi_oleh int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error) {
+func (u *pesananUsecase) Create(id_pemesan int, diverifikasi_oleh *int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error) {
 	m := &entities.Pesanan{
 		PemesanRef:         id_pemesan,
 		DiverifikasiRef:    diverifikasi_oleh,
@@ -60,7 +60,7 @@ func (u *pesananUsecase) Create(id_pemesan int, diverifikasi_oleh int, id_tarif_
 	return m, nil
 }
 
-func (u *pesananUsecase) Update(idPesanan int, id_pemesan int, diverifikasi_oleh int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error) {
+func (u *pesananUsecase) Update(idPesanan int, id_pemesan int, diverifikasi_oleh *int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error) {
 	existing, err := u.repo.FindByID(idPesanan)
 	if err != nil {
 		return nil, err

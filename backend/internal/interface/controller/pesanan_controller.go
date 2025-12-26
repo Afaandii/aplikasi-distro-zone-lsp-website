@@ -44,7 +44,7 @@ func (pes *PesananController) GetByID(w http.ResponseWriter, r *http.Request, id
 func (pes *PesananController) Create(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
 		IDPemesan         int    `json:"id_pemesan"`
-		DiverfikasiOleh   int    `json:"diverifikasi_oleh"`
+		DiverfikasiOleh   *int   `json:"diverifikasi_oleh"`
 		IDTarifPengiriman int    `json:"id_tarif_pengiriman"`
 		KodePesanan       string `json:"kode_pesanan"`
 		Subtotal          int    `json:"subtotal"`
@@ -86,7 +86,7 @@ func (pes *PesananController) Create(w http.ResponseWriter, r *http.Request) {
 func (pes *PesananController) Update(w http.ResponseWriter, r *http.Request, idPesanan int) {
 	var payload struct {
 		IDPemesan         int    `json:"id_pemesan"`
-		DiverfikasiOleh   int    `json:"diverifikasi_oleh"`
+		DiverfikasiOleh   *int   `json:"diverifikasi_oleh"`
 		IDTarifPengiriman int    `json:"id_tarif_pengiriman"`
 		KodePesanan       string `json:"kode_pesanan"`
 		Subtotal          int    `json:"subtotal"`
