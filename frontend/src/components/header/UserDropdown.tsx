@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import axios from "axios";
 import { TbLogout2 } from "react-icons/tb";
 import { FaRegUserCircle } from "react-icons/fa";
+import axios from "axios";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const getToken = () => {
-    return localStorage.getItem("token") || sessionStorage.getItem("token");
-  };
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -22,50 +16,48 @@ export default function UserDropdown() {
     setIsOpen(false);
   }
 
+  const getToken = () => {
+    return localStorage.getItem("token") || sessionStorage.getItem("token");
+  };
+
   const [userData, setUserData] = useState({
     nama: "",
     username: "",
-    foto_profile: "",
+    foto_profile: "/images/default.jpg",
   });
 
+  // Ambil data user dari localStorage/sessionStorage
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = getToken();
-      try {
-        const response = await axios.get("http://localhost:8080/api/v1/user", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 200) {
-          const data = response.data[0];
+    const getUserFromStorage = () => {
+      const storedUser =
+        localStorage.getItem("user") || sessionStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
           setUserData({
-            nama: data.nama,
-            username: data.username,
-            foto_profile: data.foto_profile || "/images/default.jpg",
+            nama: parsedUser.nama || "",
+            username: parsedUser.username || "",
+            foto_profile: parsedUser.foto_profile || "/images/default.jpg",
           });
-        } else {
-          throw new Error(response.data.message || "Unknown error");
+        } catch (e) {
+          console.error("Error parsing user data from storage:", e);
+          setUserData({
+            nama: "",
+            username: "",
+            foto_profile: "/images/default.jpg",
+          });
         }
-      } catch (err: any) {
-        if (err.response) {
-          setError(
-            `Server Error: ${err.response.status} - ${
-              err.response.data.message || err.response.statusText
-            }`
-          );
-        } else if (err.request) {
-          setError("No response from server. Check your network or backend.");
-        } else {
-          setError(err.message);
-        }
-      } finally {
-        setLoading(false);
+      } else {
+        // Jika tidak ada data user, kosongkan atau gunakan default
+        setUserData({
+          nama: "",
+          username: "",
+          foto_profile: "/images/default.jpg",
+        });
       }
     };
 
-    fetchUserData();
+    getUserFromStorage();
   }, []);
 
   const handleLogout = async () => {
@@ -93,74 +85,20 @@ export default function UserDropdown() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center text-gray-700 dark:text-gray-400">
-        <div className="mr-3 h-11 w-11 rounded-full bg-gray-300 animate-pulse"></div>
-        <div className="block mr-1 h-5 w-24 rounded bg-gray-300 animate-pulse"></div>
-        <svg
-          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          width="18"
-          height="20"
-          viewBox="0 0 18 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M4.3125 8.65625L9 13.3437L13.6875 8.65625"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center text-red-500 dark:text-red-400">
-        <div className="mr-3 h-11 w-11 rounded-full bg-red-200 flex items-center justify-center">
-          <FaRegUserCircle className="text-red-500" />
-        </div>
-        <span className="block mr-1 font-medium text-theme-sm">Error</span>
-        <svg
-          className={`stroke-red-500 dark:stroke-red-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          width="18"
-          height="20"
-          viewBox="0 0 18 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M4.3125 8.65625L9 13.3437L13.6875 8.65625"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-    );
-  }
-
+  // Tidak perlu loading/error state karena ambil dari storage
   return (
     <div className="relative">
       <button
         onClick={toggleDropdown}
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
-        <span className="mr-3 overflow-hidden rounded-full h-10 w-10">
+        <div className="mr-3 overflow-hidden rounded-full h-10 w-10">
           <img
             src={userData.foto_profile || "/images/default.jpg"}
             alt="User"
+            className="w-full h-full object-cover object-center"
           />
-        </span>
+        </div>
 
         <span className="block mr-1 font-medium text-theme-sm text-gray-500">
           {userData.nama}

@@ -95,7 +95,7 @@ export default function PesananVerifikasi() {
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
           <h1 className="text-2xl font-bold text-white">
-            Verifikasi Pesanan Kasir
+            Manage Verifikasi Pesanan
           </h1>
         </div>
       </section>
@@ -103,7 +103,7 @@ export default function PesananVerifikasi() {
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
           <h3 className="text-lg font-semibold text-white">
-            Pesanan Menunggu Verifikasi
+            DataTable Verifikasi Pesanan
           </h3>
         </div>
 

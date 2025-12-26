@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FaStar, FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import Navigation from "./Navigation";
 import Footer from "./Footer";
 import axios from "axios";
@@ -49,9 +49,6 @@ export default function CardDetailProduct() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const navigate = useNavigate();
 
-  const rating = 4.9;
-  const totalReviews = "11,5rb rating";
-  const sold = "10 rb+";
   const condition = "Baru";
   const minOrder = 1;
   const features: string[] = [];
@@ -331,23 +328,6 @@ export default function CardDetailProduct() {
                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900 mb-2">
                   {title}
                 </h1>
-                <div className="flex items-center gap-3 sm:gap-4 mb-4">
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs sm:text-sm">Terjual</span>
-                    <span className="font-semibold text-xs sm:text-sm">
-                      {sold}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FaStar className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-semibold text-xs sm:text-sm">
-                      {rating}
-                    </span>
-                    <span className="text-gray-500 text-xs sm:text-sm">
-                      ({totalReviews})
-                    </span>
-                  </div>
-                </div>
 
                 <div className="mb-4 sm:mb-6">
                   <div className="text-2xl sm:text-3xl font-bold text-gray-900">
