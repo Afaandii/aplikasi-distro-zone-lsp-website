@@ -19,9 +19,6 @@ import UserInfoCard from "./pages/Users/UserInfoCard";
 import SearchResults from "./components/ui-toko/SearchResults";
 import GoogleCallback from "./components/auth/GoogleCallbacl";
 import FacebookCallback from "./components/auth/FacebookCallback";
-import Payments from "./pages/Payment/Payments";
-import Transaction from "./pages/Transaksi/Transaction";
-import DetailTransaction from "./pages/Transaksi/DetailTransaction";
 import GlobalNotification from "./components/ui-toko/GlobalNotification";
 import Tipe from "./pages/Tipe/Tipe";
 import CreateTipe from "./pages/Tipe/CreateTipe";
@@ -54,6 +51,7 @@ import Varian from "./pages/Varian/Varian";
 import CreateVarian from "./pages/Varian/CreateVarian";
 import EditVarian from "./pages/Varian/EditVarian";
 import Checkout from "./components/ui-toko/Checkout";
+import Pesanan from "./pages/Pesanan/Pesanan";
 
 export default function App() {
   return (
@@ -147,10 +145,8 @@ export default function App() {
             <Route path="/edit-user/:id_user" element={<EditUser />} />
             {/* Setting menu end */}
 
-            {/* Payment page */}
-            <Route path="/payment" element={<Payments />} />
-            <Route path="/transaksi" element={<Transaction />} />
-            <Route path="/detail-transaksi" element={<DetailTransaction />} />
+            {/* Transaksi page */}
+            <Route path="/pesanan" element={<Pesanan />} />
           </Route>
           <Route>
             <Route path="/user-profile" element={<UserInfoCard />} />

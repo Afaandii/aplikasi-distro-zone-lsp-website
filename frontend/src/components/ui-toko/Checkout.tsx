@@ -39,13 +39,66 @@ const Checkout: React.FC = () => {
   }, [products]);
 
   // Handle checkout
-  const handleCheckout = () => {
-    console.log("Checkout clicked");
-    console.log({
-      address: selectedAddress,
-      products: products,
-      total,
-    });
+  const handleCheckout = async () => {
+    if (!selectedAddress) return;
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
+
+    try {
+      const response = await fetch("http://localhost:8080/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          alamat_pengiriman: selectedAddress.fullAddress,
+          items: products.map((p) => ({
+            id: Number(p.id),
+            quantity: p.quantity,
+          })),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Response tidak OK");
+      }
+
+      const data = await response.json();
+
+      if (!data.snap_token) {
+        alert("Snap token tidak ditemukan");
+        return;
+      }
+
+      // ✅ INI TOKEN MIDTRANS
+      const snapToken = data.snap_token;
+
+      // ✅ CEK SNAP
+      if (!window.snap) {
+        alert("Midtrans Snap belum dimuat");
+        return;
+      }
+
+      // 🔥 TAMPILKAN SNAP
+      window.snap.pay(snapToken, {
+        onSuccess: function (result) {
+          console.log("SUCCESS", result);
+        },
+        onPending: function (result) {
+          console.log("PENDING", result);
+        },
+        onError: function (result) {
+          console.error("ERROR", result);
+        },
+        onClose: function () {
+          console.log("Snap ditutup");
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat checkout");
+    }
   };
 
   useEffect(() => {
