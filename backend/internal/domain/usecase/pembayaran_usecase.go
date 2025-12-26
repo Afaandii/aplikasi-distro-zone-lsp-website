@@ -13,10 +13,11 @@ import (
 )
 
 type PembayaranUsecase struct {
-	PesananRepo repo.PesananRepository
-	ProdukRepo  repo.ProdukRepository
-	UserRepo    repo.UserRepository
-	TarifRepo   repo.TarifPengirimanRepository
+	PesananRepo   repo.PesananRepository
+	DetailPesanan repo.DetailPesananRepository
+	ProdukRepo    repo.ProdukRepository
+	UserRepo      repo.UserRepository
+	TarifRepo     repo.TarifPengirimanRepository
 }
 
 type ItemRequest struct {
@@ -59,9 +60,9 @@ func (u *PembayaranUsecase) CreatePembayaran(
 		return "", err
 	}
 
-	// 2. Hitung subtotal & total berat (GRAM)
+	// 2. Hitung subtotal & jumlah kaos
 	var subtotal int
-	var totalBeratGram float64
+	var totalQty int
 
 	for _, item := range items {
 		produk, err := u.ProdukRepo.FindByID(item.ID)
@@ -69,20 +70,13 @@ func (u *PembayaranUsecase) CreatePembayaran(
 			return "", err
 		}
 
-		// VALIDASI WAJIB
-		if produk.Berat <= 0 {
-			return "", errors.New("berat produk tidak valid")
-		}
-
 		subtotal += produk.HargaJual * item.Quantity
-		totalBeratGram += produk.Berat * float64(item.Quantity)
+		totalQty += item.Quantity
 	}
 
-	// 3. Konversi gram → kg (WAJIB CEIL)
-	totalBeratKg := int(math.Ceil(totalBeratGram / 1000))
-	if totalBeratKg <= 0 {
-		totalBeratKg = 1 // pengaman terakhir
-	}
+	// 3. Hitung berat ongkir
+	// 1 kg = 3 kaos
+	totalBeratKg := int(math.Ceil(float64(totalQty) / 3))
 
 	// 4. Tentukan wilayah
 	wilayah := mapKotaKeWilayah(strings.ToLower(user.Kota))
@@ -100,11 +94,11 @@ func (u *PembayaranUsecase) CreatePembayaran(
 	// 7. Simpan pesanan
 	pesanan := entities.Pesanan{
 		PemesanRef:         userID,
-		DiverifikasiRef:    2, // sementara
+		DiverifikasiRef:    2,
 		TarifPengirimanRef: tarif.IDTarifPengiriman,
 		KodePesanan:        "ORD-" + uuid.New().String(),
 		Subtotal:           subtotal,
-		Berat:              totalBeratKg, // 🔥 FIX PASTI MASUK
+		Berat:              totalBeratKg,
 		BiayaOngkir:        ongkir,
 		TotalBayar:         total,
 		AlamatPengiriman:   alamat,
@@ -114,6 +108,26 @@ func (u *PembayaranUsecase) CreatePembayaran(
 
 	if err := u.PesananRepo.Create(&pesanan); err != nil {
 		return "", err
+	}
+
+	// 8. Simpan detail pesanan
+	for _, item := range items {
+		produk, err := u.ProdukRepo.FindByID(item.ID)
+		if err != nil {
+			return "", err
+		}
+
+		detail := entities.DetailPesanan{
+			PesananRef:  pesanan.IDPesanan,
+			ProdukRef:   produk.IDProduk,
+			Jumlah:      item.Quantity,
+			HargaSatuan: produk.HargaJual,
+			Total:       produk.HargaJual * item.Quantity,
+		}
+
+		if err := u.DetailPesanan.Create(&detail); err != nil {
+			return "", err
+		}
 	}
 
 	// 8. Midtrans Snap

@@ -79,7 +79,8 @@ func main() {
 	pesananRepo := repo.NewPesananPGRepository(db)
 	pesananUc := usecase.NewPesananUsecase(pesananRepo)
 	pesananCtrl := controller.NewPesananController(pesananUc)
-	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo}
+	detailPesananRepo := repo.NewDetailPesananPGRepository(db)
+	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo, DetailPesanan: detailPesananRepo}
 	checkoutCtrl := &controller.CheckoutController{PembayaranUC: pembayaranUc}
 	callbackCtrl := &controller.MidtransCallbackController{PesananRepo: pesananRepo}
 
