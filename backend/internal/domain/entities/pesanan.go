@@ -5,7 +5,7 @@ import "time"
 type Pesanan struct {
 	IDPesanan          int       `json:"id_pesanan" gorm:"primaryKey;column:id_pesanan;autoIncrement"`
 	PemesanRef         int       `json:"id_pemesan" gorm:"column:id_pemesan"`
-	DiverifikasiRef    int       `json:"diverifikasi_oleh" gorm:"column:diverifikasi_oleh"`
+	DiverifikasiRef    *int      `json:"diverifikasi_oleh" gorm:"column:diverifikasi_oleh;null"`
 	TarifPengirimanRef int       `json:"id_tarif_pengiriman" gorm:"column:id_tarif_pengiriman"`
 	KodePesanan        string    `json:"kode_pesanan" gorm:"type:varchar(255)"`
 	Subtotal           int       `json:"subtotal" gorm:"type:int"`

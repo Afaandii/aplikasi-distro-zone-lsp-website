@@ -94,7 +94,7 @@ func (u *PembayaranUsecase) CreatePembayaran(
 	// 7. Simpan pesanan
 	pesanan := entities.Pesanan{
 		PemesanRef:         userID,
-		DiverifikasiRef:    2,
+		DiverifikasiRef:    nil,
 		TarifPengirimanRef: tarif.IDTarifPengiriman,
 		KodePesanan:        "ORD-" + uuid.New().String(),
 		Subtotal:           subtotal,
