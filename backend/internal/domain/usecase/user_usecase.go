@@ -5,6 +5,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"aplikasi-distro-zone-lsp-website/pkg/helper"
 	"aplikasi-distro-zone-lsp-website/pkg/jwt"
+	"errors"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,6 +20,7 @@ type UserUsecase interface {
 
 	Login(username, password string) (*entities.User, string, error)
 	Register(nama string, username string, password string, no_telp string) (*entities.User, error)
+	UpdateAddress(idUser int, alamat string, kota string) (*entities.User, error)
 }
 
 type userUsecase struct {
@@ -193,4 +195,25 @@ func (u *userUsecase) Register(nama string, username string, password string, no
 	// Don't send password in response
 	user.Password = ""
 	return user, nil
+}
+
+func (u *userUsecase) UpdateAddress(
+	idUser int,
+	alamat string,
+	kota string,
+) (*entities.User, error) {
+
+	user, err := u.repo.FindByID(idUser)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, helper.UserNotFoundError(idUser)
+	}
+
+	if alamat == "" || kota == "" {
+		return nil, errors.New("alamat dan kota wajib diisi")
+	}
+
+	return u.repo.UpdateAddress(idUser, alamat, kota)
 }

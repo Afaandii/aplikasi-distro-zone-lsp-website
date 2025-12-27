@@ -4,6 +4,8 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/usecase"
 	helper "aplikasi-distro-zone-lsp-website/internal/interface/helper"
 	helperPkg "aplikasi-distro-zone-lsp-website/pkg/helper"
+	"aplikasi-distro-zone-lsp-website/pkg/jwt"
+	"aplikasi-distro-zone-lsp-website/pkg/middleware"
 	"aplikasi-distro-zone-lsp-website/pkg/supabase"
 	"encoding/json"
 	"errors"
@@ -296,4 +298,40 @@ func (usr *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 	helper.WriteJSON(w, http.StatusOK, map[string]string{
 		"message": "Logout successful",
 	})
+}
+
+func (c *UserController) UpdateAddress(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Alamat string `json:"alamat"`
+		Kota   string `json:"kota"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "payload tidak valid",
+		})
+		return
+	}
+
+	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		helper.WriteJSON(w, http.StatusUnauthorized, map[string]string{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	user, err := c.UC.UpdateAddress(
+		claims.UserID,
+		req.Alamat,
+		req.Kota,
+	)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, user)
 }

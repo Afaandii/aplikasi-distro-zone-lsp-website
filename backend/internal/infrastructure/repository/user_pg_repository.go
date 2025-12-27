@@ -100,3 +100,36 @@ func (r *userPGRepository) FindByUsername(username string) (*entities.User, erro
 func (r *userPGRepository) Register(u *entities.User) error {
 	return r.db.Create(u).Error
 }
+
+func (r *userPGRepository) UpdateAddress(
+	idUser int,
+	alamat string,
+	kota string,
+) (*entities.User, error) {
+
+	result := r.db.Model(&entities.User{}).
+		Where("id_user = ?", idUser).
+		Updates(map[string]interface{}{
+			"alamat": alamat,
+			"kota":   kota,
+		})
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, errors.New("user tidak ditemukan")
+	}
+
+	var user entities.User
+	if err := r.db.Preload("Role").
+		First(&user, "id_user = ?", idUser).Error; err != nil {
+		return nil, err
+	}
+
+	// jangan kirim password
+	user.Password = ""
+
+	return &user, nil
+}

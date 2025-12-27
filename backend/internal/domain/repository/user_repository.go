@@ -12,4 +12,5 @@ type UserRepository interface {
 
 	FindByUsername(username string) (*entities.User, error)
 	Register(u *entities.User) error
+	UpdateAddress(idUser int, alamat string, kota string) (*entities.User, error)
 }
