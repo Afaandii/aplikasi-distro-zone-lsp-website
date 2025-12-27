@@ -52,6 +52,7 @@ import CreateVarian from "./pages/Varian/CreateVarian";
 import EditVarian from "./pages/Varian/EditVarian";
 import Checkout from "./components/ui-toko/Checkout";
 import Pesanan from "./pages/Pesanan/Pesanan";
+import OrderList from "./components/ui-toko/pesanan/OrderList";
 
 export default function App() {
   return (
@@ -158,6 +159,7 @@ export default function App() {
             path="/detail-produk/:id_produk"
             element={<CardDetailProduct />}
           />
+          <Route path="/pesanan-list" element={<OrderList />} />
           <Route path="/cart-produk" element={<CartProduct />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/produk-list" element={<ProductsPage />} />

@@ -10,7 +10,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import UserDropdown from "../header/UserDropdown";
-import { HiOutlineDocumentText } from "react-icons/hi2";
+import { IoDocumentTextOutline } from "react-icons/io5";
 
 export default function Navigation() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -268,11 +268,11 @@ export default function Navigation() {
             <span className="text-xs mt-1">Home</span>
           </a>
           <a
-            href="/"
+            href="/pesanan-list"
             className="flex flex-col items-center text-gray-600 relative"
           >
-            <HiOutlineDocumentText size={24} className="bg-white" />
-            <span className="text-xs mt-1">Transaksi</span>
+            <IoDocumentTextOutline size={24} className="bg-white" />
+            <span className="text-xs mt-1">Pesanan</span>
           </a>
 
           {/* Conditional rendering for account button */}
