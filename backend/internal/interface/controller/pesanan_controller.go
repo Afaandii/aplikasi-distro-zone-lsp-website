@@ -4,6 +4,8 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/usecase"
 	helper "aplikasi-distro-zone-lsp-website/internal/interface/helper"
 	helperPkg "aplikasi-distro-zone-lsp-website/pkg/helper"
+	"aplikasi-distro-zone-lsp-website/pkg/jwt"
+	"aplikasi-distro-zone-lsp-website/pkg/middleware"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -143,4 +145,46 @@ func (pes *PesananController) Delete(w http.ResponseWriter, r *http.Request, idP
 		return
 	}
 	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "deleted successfully!"})
+}
+
+func (pes *PesananController) GetMyPesanan(w http.ResponseWriter, r *http.Request) {
+
+	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userID := claims.UserID
+
+	list, err := pes.UC.GetByUser(userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, list)
+}
+
+func (pes *PesananController) GetMyPesananDetail(
+	w http.ResponseWriter,
+	r *http.Request,
+	idPesanan int,
+) {
+
+	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userID := claims.UserID
+
+	pesanan, err := pes.UC.GetDetailByUser(userID, idPesanan)
+	if err != nil {
+		http.Error(w, "pesanan not found", http.StatusNotFound)
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, pesanan)
 }
