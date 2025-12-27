@@ -78,4 +78,12 @@ func RegisterUserRoutes(c *controller.UserController) {
 		}
 		c.GetCashiers(w, r)
 	}))
+
+	http.HandleFunc("/api/v1/user/address", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPut {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.UpdateAddress(w, r)
+	}))
 }
