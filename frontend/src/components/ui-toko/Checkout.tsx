@@ -437,7 +437,7 @@ const Checkout: React.FC = () => {
                   disabled={!selectedAddress}
                   className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
-                  Bayar Sekarang
+                  Buat Pesanan
                 </button>
               </div>
             </div>
