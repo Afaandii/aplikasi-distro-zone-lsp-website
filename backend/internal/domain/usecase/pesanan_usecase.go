@@ -12,6 +12,9 @@ type PesananUsecase interface {
 	Create(id_pemesan int, diverifikasi_oleh *int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error)
 	Update(idPesanan int, id_pemesan int, diverifikasi_oleh *int, id_tarif_pengiriman int, kode_pesanan string, subtotal int, berat int, biaya_ongkir int, total_bayar int, alamat_pengiriman string, bukti_pembayaran string, status_pembayaran string, status_pesanan string, metode_pembayaran string) (*entities.Pesanan, error)
 	Delete(idPesanan int) error
+
+	GetByUser(userID int) ([]entities.Pesanan, error)
+	GetDetailByUser(userID int, pesananID int) (*entities.Pesanan, error)
 }
 
 type pesananUsecase struct {
@@ -97,4 +100,19 @@ func (u *pesananUsecase) Delete(idPesanan int) error {
 		return helper.PesananNotFoundError(idPesanan)
 	}
 	return u.repo.Delete(idPesanan)
+}
+
+func (u *pesananUsecase) GetByUser(userID int) ([]entities.Pesanan, error) {
+	return u.repo.FindByUserID(userID)
+}
+
+func (u *pesananUsecase) GetDetailByUser(userID int, pesananID int) (*entities.Pesanan, error) {
+	pesanan, err := u.repo.FindDetailByUserAndPesananID(userID, pesananID)
+	if err != nil {
+		return nil, err
+	}
+	if pesanan == nil {
+		return nil, helper.PesananNotFoundError(pesananID)
+	}
+	return pesanan, nil
 }

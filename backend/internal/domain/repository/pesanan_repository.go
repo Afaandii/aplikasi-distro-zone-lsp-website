@@ -15,4 +15,6 @@ type PesananRepository interface {
 		statusPesanan string,
 		metodePembayaran string,
 	) error
+	FindByUserID(userID int) ([]entities.Pesanan, error)
+	FindDetailByUserAndPesananID(userID int, pesananID int) (*entities.Pesanan, error)
 }

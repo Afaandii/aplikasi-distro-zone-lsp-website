@@ -102,3 +102,32 @@ func (r *pesananPGRepository) Delete(idPesanan int) error {
 	}
 	return nil
 }
+
+func (r *pesananPGRepository) FindByUserID(userID int) ([]entities.Pesanan, error) {
+	var list []entities.Pesanan
+	err := r.db.Preload("Diverifikasi").Preload("Pemesan").Preload("TarifPengiriman").Preload("DetailPesanan").Preload("DetailPesanan.Produk").Preload("DetailPesanan.Produk.FotoProduk").Preload("DetailPesanan.Produk.FotoProduk.Warna").Preload("DetailPesanan.Produk.Merk").Preload("DetailPesanan.Produk.Tipe").Preload("DetailPesanan.Produk.Varian").Preload("DetailPesanan.Produk.Varian.Ukuran").Preload("DetailPesanan.Produk.Varian.Warna").
+		Where("id_pemesan = ?", userID).
+		Order("created_at DESC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+func (r *pesananPGRepository) FindDetailByUserAndPesananID(userID int, pesananID int) (*entities.Pesanan, error) {
+	var pesanan entities.Pesanan
+
+	err := r.db.
+		Preload("PesananDetails").
+		Where("id_pesanan = ? AND id_pemesan = ?", pesananID, userID).
+		First(&pesanan).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &pesanan, nil
+}

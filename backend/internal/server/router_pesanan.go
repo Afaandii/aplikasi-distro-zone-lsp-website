@@ -2,6 +2,7 @@ package server
 
 import (
 	"aplikasi-distro-zone-lsp-website/internal/interface/controller"
+	"aplikasi-distro-zone-lsp-website/pkg/middleware"
 	"net/http"
 	"strconv"
 	"strings"
@@ -42,4 +43,33 @@ func RegisterPesananRoutes(c *controller.PesananController) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
+
+	http.HandleFunc("/api/v1/pesanan/my", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			c.GetMyPesanan(w, r)
+			return
+		}
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}))
+
+	// ✅ CUSTOMER - DETAIL PESANAN
+	http.HandleFunc("/api/v1/pesanan/my/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+		if len(parts) < 5 {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		id, err := strconv.Atoi(parts[len(parts)-1])
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		if r.Method == http.MethodGet {
+			c.GetMyPesananDetail(w, r, id)
+			return
+		}
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}))
 }
