@@ -6,7 +6,7 @@ import OrderDetail from "./OrderDetail";
 import Navigation from "../Navigation";
 import Footer from "../Footer";
 
-// Definisikan interface untuk data pesanan dari backend (sesuai dengan struktur log)
+// Definisikan interface untuk data pesanan dari backend
 interface BackendProduct {
   id_detail_pesanan: number;
   id_pesanan: number;
@@ -70,11 +70,16 @@ interface BackendPesanan {
     wilayah: string;
     harga_per_kg: number;
   };
-  DetailPesanan: BackendProduct[]; // Array dari produk
+  DetailPesanan: BackendProduct[];
+}
+
+// Perbaiki interface Order agar menyimpan id_pesanan
+interface ExtendedOrder extends Order {
+  backendId: number;
 }
 
 // Fungsi helper untuk mengkonversi data backend ke format yang digunakan UI
-const convertBackendToOrder = (backendData: BackendPesanan): Order => {
+const convertBackendToOrder = (backendData: BackendPesanan): ExtendedOrder => {
   // Map status pesanan backend ke status UI
   const statusMap: Record<string, Order["status"]> = {
     menunggu_verifikasi_kasir: "waiting",
@@ -104,24 +109,17 @@ const convertBackendToOrder = (backendData: BackendPesanan): Order => {
     statusLabel: statusLabelMap[status],
     createdAt: new Date(backendData.created_at).toLocaleDateString("id-ID"),
     products: backendData.DetailPesanan.map((p) => {
-      // Ambil informasi dari nested object Produk
       const produk = p.Produk;
-
-      // Ambil warna dan ukuran dari varian pertama (asumsikan varian pertama adalah yang dipilih)
       const firstVarian = produk.Varian[0] || {};
       const warna = firstVarian.Warna?.nama_warna || "Warna Tidak Diketahui";
       const ukuran =
         firstVarian.Ukuran?.nama_ukuran || "Ukuran Tidak Diketahui";
-
-      // Ambil gambar dari foto pertama
       const gambar = produk.FotoProduk[0]?.url_foto || "";
-
-      // Buat variant
       const variant = `${warna}, ${ukuran}`;
 
       return {
         id: String(p.id_produk),
-        name: produk.nama_kaos || "Produk Tanpa Nama",
+        name: produk.nama_kaos || "Undefined",
         image: gambar,
         variant: variant,
         quantity: p.jumlah || 1,
@@ -146,14 +144,18 @@ const convertBackendToOrder = (backendData: BackendPesanan): Order => {
       shippingCost: backendData.total_bayar - backendData.subtotal,
       total: backendData.total_bayar,
     },
+    backendId: backendData.id_pesanan,
   };
 };
 
 const OrderList: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("all");
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<ExtendedOrder | null>(
+    null
+  );
+  const [orders, setOrders] = useState<ExtendedOrder[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [detailLoading, setDetailLoading] = useState<boolean>(false);
 
   // Ambil data pesanan dari API saat komponen pertama kali dimuat
   useEffect(() => {
@@ -179,7 +181,6 @@ const OrderList: React.FC = () => {
         }
 
         const data = await response.json();
-        console.log("Response Data:", data); // Log data untuk debugging
 
         // Konversi data backend ke format UI
         const convertedOrders = data.map(convertBackendToOrder);
@@ -196,6 +197,41 @@ const OrderList: React.FC = () => {
     fetchOrders();
   }, []);
 
+  // Fungsi baru untuk mengambil detail pesanan
+  const fetchOrderDetail = async (backendId: number) => {
+    setDetailLoading(true);
+    try {
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:8080/api/v1/pesanan/my/${backendId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Gagal mengambil detail pesanan");
+      }
+
+      const data = await response.json();
+      const orderDetail = convertBackendToOrder(data);
+
+      // Set state untuk menampilkan detail
+      setSelectedOrder(orderDetail);
+    } catch (error) {
+      console.error("Error fetching order detail:", error);
+      alert("Terjadi kesalahan saat memuat detail pesanan.");
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
   const tabs = [
     { key: "all", label: "Semua" },
     { key: "waiting", label: "Menunggu" },
@@ -210,7 +246,23 @@ const OrderList: React.FC = () => {
       ? orders
       : orders.filter((order) => order.status === selectedTab);
 
+  // Jika sedang memuat detail, tampilkan pesan loading
+  if (detailLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-pulse">
+            <div className="bg-gray-300 h-12 w-12 rounded-full mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded w-48 mx-auto mb-2"></div>
+            <div className="h-4 bg-gray-300 rounded w-32 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (selectedOrder) {
+    // Cast ke tipe Order karena komponen OrderDetail tidak perlu tahu tentang backendId
     return (
       <OrderDetail
         order={selectedOrder}
@@ -276,7 +328,7 @@ const OrderList: React.FC = () => {
                 <OrderCard
                   key={order.id}
                   order={order}
-                  onClick={() => setSelectedOrder(order)}
+                  onClick={() => fetchOrderDetail(order.backendId)}
                 />
               ))}
             </div>
