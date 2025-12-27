@@ -41,6 +41,33 @@ func mapItems(reqItems []struct {
 	return items
 }
 
+func (c *CheckoutController) Preview(w http.ResponseWriter, r *http.Request) {
+	var req CheckoutRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userID := claims.UserID
+
+	subtotal, ongkir, total, err :=
+		c.PembayaranUC.HitungCheckoutPreview(userID, req.Alamat, req.Items)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]int{
+		"subtotal": subtotal,
+		"ongkir":   ongkir,
+		"total":    total,
+	})
+}
+
 func (c *CheckoutController) Checkout(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		AlamatPengiriman string `json:"alamat_pengiriman"`

@@ -12,5 +12,6 @@ func RegisterPembayaranRoutes(
 	callbackCtrl *controller.MidtransCallbackController,
 ) {
 	http.HandleFunc("/api/checkout", middleware.AuthMiddleware(checkoutCtrl.Checkout))
+	http.HandleFunc("/api/checkout/preview", middleware.AuthMiddleware(checkoutCtrl.Preview))
 	http.HandleFunc("/api/v1/payment-notification", callbackCtrl.Handle)
 }

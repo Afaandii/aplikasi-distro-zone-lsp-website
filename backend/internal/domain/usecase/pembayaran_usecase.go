@@ -44,6 +44,46 @@ func mapKotaKeWilayah(kota string) string {
 	}
 }
 
+func (u *PembayaranUsecase) HitungCheckoutPreview(
+	userID int,
+	alamat string,
+	items []ItemRequest,
+) (int, int, int, error) {
+
+	user, err := u.UserRepo.FindByID(userID)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	var subtotal int
+	var totalQty int
+
+	for _, item := range items {
+		produk, err := u.ProdukRepo.FindByID(item.ID)
+		if err != nil {
+			return 0, 0, 0, err
+		}
+
+		subtotal += produk.HargaJual * item.Quantity
+		totalQty += item.Quantity
+	}
+
+	// aturan LSP
+	beratKg := int(math.Ceil(float64(totalQty) / 3))
+
+	wilayah := mapKotaKeWilayah(strings.ToLower(user.Kota))
+
+	tarif, err := u.TarifRepo.FindByWilayah(wilayah)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	ongkir := beratKg * tarif.HargaPerKg
+	total := subtotal + ongkir
+
+	return subtotal, ongkir, total, nil
+}
+
 func (u *PembayaranUsecase) CreatePembayaran(
 	userID int,
 	alamat string,
