@@ -119,7 +119,7 @@ func (r *pesananPGRepository) FindDetailByUserAndPesananID(userID int, pesananID
 	var pesanan entities.Pesanan
 
 	err := r.db.
-		Preload("PesananDetails").
+		Preload("DetailPesanan").Preload("Pemesan").Preload("Diverifikasi").Preload("TarifPengiriman").Preload("DetailPesanan.Produk").Preload("DetailPesanan.Produk.FotoProduk").Preload("DetailPesanan.Produk.FotoProduk.Warna").Preload("DetailPesanan.Produk.Merk").Preload("DetailPesanan.Produk.Tipe").Preload("DetailPesanan.Produk.Varian").Preload("DetailPesanan.Produk.Varian.Ukuran").Preload("DetailPesanan.Produk.Varian.Warna").
 		Where("id_pesanan = ? AND id_pemesan = ?", pesananID, userID).
 		First(&pesanan).Error
 
