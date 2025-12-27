@@ -26,6 +26,7 @@ const Checkout: React.FC = () => {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>();
   const [subtotal, setSubtotal] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const [ongkir, setOngkir] = useState<number>(0);
   const products: Product[] = location.state?.products || [];
 
   // Calculate subtotal
@@ -35,8 +36,39 @@ const Checkout: React.FC = () => {
       0
     );
     setSubtotal(calculatedSubtotal);
-    setTotal(calculatedSubtotal);
   }, [products]);
+
+  useEffect(() => {
+    if (!selectedAddress || products.length === 0) return;
+
+    const fetchPreview = async () => {
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+
+      const res = await fetch("http://localhost:8080/api/checkout/preview", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          alamat_pengiriman: selectedAddress.fullAddress,
+          items: products.map((p) => ({
+            id: Number(p.id),
+            quantity: p.quantity,
+          })),
+        }),
+      });
+
+      const data = await res.json();
+
+      setSubtotal(data.subtotal);
+      setOngkir(data.ongkir);
+      setTotal(data.total);
+    };
+
+    fetchPreview();
+  }, [selectedAddress, products]);
 
   // Handle checkout
   const handleCheckout = async () => {
@@ -253,6 +285,10 @@ const Checkout: React.FC = () => {
                   <div className="flex justify-between text-gray-700">
                     <span>Subtotal Produk</span>
                     <span>{formatCurrency(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-700">
+                    <span>Ongkos Kirim</span>
+                    <span>{formatCurrency(ongkir)}</span>
                   </div>
                 </div>
 
