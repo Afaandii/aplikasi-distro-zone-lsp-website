@@ -155,10 +155,10 @@ export default function PesananVerifikasi() {
                         {p.Pemesan?.nama || "-"}
                       </td>
                       <td className="px-4 py-3 text-gray-300">
-                        Rp {p.biaya_ongkir.toLocaleString()}
+                        Rp {p.total_bayar.toLocaleString()}
                       </td>
                       <td className="px-4 py-3 text-gray-300">
-                        Rp {p.total_bayar.toLocaleString()}
+                        Rp {p.biaya_ongkir.toLocaleString()}
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         {p.status_pesanan}
