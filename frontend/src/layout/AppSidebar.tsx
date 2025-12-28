@@ -108,8 +108,8 @@ const navItems: NavItem[] = [
     roles: ["admin", "kasir"],
     subItems: [
       {
-        name: "Laporan Transaksi Saya",
-        path: "/laporan-transaksi-saya",
+        name: "Laporan Keuangan Saya",
+        path: "/laporan-keuangan-saya",
         pro: false,
         roles: ["kasir"],
       },
@@ -134,10 +134,8 @@ const AppSidebar: React.FC = () => {
   const location = useLocation();
   const userRole = getUserRole();
 
-  const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "main";
-    index: number;
-  } | null>(null);
+  // Ganti state menyimpan String (Nama Menu) daripada Index Angka
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
     {}
   );
@@ -232,13 +230,18 @@ const AppSidebar: React.FC = () => {
       }
       // Setting menu end
 
-      if (path === "/payment") {
-        return (
-          location.pathname.startsWith("/payment") ||
-          location.pathname.startsWith("/edit-payment") ||
-          location.pathname.startsWith("/create-payment")
-        );
+      // Laporan Logic
+      if (path === "/laporan-keuangan-saya") {
+        return location.pathname.startsWith("/laporan-keuangan-saya");
       }
+      if (path === "/laporan-transaksi") {
+        return location.pathname.startsWith("/laporan-transaksi");
+      }
+      if (path === "/laporan-rugi-laba") {
+        return location.pathname.startsWith("/laporan-rugi-laba");
+      }
+
+      // Transaksi logic
       if (path === "/transaksi") {
         return (
           location.pathname.startsWith("/transaksi") ||
@@ -265,14 +268,11 @@ const AppSidebar: React.FC = () => {
 
   useEffect(() => {
     let submenuMatched = false;
-    navItems.forEach((nav, index) => {
+    navItems.forEach((nav) => {
       if (nav.subItems) {
         nav.subItems.forEach((subItem) => {
           if (isActive(subItem.path)) {
-            setOpenSubmenu({
-              type: "main",
-              index,
-            });
+            setOpenSubmenu(nav.name);
             submenuMatched = true;
           }
         });
@@ -286,7 +286,7 @@ const AppSidebar: React.FC = () => {
 
   useEffect(() => {
     if (openSubmenu !== null) {
-      const key = `${openSubmenu.type}-${openSubmenu.index}`;
+      const key = openSubmenu;
       if (subMenuRefs.current[key]) {
         setSubMenuHeight((prevHeights) => ({
           ...prevHeights,
@@ -296,16 +296,12 @@ const AppSidebar: React.FC = () => {
     }
   }, [openSubmenu]);
 
-  const handleSubmenuToggle = (index: number) => {
+  const handleSubmenuToggle = (name: string) => {
     setOpenSubmenu((prevOpenSubmenu) => {
-      if (
-        prevOpenSubmenu &&
-        prevOpenSubmenu.type === "main" &&
-        prevOpenSubmenu.index === index
-      ) {
+      if (prevOpenSubmenu === name) {
         return null;
       }
-      return { type: "main", index };
+      return name;
     });
   };
 
@@ -315,13 +311,13 @@ const AppSidebar: React.FC = () => {
         .filter(
           (nav) => !nav.roles || (userRole && nav.roles.includes(userRole))
         )
-        .map((nav, index) => (
+        .map((nav) => (
           <li key={nav.name}>
             {nav.subItems ? (
               <button
-                onClick={() => handleSubmenuToggle(index)}
+                onClick={() => handleSubmenuToggle(nav.name)}
                 className={`menu-item group ${
-                  openSubmenu?.type === "main" && openSubmenu?.index === index
+                  openSubmenu === nav.name
                     ? "menu-item-active"
                     : "menu-item-inactive"
                 } cursor-pointer ${
@@ -332,7 +328,7 @@ const AppSidebar: React.FC = () => {
               >
                 <span
                   className={`menu-item-icon-size  ${
-                    openSubmenu?.type === "main" && openSubmenu?.index === index
+                    openSubmenu === nav.name
                       ? "menu-item-icon-active"
                       : "menu-item-icon-inactive"
                   }`}
@@ -345,8 +341,7 @@ const AppSidebar: React.FC = () => {
                 {(isExpanded || isHovered || isMobileOpen) && (
                   <FaChevronDown
                     className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                      openSubmenu?.type === "main" &&
-                      openSubmenu?.index === index
+                      openSubmenu === nav.name
                         ? "rotate-180 text-brand-500"
                         : ""
                     }`}
@@ -381,13 +376,13 @@ const AppSidebar: React.FC = () => {
             {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
               <div
                 ref={(el) => {
-                  subMenuRefs.current[`main-${index}`] = el;
+                  subMenuRefs.current[nav.name] = el;
                 }}
                 className="overflow-hidden transition-all duration-300"
                 style={{
                   height:
-                    openSubmenu?.type === "main" && openSubmenu?.index === index
-                      ? `${subMenuHeight[`main-${index}`]}px`
+                    openSubmenu === nav.name
+                      ? `${subMenuHeight[nav.name]}px`
                       : "0px",
                 }}
               >
@@ -501,7 +496,7 @@ const AppSidebar: React.FC = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   "MENU"
                 ) : (
-                  <FaEllipsisH className="size-6" /> // Ganti HorizontaLDots dengan FaEllipsisH
+                  <FaEllipsisH className="size-6" />
                 )}
               </h2>
               {renderMenuItems(navItems)}
