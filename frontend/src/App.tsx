@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import NotFound from "./pages/NotFound/NotFound";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -51,8 +51,9 @@ import Varian from "./pages/Varian/Varian";
 import CreateVarian from "./pages/Varian/CreateVarian";
 import EditVarian from "./pages/Varian/EditVarian";
 import Checkout from "./components/ui-toko/Checkout";
-import Pesanan from "./pages/Pesanan/Pesanan";
 import OrderList from "./components/ui-toko/pesanan/OrderList";
+import PesananKasir from "./pages/Pesanan/PesananKasir";
+import PesananAdmin from "./pages/Pesanan/PesananAdmin";
 
 export default function App() {
   return (
@@ -147,7 +148,35 @@ export default function App() {
             {/* Setting menu end */}
 
             {/* Transaksi page */}
-            <Route path="/pesanan" element={<Pesanan />} />
+            <Route
+              path="/pesanan"
+              element={(() => {
+                const userData =
+                  localStorage.getItem("user") ||
+                  sessionStorage.getItem("user");
+                let user = null;
+                try {
+                  user = userData ? JSON.parse(userData) : null;
+                } catch (e) {
+                  console.log("Error parsing user data:", e);
+                  return <Navigate to="/login" replace />;
+                }
+
+                if (!user) {
+                  return <Navigate to="/login" replace />;
+                }
+
+                // Render komponen berdasarkan role
+                if (user.id_role == 1) {
+                  return <PesananAdmin />;
+                } else if (user.id_role == 2) {
+                  return <PesananKasir />;
+                }
+
+                // Jika role tidak valid, redirect ke home
+                return <Navigate to="/" replace />;
+              })()}
+            />
           </Route>
           <Route>
             <Route path="/user-profile" element={<UserInfoCard />} />

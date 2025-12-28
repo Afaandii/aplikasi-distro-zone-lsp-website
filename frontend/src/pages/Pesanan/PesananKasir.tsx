@@ -19,7 +19,7 @@ type Pesanan = {
   };
 };
 
-export default function PesananVerifikasi() {
+export default function PesananKasir() {
   const [pesanan, setPesanan] = useState<Pesanan[]>([]);
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -137,6 +137,9 @@ export default function PesananVerifikasi() {
                       Biaya Ongkir
                     </th>
                     <th className="px-4 py-3 text-xs text-gray-300">
+                      Status Pembayaran
+                    </th>
+                    <th className="px-4 py-3 text-xs text-gray-300">
                       Status Pesanan
                     </th>
                     <th className="px-4 py-3 text-xs text-gray-300">
@@ -159,6 +162,9 @@ export default function PesananVerifikasi() {
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         Rp {p.biaya_ongkir.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        {p.status_pembayaran}
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         {p.status_pesanan}

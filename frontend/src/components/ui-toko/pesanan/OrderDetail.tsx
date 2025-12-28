@@ -4,6 +4,7 @@ import { BsCreditCard } from "react-icons/bs";
 import { OrderStatusTracker } from "./OrderSharedComponent";
 import type { Order } from "./OrderSharedData";
 import Footer from "../Footer";
+import { useNavigate } from "react-router";
 
 interface OrderDetailProps {
   order: Order;
@@ -14,6 +15,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ order, onBack }) => {
   const handleAction = (action: string) => {
     alert(`Action: ${action} untuk pesanan ${order.id}`);
   };
+  const navigate = useNavigate();
 
   return (
     <>
@@ -189,7 +191,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ order, onBack }) => {
             )}
             {order.status === "completed" && (
               <button
-                onClick={() => handleAction("Beli Lagi")}
+                onClick={() => navigate("/")}
                 className="w-full py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
               >
                 Beli Lagi
