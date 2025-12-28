@@ -12,4 +12,8 @@ type AdminRepository interface {
 		toSatatus string,
 		adminID int,
 	) error
+
+	InsertTransaksiFromPesanan(
+		kodePesanan string,
+	) error
 }

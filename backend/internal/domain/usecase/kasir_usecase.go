@@ -54,6 +54,5 @@ func (u *KasirUsecase) TolakPesananCustomer(kodePesanan string, kasirID int) err
 	return u.KasirRepo.UpdatePesananCustomer(
 		kodePesanan,
 		"dibatalkan",
-		kasirID,
 	)
 }

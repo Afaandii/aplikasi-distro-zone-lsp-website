@@ -12,6 +12,5 @@ type KasirRepository interface {
 	UpdatePesananCustomer(
 		kodePesanan string,
 		statusPesanan string,
-		kasirID int,
 	) error
 }
