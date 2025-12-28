@@ -21,12 +21,12 @@ export default function AuthLayout({
                 <img
                   width={231}
                   height={48}
-                  src="/images/goshop.png"
+                  src="/images/distro-zone.png"
                   alt="Logo"
                 />
               </Link>
               <p className="text-center text-gray-400 dark:text-white/60">
-                Welcome to Goshoop E-commerce
+                Welcome to DistroZone Store
               </p>
             </div>
           </div>

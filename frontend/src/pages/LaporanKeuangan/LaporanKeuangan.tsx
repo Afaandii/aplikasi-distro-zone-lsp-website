@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "../../components/form/date-picker";
+import { Link } from "react-router";
 
 type User = {
   id_user: number;
@@ -231,6 +232,9 @@ export default function LaporanKeuangan() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Tanggal
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Aksi
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
@@ -254,6 +258,14 @@ export default function LaporanKeuangan() {
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         {formatDate(trans.created_at)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        <Link
+                          to={`/laporan-keuangan-saya-detail/${trans.id_transaksi}`}
+                          className="inline-flex items-center px-4 py-3 bg-blue-500 hover:bg-yellow-600 text-white rounded mr-2"
+                        >
+                          Detail
+                        </Link>
                       </td>
                     </tr>
                   ))}
