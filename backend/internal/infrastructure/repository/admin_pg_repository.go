@@ -72,3 +72,72 @@ func (r *adminPgRepository) UpdateStatusPesananAdmin(
 
 	return result.Error
 }
+
+func (r *adminPgRepository) InsertTransaksiFromPesanan(
+	kodePesanan string,
+) error {
+
+	tx := r.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	var transaksiID int
+
+	// Insert transaksi
+	err := tx.Raw(`
+		INSERT INTO transaksi (
+			id_user,
+			kode_transaksi,
+			total,
+			metode_pembayaran,
+			status_transaksi,
+			created_at
+		)
+		SELECT
+			p.diverifikasi_oleh,
+			'TRX-' || p.kode_pesanan,
+			p.total_bayar,
+			p.metode_pembayaran,
+			'selesai',
+			NOW()
+		FROM pesanan p
+		WHERE p.kode_pesanan = $1
+		  AND p.diverifikasi_oleh IS NOT NULL
+		RETURNING id_transaksi
+	`, kodePesanan).Scan(&transaksiID).Error
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Insert detail_transaksi
+	err = tx.Exec(`
+		INSERT INTO detail_transaksi (
+			id_transaksi,
+			id_produk,
+			jumlah,
+			harga_satuan,
+			subtotal,
+			created_at
+		)
+		SELECT
+			$1,
+			dp.id_produk,
+			dp.jumlah,
+			dp.harga_satuan,
+			dp.total,
+			NOW()
+		FROM detail_pesanan dp
+		JOIN pesanan p ON p.id_pesanan = dp.id_pesanan
+		WHERE p.kode_pesanan = $2
+	`, transaksiID, kodePesanan).Error
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+}

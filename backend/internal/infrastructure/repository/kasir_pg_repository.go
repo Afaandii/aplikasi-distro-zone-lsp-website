@@ -52,19 +52,17 @@ func (r *kasirPgRepository) UpdateVerifikasiKasir(
 func (r *kasirPgRepository) UpdatePesananCustomer(
 	kodePesanan string,
 	statusPesanan string,
-	kasirID int,
 ) error {
 
 	result := r.db.Exec(`
 		UPDATE pesanan
 		SET status_pesanan = $1,
-		    diverifikasi_oleh = $2,
 				verifikasi_pada = NOW(),
 		    updated_at = NOW()
-		WHERE kode_pesanan = $3
+		WHERE kode_pesanan = $2
 		  AND status_pembayaran = 'paid'
 		  AND status_pesanan IN ('diproses', 'menunggu_verifikasi_kasir')
-	`, statusPesanan, kasirID, kodePesanan)
+	`, statusPesanan, kodePesanan)
 
 	if result.RowsAffected == 0 {
 		return gorm.ErrRecordNotFound

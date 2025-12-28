@@ -45,10 +45,20 @@ func (uc *AdminUsecase) SetPesananDikirim(kode string, adminID int) error {
 }
 
 func (uc *AdminUsecase) SetPesananSelesai(kode string, adminID int) error {
-	return uc.AdminRepo.UpdateStatusPesananAdmin(
+	if err := uc.AdminRepo.UpdateStatusPesananAdmin(
 		kode,
 		"dikirim",
 		"selesai",
 		adminID,
-	)
+	); err != nil {
+		return err
+	}
+
+	if err := uc.AdminRepo.InsertTransaksiFromPesanan(
+		kode,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }
