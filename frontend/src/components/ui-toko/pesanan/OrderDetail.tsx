@@ -5,17 +5,51 @@ import { OrderStatusTracker } from "./OrderSharedComponent";
 import type { Order } from "./OrderSharedData";
 import Footer from "../Footer";
 import { useNavigate } from "react-router";
+import axios from "axios";
 
 interface OrderDetailProps {
   order: Order;
   onBack: () => void;
+  onOrderCancelled?: (orderId: string) => void;
 }
 
-const OrderDetail: React.FC<OrderDetailProps> = ({ order, onBack }) => {
-  const handleAction = (action: string) => {
-    alert(`Action: ${action} untuk pesanan ${order.id}`);
-  };
+const OrderDetail: React.FC<OrderDetailProps> = ({
+  order,
+  onBack,
+  onOrderCancelled,
+}) => {
   const navigate = useNavigate();
+
+  const handleCancelOrder = async () => {
+    if (!window.confirm("Yakin ingin membatalkan pesanan ini?")) return;
+
+    try {
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+      if (!token) {
+        alert("Anda belum login");
+        return;
+      }
+
+      await axios.put(
+        `http://localhost:8080/api/v1/customer/pesanan/tolak/${order.id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (onOrderCancelled) {
+        onOrderCancelled(order.id);
+      }
+
+      alert("Pesanan berhasil dibatalkan");
+      onBack();
+    } catch (err) {
+      console.error("Error canceling order:", err);
+      alert("Gagal membatalkan pesanan. Silakan coba lagi.");
+    }
+  };
 
   return (
     <>
@@ -157,7 +191,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ order, onBack }) => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
             {order.status === "waiting" && (
               <button
-                onClick={() => handleAction("Batalkan Pesanan")}
+                onClick={handleCancelOrder}
                 className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
               >
                 Batalkan Pesanan
@@ -165,7 +199,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ order, onBack }) => {
             )}
             {order.status === "processing" && (
               <button
-                onClick={() => handleAction("Batalkan Pesanan")}
+                onClick={handleCancelOrder}
                 className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
               >
                 Batalkan Pesanan
@@ -174,7 +208,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ order, onBack }) => {
             {order.status === "packing" && (
               <button
                 disabled
-                onClick={() => handleAction("Batalkan Pesanan")}
+                onClick={handleCancelOrder}
                 className="w-full py-3 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed transition-colors font-medium"
               >
                 Batalkan Pesanan
@@ -183,7 +217,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ order, onBack }) => {
             {order.status === "shipping" && (
               <button
                 disabled
-                onClick={() => handleAction("Batalkan Pesanan")}
+                onClick={handleCancelOrder}
                 className="w-full py-3 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed transition-colors font-medium"
               >
                 Batalkan Pesanan

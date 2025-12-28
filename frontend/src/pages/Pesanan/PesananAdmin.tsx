@@ -83,12 +83,19 @@ export default function PesananAdmin() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Update state secara optimis
-      setPesanan((prev) =>
-        prev.map((p) =>
-          p.kode_pesanan === kode ? { ...p, status_pesanan: newStatus } : p
-        )
-      );
+      setPesanan((prev) => {
+        if (
+          (activeTab === "diproses" && newStatus === "diproses") ||
+          (activeTab === "dikemas" && newStatus === "dikemas") ||
+          (activeTab === "dikirim" && newStatus === "dikirim")
+        ) {
+          return prev.map((p) =>
+            p.kode_pesanan === kode ? { ...p, status_pesanan: newStatus } : p
+          );
+        } else {
+          return prev.filter((p) => p.kode_pesanan !== kode);
+        }
+      });
       setSuccessMessage(`Status pesanan berhasil diubah menjadi ${newStatus}`);
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
