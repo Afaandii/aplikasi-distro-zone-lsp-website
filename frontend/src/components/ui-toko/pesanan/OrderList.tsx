@@ -267,6 +267,9 @@ const OrderList: React.FC = () => {
       <OrderDetail
         order={selectedOrder}
         onBack={() => setSelectedOrder(null)}
+        onOrderCancelled={(orderId) => {
+          setOrders((prev) => prev.filter((order) => order.id !== orderId));
+        }}
       />
     );
   }
