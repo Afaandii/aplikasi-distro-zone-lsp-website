@@ -54,6 +54,7 @@ import Checkout from "./components/ui-toko/Checkout";
 import OrderList from "./components/ui-toko/pesanan/OrderList";
 import PesananKasir from "./pages/Pesanan/PesananKasir";
 import PesananAdmin from "./pages/Pesanan/PesananAdmin";
+import LaporanKeuangan from "./pages/LaporanKeuangan/LaporanKeuangan";
 
 export default function App() {
   return (
@@ -148,6 +149,10 @@ export default function App() {
             {/* Setting menu end */}
 
             {/* Transaksi page */}
+            <Route
+              path="/laporan-keuangan-saya"
+              element={<LaporanKeuangan />}
+            />
             <Route
               path="/pesanan"
               element={(() => {

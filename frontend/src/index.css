@@ -17,6 +17,18 @@ layer(base);
   }
 }
 
+/* Default untuk Mobile & Tablet (tidak ada perubahan posisi) */
+.flatpickr-calendar {
+  /* Kosongkan atau biarkan default */
+}
+
+/* Hanya berjalan di Desktop (Layar lebih besar dari 1024px) */
+@media (min-width: 1024px) {
+  .flatpickr-calendar {
+    transform: translateX(100px) !important;
+  }
+}
+
 .animate-fadeSlideDown {
   animation: fadeSlideDown 0.25s ease-out;
 }
