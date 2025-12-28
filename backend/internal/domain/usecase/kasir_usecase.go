@@ -45,3 +45,15 @@ func (u *KasirUsecase) TolakPesanan(kodePesanan string, kasirID int) error {
 		kasirID,
 	)
 }
+
+func (u *KasirUsecase) TolakPesananCustomer(kodePesanan string, kasirID int) error {
+	if kodePesanan == "" {
+		return errors.New("kode pesanan tidak boleh kosong")
+	}
+
+	return u.KasirRepo.UpdatePesananCustomer(
+		kodePesanan,
+		"dibatalkan",
+		kasirID,
+	)
+}

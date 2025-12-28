@@ -9,4 +9,9 @@ type KasirRepository interface {
 		statusPesanan string,
 		kasirID int,
 	) error
+	UpdatePesananCustomer(
+		kodePesanan string,
+		statusPesanan string,
+		kasirID int,
+	) error
 }

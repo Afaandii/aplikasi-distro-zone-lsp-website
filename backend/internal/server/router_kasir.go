@@ -62,4 +62,42 @@ func RegisterKasirRoutes(c *controller.KasirController) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	}))
+
+	http.HandleFunc("/api/v1/customer/pesanan/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+
+		// contoh path:
+		// /api/v1/kasir/pesanan/setujui/ORD-xxx
+		// /api/v1/kasir/pesanan/tolak/ORD-xxx
+
+		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+
+		// minimal: api v1 kasir pesanan {aksi} {kode}
+		if len(parts) < 6 {
+			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		}
+
+		aksi := parts[len(parts)-2]
+		kodePesanan := parts[len(parts)-1]
+
+		if kodePesanan == "" {
+			http.Error(w, "Kode pesanan tidak valid", http.StatusBadRequest)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodPut:
+			switch aksi {
+			case "tolak":
+				c.TolakPesananCustomer(w, r.WithContext(
+					httpctx.ContextWithKode(r, kodePesanan),
+				))
+			default:
+				http.Error(w, "Not Found", http.StatusNotFound)
+			}
+
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	}))
 }

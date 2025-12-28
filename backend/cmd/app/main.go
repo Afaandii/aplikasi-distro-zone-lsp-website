@@ -83,6 +83,9 @@ func main() {
 	kasirRepo := repo.NewKasirPgRepository(db)
 	kasirUc := usecase.NewKasirUsecase(kasirRepo)
 	kasirCtrl := controller.NewKasirController(kasirUc)
+	adminRepo := repo.NewAdminPgRepository(db)
+	adminUc := usecase.NewAdminUsecase(adminRepo)
+	adminCtrl := controller.NewAdminController(adminUc)
 	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo, DetailPesanan: detailPesananRepo}
 	checkoutCtrl := &controller.CheckoutController{PembayaranUC: pembayaranUc}
 	callbackCtrl := &controller.MidtransCallbackController{PesananRepo: pesananRepo}
@@ -101,6 +104,7 @@ func main() {
 	server.RegisterPesananRoutes(pesananCtrl)
 	server.RegisterPembayaranRoutes(checkoutCtrl, callbackCtrl)
 	server.RegisterKasirRoutes(kasirCtrl)
+	server.RegisterAdminRoutes(adminCtrl)
 
 	port := os.Getenv("PORT")
 	handleCors := config.CorsMiddleware(http.DefaultServeMux)

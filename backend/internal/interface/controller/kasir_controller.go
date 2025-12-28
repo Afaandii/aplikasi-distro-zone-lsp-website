@@ -8,8 +8,6 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/httpctx"
 	"aplikasi-distro-zone-lsp-website/pkg/jwt"
 	"aplikasi-distro-zone-lsp-website/pkg/middleware"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type KasirController struct {
@@ -32,7 +30,6 @@ func (c *KasirController) GetPesananMenungguVerifikasi(w http.ResponseWriter, r 
 	json.NewEncoder(w).Encode(data)
 }
 
-// PUT /api/kasir/pesanan/{kode}/setujui
 func (c *KasirController) SetujuiPesanan(w http.ResponseWriter, r *http.Request) {
 	kode := httpctx.GetKodePesanan(r)
 
@@ -53,9 +50,8 @@ func (c *KasirController) SetujuiPesanan(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusOK)
 }
 
-// PUT /api/kasir/pesanan/{kode}/tolak
 func (c *KasirController) TolakPesanan(w http.ResponseWriter, r *http.Request) {
-	kode := chi.URLParam(r, "kode")
+	kode := httpctx.GetKodePesanan(r)
 
 	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
 	if !ok {
@@ -66,6 +62,25 @@ func (c *KasirController) TolakPesanan(w http.ResponseWriter, r *http.Request) {
 	kasirID := claims.UserID
 
 	if err := c.UC.TolakPesanan(kode, kasirID); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (c *KasirController) TolakPesananCustomer(w http.ResponseWriter, r *http.Request) {
+	kode := httpctx.GetKodePesanan(r)
+
+	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	kasirID := claims.UserID
+
+	if err := c.UC.TolakPesananCustomer(kode, kasirID); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
