@@ -2,6 +2,7 @@ package repository
 
 import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -42,4 +43,35 @@ func (r *reportKasirPgRepository) FindTransaksiByKasirAndPeriode(
 		Find(&transaksi).Error
 
 	return transaksi, err
+}
+
+func (r *reportKasirPgRepository) FindDetailTransaksiByID(
+	transaksiID int,
+	kasirID int,
+) (*entities.Transaksi, []entities.DetailTransaksi, error) {
+
+	// 1️⃣ Ambil header transaksi + relasi User (opsional tapi bagus)
+	var transaksi entities.Transaksi
+	err := r.db.Preload("User").
+		Where("id_transaksi = ? AND id_user = ? AND status_transaksi = 'selesai'", transaksiID, kasirID).
+		First(&transaksi).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil, errors.New("transaksi tidak ditemukan atau bukan milik Anda")
+		}
+		return nil, nil, err
+	}
+
+	// 2️⃣ Ambil detail transaksi dengan Preload Produk
+	var items []entities.DetailTransaksi
+	err = r.db.Preload("Produk").Preload("Transaksi").Preload("Transaksi.User").
+		Where("id_transaksi = ?", transaksiID).
+		Find(&items).Error
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return &transaksi, items, nil
 }

@@ -9,4 +9,8 @@ type ReportKasirRepository interface {
 		startDate string,
 		endDate string,
 	) ([]entities.Transaksi, error)
+	FindDetailTransaksiByID(
+		transaksiID int,
+		kasirID int,
+	) (*entities.Transaksi, []entities.DetailTransaksi, error)
 }

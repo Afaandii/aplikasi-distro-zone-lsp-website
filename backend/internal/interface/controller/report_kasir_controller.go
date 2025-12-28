@@ -6,6 +6,8 @@ import (
 	"aplikasi-distro-zone-lsp-website/pkg/jwt"
 	"aplikasi-distro-zone-lsp-website/pkg/middleware"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type ReportKasirController struct {
@@ -63,4 +65,37 @@ func (c *ReportKasirController) FindLaporanByKasirAndPeriode(w http.ResponseWrit
 	}
 
 	response.WriteJSON(w, http.StatusOK, data)
+}
+
+func (c *ReportKasirController) FindDetailLaporanByID(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+	if len(parts) < 5 || parts[len(parts)-1] == "" {
+		response.WriteJSON(w, http.StatusBadRequest, "ID transaksi diperlukan")
+		return
+	}
+
+	idStr := parts[len(parts)-1]
+	transaksiID, err := strconv.Atoi(idStr)
+	if err != nil {
+		response.WriteJSON(w, http.StatusBadRequest, "ID transaksi tidak valid")
+		return
+	}
+
+	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		response.WriteJSON(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	kasirID := claims.UserID
+
+	transaksi, items, err := c.Usecase.FindDetailLaporanByTransaksiID(transaksiID, kasirID)
+	if err != nil {
+		response.WriteJSON(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	response.WriteJSON(w, http.StatusOK, map[string]interface{}{
+		"transaksi": transaksi,
+		"items":     items,
+	})
 }

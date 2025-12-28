@@ -40,4 +40,22 @@ func RegisterKasirReportRoutes(c *controller.ReportKasirController) {
 			c.FindLaporanByKasirAndPeriode(w, r, startDate, endDate)
 		}),
 	)
+
+	http.HandleFunc("/api/v1/kasir/laporan/detail/",
+		middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+
+			if r.Method != http.MethodGet {
+				w.WriteHeader(http.StatusMethodNotAllowed)
+				return
+			}
+
+			parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+			if len(parts) < 6 {
+				http.Error(w, "Not Found", http.StatusNotFound)
+				return
+			}
+
+			c.FindDetailLaporanByID(w, r)
+		}),
+	)
 }

@@ -3,6 +3,7 @@ package usecase
 import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
+	"errors"
 )
 
 type ReportKasirUsecase struct {
@@ -31,4 +32,23 @@ func (uc *ReportKasirUsecase) FindTransaksiByKasirAndPeriode(
 		startDate,
 		endDate,
 	)
+}
+
+func (uc *ReportKasirUsecase) FindDetailLaporanByTransaksiID(
+	transaksiID int,
+	kasirID int,
+) (*entities.Transaksi, []entities.DetailTransaksi, error) {
+
+	transaksi, items, err :=
+		uc.Repo.FindDetailTransaksiByID(transaksiID, kasirID)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if transaksi == nil {
+		return nil, nil, errors.New("transaksi tidak ditemukan")
+	}
+
+	return transaksi, items, nil
 }
