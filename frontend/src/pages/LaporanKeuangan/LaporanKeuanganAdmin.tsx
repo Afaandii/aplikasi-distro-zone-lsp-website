@@ -87,13 +87,19 @@ export default function LaporanKeuanganAdmin() {
   // Format tanggal ke "DD MMM YYYY HH:mm"
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
-    return date.toLocaleString("id-ID", {
+    const options: Intl.DateTimeFormatOptions = {
       day: "2-digit",
       month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    });
+      hour12: false,
+    };
+
+    let formatted = date.toLocaleString("id-ID", options);
+    formatted = formatted.replace(/(\d{2})\.(\d{2})$/, "$1:$2");
+
+    return formatted;
   };
 
   // Format Rupiah
@@ -133,9 +139,7 @@ export default function LaporanKeuanganAdmin() {
       {/* Header Section */}
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 ">
-          <h1 className="text-2xl font-bold text-white">
-            Laporan Keuangan Admin
-          </h1>
+          <h1 className="text-2xl font-bold text-white">Laporan Keuangan</h1>
         </div>
       </section>
 
@@ -190,7 +194,7 @@ export default function LaporanKeuanganAdmin() {
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
           <h3 className="text-lg font-semibold text-white">
-            Daftar Laporan Keuangan Admin
+            DataTable Laporan Keuangan
           </h3>
         </div>
 
@@ -216,10 +220,10 @@ export default function LaporanKeuanganAdmin() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       No
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-14 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Nama Kasir
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-28 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Kode Transaksi
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -231,7 +235,7 @@ export default function LaporanKeuanganAdmin() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Status Transaksi
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-14 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Tanggal
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">

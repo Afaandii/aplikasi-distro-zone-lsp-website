@@ -87,13 +87,19 @@ export default function LaporanKeuanganKasir() {
   // Format tanggal ke "DD MMM YYYY HH:mm"
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
-    return date.toLocaleString("id-ID", {
+    const options: Intl.DateTimeFormatOptions = {
       day: "2-digit",
       month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    });
+      hour12: false,
+    };
+
+    let formatted = date.toLocaleString("id-ID", options);
+    formatted = formatted.replace(/(\d{2})\.(\d{2})$/, "$1:$2");
+
+    return formatted;
   };
 
   // Format Rupiah
@@ -134,7 +140,7 @@ export default function LaporanKeuanganKasir() {
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 ">
           <h1 className="text-2xl font-bold text-white">
-            Laporan Keuangan Kasir
+            Laporan Keuangan Saya
           </h1>
         </div>
       </section>
@@ -190,7 +196,7 @@ export default function LaporanKeuanganKasir() {
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
           <h3 className="text-lg font-semibold text-white">
-            Daftar Laporan Keuangan
+            DataTable Laporan Keuangan Saya
           </h3>
         </div>
 
@@ -216,10 +222,7 @@ export default function LaporanKeuanganKasir() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       No
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Nama Kasir
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-28 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Kode Transaksi
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -231,8 +234,8 @@ export default function LaporanKeuanganKasir() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Status Transaksi
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Tanggal
+                    <th className="px-14 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Tanggal Transaksi
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Aksi
@@ -243,9 +246,6 @@ export default function LaporanKeuanganKasir() {
                   {transaksi.map((trans, index) => (
                     <tr key={trans.id_transaksi} className="hover:bg-gray-700">
                       <td className="px-4 py-3 text-white">{index + 1}</td>
-                      <td className="px-4 py-3 text-white">
-                        {trans.User?.nama || "-"}
-                      </td>
                       <td className="px-4 py-3 text-gray-300">
                         {trans.kode_transaksi || "-"}
                       </td>

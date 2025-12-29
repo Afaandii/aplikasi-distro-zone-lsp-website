@@ -86,9 +86,7 @@ export default function LaporanRugiLaba() {
       {/* Header Section */}
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 rounded-t-lg">
-          <h1 className="text-2xl font-bold text-white">
-            Laporan Rugi Laba Admin
-          </h1>
+          <h1 className="text-2xl font-bold text-white">Laporan Rugi Laba</h1>
         </div>
       </section>
 

@@ -107,13 +107,19 @@ export default function DetailLaporanKeuanganAdmin() {
   // Format tanggal
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
-    return date.toLocaleString("id-ID", {
+    const options: Intl.DateTimeFormatOptions = {
       day: "2-digit",
       month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    });
+      hour12: false,
+    };
+
+    let formatted = date.toLocaleString("id-ID", options);
+    formatted = formatted.replace(/(\d{2})\.(\d{2})$/, "$1:$2");
+
+    return formatted;
   };
 
   return (
@@ -129,7 +135,9 @@ export default function DetailLaporanKeuanganAdmin() {
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
-          <h3 className="text-lg font-semibold text-white">Detail Transaksi</h3>
+          <h3 className="text-lg font-semibold text-white">
+            DataTable Detail Laporan Keuangan Transaksi
+          </h3>
         </div>
 
         <div className="p-4">
@@ -164,13 +172,13 @@ export default function DetailLaporanKeuanganAdmin() {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         No
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-24 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Kode Transaksi
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-28 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Nama Produk
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-14 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Nama Kasir
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -191,7 +199,7 @@ export default function DetailLaporanKeuanganAdmin() {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Status Pembayaran
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      <th className="px-14 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         Tanggal Transaksi
                       </th>
                     </tr>
