@@ -54,8 +54,11 @@ import Checkout from "./components/ui-toko/Checkout";
 import OrderList from "./components/ui-toko/pesanan/OrderList";
 import PesananKasir from "./pages/Pesanan/PesananKasir";
 import PesananAdmin from "./pages/Pesanan/PesananAdmin";
-import LaporanKeuangan from "./pages/LaporanKeuangan/LaporanKeuangan";
-import DetailLaporanKeuangan from "./pages/LaporanKeuangan/DetailLaporanKeuangan";
+import DetailLaporanKeuanganKasir from "./pages/LaporanKeuangan/DetailLaporanKeuanganKasir";
+import LaporanKeuanganKasir from "./pages/LaporanKeuangan/LaporanKeuanganKasir";
+import LaporanKeuanganAdmin from "./pages/LaporanKeuangan/LaporanKeuanganAdmin";
+import DetailLaporanKeuanganAdmin from "./pages/LaporanKeuangan/DetailLaporanKeuanganAdmin";
+import LaporanRugiLaba from "./pages/LaporanKeuangan/LaporanRugiLaba";
 
 export default function App() {
   return (
@@ -151,14 +154,6 @@ export default function App() {
 
             {/* Transaksi page */}
             <Route
-              path="/laporan-keuangan-saya"
-              element={<LaporanKeuangan />}
-            />
-            <Route
-              path="/laporan-keuangan-saya-detail/:id_transaksi"
-              element={<DetailLaporanKeuangan />}
-            />
-            <Route
               path="/pesanan"
               element={(() => {
                 const userData =
@@ -187,6 +182,26 @@ export default function App() {
                 return <Navigate to="/" replace />;
               })()}
             />
+            {/* Transaksi End Page */}
+            {/* Laporan Page */}
+            <Route
+              path="/laporan-keuangan-saya"
+              element={<LaporanKeuanganKasir />}
+            />
+            <Route
+              path="/laporan-keuangan-saya-detail/:id_transaksi"
+              element={<DetailLaporanKeuanganKasir />}
+            />
+            <Route
+              path="/laporan-transaksi-keuangan"
+              element={<LaporanKeuanganAdmin />}
+            />
+            <Route
+              path="/laporan-transaksi-keuangan-detail/:id_transaksi"
+              element={<DetailLaporanKeuanganAdmin />}
+            />
+            <Route path="/laporan-rugi-laba" element={<LaporanRugiLaba />} />
+            {/* Laporan end page */}
           </Route>
           <Route>
             <Route path="/user-profile" element={<UserInfoCard />} />

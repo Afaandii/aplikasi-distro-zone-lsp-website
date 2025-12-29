@@ -44,7 +44,7 @@ type ResponseData = {
   items: DetailTransaksi[];
 };
 
-export default function DetailLaporanKeuangan() {
+export default function DetailLaporanKeuanganKasir() {
   const [detailTransaction, setDetailTransaction] = useState<DetailTransaksi[]>(
     []
   );

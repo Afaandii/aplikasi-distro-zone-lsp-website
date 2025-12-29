@@ -114,8 +114,8 @@ const navItems: NavItem[] = [
         roles: ["kasir"],
       },
       {
-        name: "Laporan Transaksi",
-        path: "/laporan-transaksi",
+        name: "Laporan Transaksi Keuangan",
+        path: "/laporan-transaksi-keuangan",
         pro: false,
         roles: ["admin"],
       },
@@ -230,12 +230,12 @@ const AppSidebar: React.FC = () => {
       }
       // Setting menu end
 
-      // Laporan Logic
+      // Laporan
       if (path === "/laporan-keuangan-saya") {
         return location.pathname.startsWith("/laporan-keuangan-saya");
       }
-      if (path === "/laporan-transaksi") {
-        return location.pathname.startsWith("/laporan-transaksi");
+      if (path === "/laporan-transaksi-keuangan") {
+        return location.pathname.startsWith("/laporan-transaksi-keuangan");
       }
       if (path === "/laporan-rugi-laba") {
         return location.pathname.startsWith("/laporan-rugi-laba");

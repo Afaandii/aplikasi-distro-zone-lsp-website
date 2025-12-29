@@ -20,7 +20,7 @@ type Transaksi = {
   User?: User;
 };
 
-export default function LaporanKeuangan() {
+export default function LaporanKeuanganAdmin() {
   const [transaksi, setTransaksi] = useState<Transaksi[]>([]);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
@@ -40,7 +40,7 @@ export default function LaporanKeuangan() {
       }
 
       const res = await axios.get(
-        "http://localhost:8080/api/v1/kasir/laporan",
+        "http://localhost:8080/api/v1/admin/laporan-transaksi",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ export default function LaporanKeuangan() {
     try {
       const token = getToken();
       const res = await axios.get(
-        `http://localhost:8080/api/v1/kasir/laporan/${startDate}/${endDate}`,
+        `http://localhost:8080/api/v1/admin/laporan-transaksi/${startDate}/${endDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -134,7 +134,7 @@ export default function LaporanKeuangan() {
       <section className="mb-6">
         <div className="flex items-center justify-between p-3 ">
           <h1 className="text-2xl font-bold text-white">
-            Laporan Transaksi Kasir
+            Laporan Keuangan Admin
           </h1>
         </div>
       </section>
@@ -189,7 +189,9 @@ export default function LaporanKeuangan() {
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
-          <h3 className="text-lg font-semibold text-white">Daftar Transaksi</h3>
+          <h3 className="text-lg font-semibold text-white">
+            Daftar Laporan Keuangan Admin
+          </h3>
         </div>
 
         <div className="p-4">
@@ -261,7 +263,7 @@ export default function LaporanKeuangan() {
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         <Link
-                          to={`/laporan-keuangan-saya-detail/${trans.id_transaksi}`}
+                          to={`/laporan-transaksi-keuangan-detail/${trans.id_transaksi}`}
                           className="inline-flex items-center px-4 py-3 bg-blue-500 hover:bg-yellow-600 text-white rounded mr-2"
                         >
                           Detail
