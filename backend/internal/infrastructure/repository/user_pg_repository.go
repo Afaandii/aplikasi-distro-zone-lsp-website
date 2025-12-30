@@ -133,3 +133,27 @@ func (r *userPGRepository) UpdateAddress(
 
 	return &user, nil
 }
+
+func (r *userPGRepository) GetTransaksiByUser(idUser int) ([]entities.Transaksi, error) {
+	var transaksi []entities.Transaksi
+
+	err := r.db.
+		Preload("Customer").Preload("DetailTransaksi").Preload("DetailTransaksi.Produk").
+		Where("id_customer = ?", idUser).
+		Order("created_at DESC").
+		Find(&transaksi).Error
+
+	return transaksi, err
+}
+
+func (r *userPGRepository) GetPesananByUser(idUser int) ([]entities.Pesanan, error) {
+	var pesanan []entities.Pesanan
+
+	err := r.db.
+		Preload("Pemesan").Preload("DetailPesanan").Preload("DetailPesanan.Produk").
+		Where("id_pemesan = ?", idUser).
+		Order("created_at DESC").
+		Find(&pesanan).Error
+
+	return pesanan, err
+}

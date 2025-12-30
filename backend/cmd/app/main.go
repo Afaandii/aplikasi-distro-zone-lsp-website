@@ -40,6 +40,8 @@ func main() {
 	db.AutoMigrate(&entities.Transaksi{})
 	db.AutoMigrate(&entities.DetailTransaksi{})
 	db.AutoMigrate(&entities.Pembayaran{})
+	db.AutoMigrate(&entities.Komplain{})
+	db.AutoMigrate(&entities.Refund{})
 	supabase.InitStorage()
 
 	roleRepo := repo.NewRolePGRepository(db)
@@ -92,6 +94,13 @@ func main() {
 	reportAdminRepo := repo.NewReportAdminPgRepository(db)
 	reportAdminUc := usecase.NewReportAdminUsecase(reportAdminRepo)
 	reportAdminCtrl := controller.NewReportAdminController(reportAdminUc)
+	komplainRepo := repo.NewKomplainPgRepository(db)
+	komplainUc := usecase.NewKomplainUsecase(komplainRepo)
+	komplainCtrl := controller.NewKomplainController(komplainUc)
+	refundRepo := repo.NewRefundPgRepository(db)
+	paymentGateway := midtrans.NewPaymentGateway()
+	refundUc := usecase.NewRefundUsecase(refundRepo, paymentGateway)
+	refundCtrl := controller.NewRefundController(refundUc)
 	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo, DetailPesanan: detailPesananRepo}
 	checkoutCtrl := &controller.CheckoutController{PembayaranUC: pembayaranUc}
 	callbackCtrl := &controller.MidtransCallbackController{PesananRepo: pesananRepo}
@@ -113,6 +122,8 @@ func main() {
 	server.RegisterAdminRoutes(adminCtrl)
 	server.RegisterKasirReportRoutes(reportKasirCtrl)
 	server.RegisterAdminReportRoutes(reportAdminCtrl)
+	server.RegisterKomplainRoutes(komplainCtrl)
+	server.RegisterRefundRoutes(refundCtrl)
 
 	port := os.Getenv("PORT")
 	handleCors := config.CorsMiddleware(http.DefaultServeMux)

@@ -26,6 +26,7 @@ type Pesanan struct {
 
 	Pembayaran    []Pembayaran    `gorm:"foreignKey:PesananRef;references:IDPesanan"`
 	DetailPesanan []DetailPesanan `gorm:"foreignKey:PesananRef;references:IDPesanan"`
+	Komplain      []Komplain      `gorm:"foreignKey:PesananRef;references:IDPesanan"`
 }
 
 func (Pesanan) TableName() string {
