@@ -335,3 +335,41 @@ func (c *UserController) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 
 	helper.WriteJSON(w, http.StatusOK, user)
 }
+
+func (c *UserController) GetTransaksiByUser(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		helper.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return
+	}
+
+	userID := claims.UserID
+
+	// Panggil usecase untuk mendapatkan transaksi berdasarkan user ID
+	transaksi, err := c.UC.GetTransaksiByUser(userID)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, transaksi)
+}
+
+func (c *UserController) GetPesananByUser(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		helper.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return
+	}
+
+	userID := claims.UserID
+
+	// Panggil usecase untuk mendapatkan pesanan berdasarkan user ID
+	pesanan, err := c.UC.GetPesananByUser(userID)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, pesanan)
+}

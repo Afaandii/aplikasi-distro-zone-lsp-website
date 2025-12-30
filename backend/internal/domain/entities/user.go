@@ -21,12 +21,15 @@ type User struct {
 	// Relasi dengan constraint
 	Role Role `gorm:"foreignKey:RoleRef;references:IDRole;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 
-	Transaksi           []Transaksi  `gorm:"foreignKey:UserRef;references:IDUser"`
+	Customer            []Transaksi  `gorm:"foreignKey:CustomerRef;references:IDUser"`
+	Kasir               []Transaksi  `gorm:"foreignKey:KasirRef;references:IDUser"`
 	PesananDibuat       []Pesanan    `gorm:"foreignKey:PemesanRef;references:IDUser"`
 	PesananDiverifikasi []Pesanan    `gorm:"foreignKey:DiverifikasiRef;references:IDUser"`
 	Pembayaran          []Pembayaran `gorm:"foreignKey:UserRef;references:IDUser"`
 	Pengirim            []ChatCS     `gorm:"foreignKey:IDPengirim;references:IDUser"`
 	Penerima            []ChatCS     `gorm:"foreignKey:IDPenerima;references:IDUser"`
+	Komplain            []Komplain   `gorm:"foreignKey:UserRef;references:IDUser"`
+	Refund              []Refund     `gorm:"foreignKey:UserRef;references:IDUser"`
 }
 
 func (User) TableName() string {

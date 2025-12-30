@@ -21,6 +21,8 @@ type UserUsecase interface {
 	Login(username, password string) (*entities.User, string, error)
 	Register(nama string, username string, password string, no_telp string) (*entities.User, error)
 	UpdateAddress(idUser int, alamat string, kota string) (*entities.User, error)
+	GetTransaksiByUser(idUser int) ([]entities.Transaksi, error)
+	GetPesananByUser(idUser int) ([]entities.Pesanan, error)
 }
 
 type userUsecase struct {
@@ -216,4 +218,12 @@ func (u *userUsecase) UpdateAddress(
 	}
 
 	return u.repo.UpdateAddress(idUser, alamat, kota)
+}
+
+func (u *userUsecase) GetTransaksiByUser(idUser int) ([]entities.Transaksi, error) {
+	return u.repo.GetTransaksiByUser(idUser)
+}
+
+func (u *userUsecase) GetPesananByUser(idUser int) ([]entities.Pesanan, error) {
+	return u.repo.GetPesananByUser(idUser)
 }

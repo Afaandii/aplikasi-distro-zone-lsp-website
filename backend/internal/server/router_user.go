@@ -86,4 +86,24 @@ func RegisterUserRoutes(c *controller.UserController) {
 		}
 		c.UpdateAddress(w, r)
 	}))
+
+	http.HandleFunc("/api/v1/user/transaksi",
+		middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet {
+				w.WriteHeader(http.StatusMethodNotAllowed)
+				return
+			}
+			c.GetTransaksiByUser(w, r)
+		}),
+	)
+
+	http.HandleFunc("/api/v1/user/pesanan",
+		middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet {
+				w.WriteHeader(http.StatusMethodNotAllowed)
+				return
+			}
+			c.GetPesananByUser(w, r)
+		}),
+	)
 }
