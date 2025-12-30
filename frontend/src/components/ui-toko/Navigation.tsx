@@ -116,7 +116,7 @@ export default function Navigation() {
             </div>
             <div className="flex items-center gap-6 ">
               <a href="/about-us">Tentang DistroZone</a>
-              <a href="/about-us">Customer Service</a>
+              <a href="/customer-service-page">Customer Service</a>
             </div>
           </div>
         </div>

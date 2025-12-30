@@ -59,6 +59,9 @@ import LaporanKeuanganKasir from "./pages/LaporanKeuangan/LaporanKeuanganKasir";
 import LaporanKeuanganAdmin from "./pages/LaporanKeuangan/LaporanKeuanganAdmin";
 import DetailLaporanKeuanganAdmin from "./pages/LaporanKeuangan/DetailLaporanKeuanganAdmin";
 import LaporanRugiLaba from "./pages/LaporanKeuangan/LaporanRugiLaba";
+import CustomerService from "./components/ui-toko/customer-service/CustomerService";
+import AjukanRefund from "./components/ui-toko/customer-service/AjukanRefund";
+import AjukanKomplain from "./components/ui-toko/customer-service/AjukanKomplain";
 
 export default function App() {
   return (
@@ -220,6 +223,9 @@ export default function App() {
           <Route path="/kontak-kami" element={<ContactPage />} />
           <Route path="/about-us" element={<AboutSection />} />
           <Route path="/checkout-produk-page" element={<Checkout />} />
+          <Route path="/customer-service-page" element={<CustomerService />} />
+          <Route path="/refund" element={<AjukanRefund />} />
+          <Route path="/complaint" element={<AjukanKomplain />} />
           {/* Route halaman toko end */}
 
           {/* Fallback Route If Not Found Page */}
