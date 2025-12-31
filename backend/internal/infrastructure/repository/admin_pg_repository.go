@@ -87,7 +87,8 @@ func (r *adminPgRepository) InsertTransaksiFromPesanan(
 	// Insert transaksi
 	err := tx.Raw(`
 		INSERT INTO transaksi (
-			id_user,
+			id_customer,
+			id_kasir,
 			kode_transaksi,
 			total,
 			metode_pembayaran,
@@ -95,6 +96,7 @@ func (r *adminPgRepository) InsertTransaksiFromPesanan(
 			created_at
 		)
 		SELECT
+			p.id_pemesan,
 			p.diverifikasi_oleh,
 			'TRX-' || p.kode_pesanan,
 			p.total_bayar,

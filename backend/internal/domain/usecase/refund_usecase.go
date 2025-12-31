@@ -6,6 +6,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/pkg/service"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -21,9 +22,23 @@ func NewRefundUsecase(repo repository.RefundRepository, payment service.PaymentG
 	}
 }
 
-// CUSTOMER
+//
+// ================= CUSTOMER =================
+//
+
 func (u *RefundUsecase) CreateRefund(refund *entities.Refund) error {
 	refund.Status = "PENDING"
+
+	kode, total, err := u.RefundRepo.GetTransaksiInfo(refund.TransaksiRef)
+	if err != nil {
+		return errors.New("transaksi tidak ditemukan")
+	}
+
+	kode = strings.TrimPrefix(kode, "TRX-")
+
+	refund.MidtransOrderID = kode
+	refund.RefundAmount = int64(total)
+
 	return u.RefundRepo.Create(refund)
 }
 
@@ -31,49 +46,28 @@ func (u *RefundUsecase) GetRefundByUser(userID uint) ([]entities.Refund, error) 
 	return u.RefundRepo.FindByUser(userID)
 }
 
-// ADMIN
+//
+// ================= ADMIN =================
+//
+
 func (u *RefundUsecase) GetAllRefunds() ([]entities.Refund, error) {
 	return u.RefundRepo.FindAll()
 }
 
-func (u *RefundUsecase) ProcessRefund(id uint, status string, note *string) error {
+func (u *RefundUsecase) GetRefundDetail(id uint) (*entities.Refund, error) {
+	return u.RefundRepo.FindByID(id)
+}
+
+func (u *RefundUsecase) ApproveRefund(id uint, adminNote string) error {
 	refund, err := u.RefundRepo.FindByID(id)
 	if err != nil {
 		return err
 	}
 
+	fmt.Printf("🔍 Refunding MidtransOrderID: %s\n", refund.MidtransOrderID)
+
 	if refund.Status != "PENDING" {
-		return errors.New("refund already processed")
-	}
-
-	refund.Status = status
-	refund.AdminNote = note
-
-	return u.RefundRepo.Update(refund)
-}
-
-func (u *RefundUsecase) RequestRefund(
-	userID uint,
-	transaksi entities.Transaksi,
-	reason string,
-) error {
-
-	refund := &entities.Refund{
-		UserRef:         userID,
-		TransaksiRef:    uint(transaksi.IDTransaksi),
-		Reason:          reason,
-		Status:          "PENDING",
-		MidtransOrderID: transaksi.KodeTransaksi,
-		RefundAmount:    int64(transaksi.Total),
-	}
-
-	return u.RefundRepo.Create(refund)
-}
-
-func (u *RefundUsecase) ApproveRefund(refundID uint, adminNote string) error {
-	refund, err := u.RefundRepo.FindByID(refundID)
-	if err != nil {
-		return err
+		return errors.New("refund sudah diproses")
 	}
 
 	refundKey := fmt.Sprintf("refund-%d", time.Now().Unix())
@@ -90,6 +84,22 @@ func (u *RefundUsecase) ApproveRefund(refundID uint, adminNote string) error {
 	refund.Status = "APPROVED"
 	refund.AdminNote = &adminNote
 	refund.RefundKey = &refundKey
+
+	return u.RefundRepo.Update(refund)
+}
+
+func (u *RefundUsecase) RejectRefund(id uint, adminNote string) error {
+	refund, err := u.RefundRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if refund.Status != "PENDING" {
+		return errors.New("refund sudah diproses")
+	}
+
+	refund.Status = "REJECTED"
+	refund.AdminNote = &adminNote
 
 	return u.RefundRepo.Update(refund)
 }

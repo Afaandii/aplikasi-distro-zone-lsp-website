@@ -9,6 +9,9 @@ type PesananRepository interface {
 	Update(p *entities.Pesanan) error
 	Delete(idPesanan int) error
 
+	// find by kode (kode_pesanan / order id string)
+	FindByKode(kodePesanan string) (*entities.Pesanan, error)
+
 	UpdateStatusByKode(
 		kodePesanan string,
 		statusPembayaran string,

@@ -7,8 +7,10 @@ import (
 	"aplikasi-distro-zone-lsp-website/pkg/jwt"
 	"aplikasi-distro-zone-lsp-website/pkg/middleware"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type RefundController struct {
@@ -19,15 +21,26 @@ func NewRefundController(u *usecase.RefundUsecase) *RefundController {
 	return &RefundController{Usecase: u}
 }
 
-// CUSTOMER
-func (c *RefundController) CreateRefund(w http.ResponseWriter, r *http.Request) {
-	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
-	if !ok {
-		helper.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
-		return
+// helper
+func getIDFromPath(r *http.Request) (uint, error) {
+	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+	if len(parts) == 0 {
+		return 0, fmt.Errorf("invalid path")
 	}
+	idStr := parts[len(parts)-1]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return 0, err
+	}
+	return uint(id), nil
+}
 
-	userID := claims.UserID
+//
+// =============== CUSTOMER =================
+//
+
+func (c *RefundController) CreateRefund(w http.ResponseWriter, r *http.Request) {
+	claims := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
 
 	var req struct {
 		IDTransaksi uint   `json:"id_transaksi"`
@@ -36,60 +49,98 @@ func (c *RefundController) CreateRefund(w http.ResponseWriter, r *http.Request) 
 
 	json.NewDecoder(r.Body).Decode(&req)
 
-	if req.IDTransaksi == 0 {
-		http.Error(w, "ID transaksi wajib diisi", http.StatusBadRequest)
-		return
-	}
-
 	refund := &entities.Refund{
+		UserRef:      uint(claims.UserID),
 		TransaksiRef: req.IDTransaksi,
-		UserRef:      uint(userID),
 		Reason:       req.Reason,
 	}
 
 	err := c.Usecase.CreateRefund(refund)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
-	json.NewEncoder(w).Encode(refund)
+	helper.WriteJSON(w, http.StatusCreated, refund)
 }
 
 func (c *RefundController) GetMyRefunds(w http.ResponseWriter, r *http.Request) {
-	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
-	if !ok {
-		helper.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
-		return
-	}
-
-	userID := claims.UserID
-	data, _ := c.Usecase.GetRefundByUser(uint(userID))
-	json.NewEncoder(w).Encode(data)
+	claims := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	data, _ := c.Usecase.GetRefundByUser(uint(claims.UserID))
+	helper.WriteJSON(w, http.StatusOK, data)
 }
 
-// ADMIN
+//
+// ================= ADMIN =================
+//
+
 func (c *RefundController) GetAllRefunds(w http.ResponseWriter, r *http.Request) {
 	data, _ := c.Usecase.GetAllRefunds()
-	json.NewEncoder(w).Encode(data)
+	helper.WriteJSON(w, http.StatusOK, data)
 }
 
-func (c *RefundController) ProcessRefund(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Query().Get("id")
-	id, _ := strconv.Atoi(idStr)
-
-	var req struct {
-		Status    string  `json:"status"`
-		AdminNote *string `json:"admin_note"`
-	}
-
-	json.NewDecoder(r.Body).Decode(&req)
-
-	err := c.Usecase.ProcessRefund(uint(id), req.Status, req.AdminNote)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+func (c *RefundController) GetRefundDetail(w http.ResponseWriter, r *http.Request) {
+	_, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	w.Write([]byte(`{"message":"refund processed"}`))
+	refundID, err := getIDFromPath(r)
+	if err != nil {
+		http.Error(w, "invalid refund id", http.StatusBadRequest)
+		return
+	}
+
+	data, err := c.Usecase.GetRefundDetail(refundID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(data)
+}
+
+func (c *RefundController) ApproveRefund(w http.ResponseWriter, r *http.Request) {
+	_, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	refundID, err := getIDFromPath(r)
+	if err != nil {
+		http.Error(w, "invalid refund id", http.StatusBadRequest)
+		return
+	}
+
+	var req struct {
+		AdminNote string `json:"admin_note"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	err = c.Usecase.ApproveRefund(refundID, req.AdminNote)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "refund approved"})
+}
+
+func (c *RefundController) RejectRefund(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+
+	var req struct {
+		AdminNote string `json:"admin_note"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	err := c.Usecase.RejectRefund(uint(id), req.AdminNote)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "refund rejected"})
 }
