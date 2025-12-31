@@ -50,6 +50,18 @@ const navItems: NavItem[] = [
         pro: false,
         roles: ["admin", "kasir"],
       },
+      {
+        name: "Refund",
+        path: "/refund",
+        pro: false,
+        roles: ["admin"],
+      },
+      {
+        name: "Komplain",
+        path: "/komplain",
+        pro: false,
+        roles: ["admin"],
+      },
     ],
   },
   {
@@ -254,6 +266,12 @@ const AppSidebar: React.FC = () => {
           location.pathname.startsWith("/detail-transaksi") ||
           location.pathname.startsWith("/edit-detail-transaksi") ||
           location.pathname.startsWith("/create-detail-transaksi")
+        );
+      }
+      if (path === "/refund") {
+        return (
+          location.pathname.startsWith("/refund") ||
+          location.pathname.startsWith("/detail-refund")
         );
       }
 
