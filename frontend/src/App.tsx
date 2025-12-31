@@ -62,6 +62,8 @@ import LaporanRugiLaba from "./pages/LaporanKeuangan/LaporanRugiLaba";
 import CustomerService from "./components/ui-toko/customer-service/CustomerService";
 import AjukanRefund from "./components/ui-toko/customer-service/AjukanRefund";
 import AjukanKomplain from "./components/ui-toko/customer-service/AjukanKomplain";
+import RefundAdmin from "./pages/CustomerService/RefundAdmin";
+import RefundAdminDetail from "./pages/CustomerService/RefundAdminDetail";
 
 export default function App() {
   return (
@@ -185,6 +187,11 @@ export default function App() {
                 return <Navigate to="/" replace />;
               })()}
             />
+            <Route path="/refund" element={<RefundAdmin />} />
+            <Route
+              path="/detail-refund/:id_refund"
+              element={<RefundAdminDetail />}
+            />
             {/* Transaksi End Page */}
             {/* Laporan Page */}
             <Route
@@ -224,8 +231,8 @@ export default function App() {
           <Route path="/about-us" element={<AboutSection />} />
           <Route path="/checkout-produk-page" element={<Checkout />} />
           <Route path="/customer-service-page" element={<CustomerService />} />
-          <Route path="/refund" element={<AjukanRefund />} />
-          <Route path="/complaint" element={<AjukanKomplain />} />
+          <Route path="/refund-form" element={<AjukanRefund />} />
+          <Route path="/complaint-form" element={<AjukanKomplain />} />
           {/* Route halaman toko end */}
 
           {/* Fallback Route If Not Found Page */}

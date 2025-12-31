@@ -54,14 +54,14 @@ const CustomerService = () => {
       title: "Ajukan Komplain",
       description: "Laporkan masalah dengan pesanan Anda",
       action: "Buat Komplain",
-      link: "/complaint",
+      link: "/complaint-form",
     },
     {
       icon: <FaUndo className="text-3xl text-red-600" />,
       title: "Pembatalan / Refund",
       description: "Ajukan pembatalan pesanan atau pengembalian dana",
       action: "Ajukan Refund",
-      link: "/refund",
+      link: "/refund-form",
     },
   ];
 
