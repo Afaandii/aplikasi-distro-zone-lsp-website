@@ -13,11 +13,12 @@ import (
 )
 
 type PembayaranUsecase struct {
-	PesananRepo   repo.PesananRepository
-	DetailPesanan repo.DetailPesananRepository
-	ProdukRepo    repo.ProdukRepository
-	UserRepo      repo.UserRepository
-	TarifRepo     repo.TarifPengirimanRepository
+	PesananRepo    repo.PesananRepository
+	PembayaranRepo repo.PembayaranRepository
+	DetailPesanan  repo.DetailPesananRepository
+	ProdukRepo     repo.ProdukRepository
+	UserRepo       repo.UserRepository
+	TarifRepo      repo.TarifPengirimanRepository
 }
 
 type ItemRequest struct {

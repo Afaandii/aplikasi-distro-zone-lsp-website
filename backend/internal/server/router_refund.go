@@ -7,6 +7,7 @@ import (
 )
 
 func RegisterRefundRoutes(c *controller.RefundController) {
+
 	// CUSTOMER
 	http.HandleFunc("/api/v1/refunds", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -28,11 +29,27 @@ func RegisterRefundRoutes(c *controller.RefundController) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}))
 
-	http.HandleFunc("/api/v1/admin/refunds/process", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPut {
-			c.ProcessRefund(w, r)
+	http.HandleFunc("/api/v1/admin/refunds/detail/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		c.GetRefundDetail(w, r)
+	}))
+
+	http.HandleFunc("/api/v1/admin/refunds/approve/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPut {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.ApproveRefund(w, r)
+	}))
+
+	http.HandleFunc("/api/v1/admin/refunds/reject/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPut {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.RejectRefund(w, r)
 	}))
 }

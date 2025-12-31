@@ -91,6 +91,17 @@ func (r *pesananPGRepository) UpdateStatusByKode(
 	return nil
 }
 
+func (r *pesananPGRepository) FindByKode(kodePesanan string) (*entities.Pesanan, error) {
+	var pes entities.Pesanan
+	if err := r.db.Where("kode_pesanan = ?", kodePesanan).First(&pes).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &pes, nil
+}
+
 func (r *pesananPGRepository) Delete(idPesanan int) error {
 	result := r.db.Delete(&entities.Pesanan{}, idPesanan)
 	if result.Error != nil {

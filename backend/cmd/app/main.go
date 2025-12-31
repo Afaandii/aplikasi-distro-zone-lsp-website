@@ -101,9 +101,10 @@ func main() {
 	paymentGateway := midtrans.NewPaymentGateway()
 	refundUc := usecase.NewRefundUsecase(refundRepo, paymentGateway)
 	refundCtrl := controller.NewRefundController(refundUc)
+	pembayaranRepo := repo.NewPembayaranPgRepository(db)
 	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo, DetailPesanan: detailPesananRepo}
 	checkoutCtrl := &controller.CheckoutController{PembayaranUC: pembayaranUc}
-	callbackCtrl := &controller.MidtransCallbackController{PesananRepo: pesananRepo}
+	callbackCtrl := &controller.MidtransCallbackController{PesananRepo: pesananRepo, PembayaranRepo: pembayaranRepo}
 
 	server.RegisterRoleRoutes(roleCtrl)
 	server.RegisterUserRoutes(userCtrl)
