@@ -87,7 +87,15 @@ func (c *KomplainController) GetAllKomplain(w http.ResponseWriter, r *http.Reque
 
 func (c *KomplainController) UpdateStatus(w http.ResponseWriter, r *http.Request) {
 	idStr := httpctx.GetParam(r, "id")
-	id, _ := strconv.Atoi(idStr)
+	if idStr == "" {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
 
 	var req struct {
 		Status string `json:"status"`
@@ -95,7 +103,7 @@ func (c *KomplainController) UpdateStatus(w http.ResponseWriter, r *http.Request
 
 	json.NewDecoder(r.Body).Decode(&req)
 
-	err := c.Usecase.UpdateStatus(id, req.Status)
+	err = c.Usecase.UpdateStatus(id, req.Status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

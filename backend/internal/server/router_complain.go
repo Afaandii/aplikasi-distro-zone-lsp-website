@@ -1,7 +1,9 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"aplikasi-distro-zone-lsp-website/internal/httpctx"
@@ -26,14 +28,39 @@ func RegisterKomplainRoutes(c *controller.KomplainController) {
 	// ADMIN
 	http.HandleFunc("/api/v1/admin/komplain/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
-		id := parts[len(parts)-1]
+		idStr := parts[len(parts)-1]
 
-		r = r.WithContext(
-			httpctx.ContextWithParam(r, "id", id),
-		)
-
+		// Jika method PUT → update status
 		if r.Method == http.MethodPut {
+			if idStr == "" {
+				http.Error(w, "Invalid ID", http.StatusBadRequest)
+				return
+			}
+			if _, err := strconv.Atoi(idStr); err != nil {
+				http.Error(w, "Invalid ID", http.StatusBadRequest)
+				return
+			}
+			r = r.WithContext(httpctx.ContextWithParam(r, "id", idStr))
 			c.UpdateStatus(w, r)
+			return
+		}
+
+		// Jika method GET → ambil detail komplain
+		if r.Method == http.MethodGet {
+			id, err := strconv.Atoi(idStr)
+			if err != nil {
+				http.Error(w, "Invalid ID", http.StatusBadRequest)
+				return
+			}
+
+			// Ambil data komplain berdasarkan ID
+			komplain, err := c.Usecase.GetKomplainByID(id)
+			if err != nil {
+				http.Error(w, "Komplain not found", http.StatusNotFound)
+				return
+			}
+
+			json.NewEncoder(w).Encode(komplain)
 			return
 		}
 

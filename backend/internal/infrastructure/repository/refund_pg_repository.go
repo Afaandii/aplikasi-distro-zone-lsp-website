@@ -22,7 +22,7 @@ func (r *RefundPgRepository) FindByUser(userID uint) ([]entities.Refund, error) 
 	var refunds []entities.Refund
 	err := r.DB.
 		Where("id_user = ?", userID).
-		Preload("Transaksi").
+		Preload("Transaksi").Preload("User").Preload("Transaksi.Customer").Preload("Transaksi.Kasir").
 		Find(&refunds).Error
 	return refunds, err
 }
