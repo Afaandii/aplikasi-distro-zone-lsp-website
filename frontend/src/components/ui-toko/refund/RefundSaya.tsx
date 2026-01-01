@@ -88,6 +88,7 @@ export default function RefundSaya() {
         <table className="w-full border border-gray-200 rounded-lg">
           <thead className="bg-gray-100">
             <tr>
+              <th className="p-2 border">No</th>
               <th className="p-2 border">Kode Transaksi</th>
               <th className="p-2 border">Total</th>
               <th className="p-2 border">Status</th>
@@ -95,8 +96,9 @@ export default function RefundSaya() {
             </tr>
           </thead>
           <tbody>
-            {refunds.map((r) => (
+            {refunds.map((r, index) => (
               <tr key={r.id_refund} className="text-center">
+                <td className="p-2 border">{index + 1}</td>
                 <td className="p-2 border">{r.kode_transaksi}</td>
                 <td className="p-2 border">
                   Rp {r.total_refund.toLocaleString("id-ID")}

@@ -25,6 +25,15 @@ interface TarifPengiriman {
   wilayah: string;
 }
 
+interface JamOperasional {
+  id_jam_operasional: number;
+  tipe_layanan: string;
+  hari: string;
+  jam_buka: string;
+  jam_tutup: string;
+  status: string;
+}
+
 interface AlertStates {
   show: boolean;
   message: string;
@@ -42,12 +51,74 @@ const Checkout: React.FC = () => {
   const [alamat, setAlamat] = useState("");
   const [kota, setKota] = useState("");
   const [daftarKota, setDaftarKota] = useState<string[]>([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [jamOperasional, setJamOperasional] = useState<JamOperasional | null>(
+    null
+  );
+  const [isServiceOpen, setIsServiceOpen] = useState(false);
   const [alerts, setAlerts] = useState<AlertStates>({
     show: false,
     message: "",
     type: "success",
   });
   const products: Product[] = location.state?.products || [];
+
+  // Fungsi untuk fetch jam operasional
+  const fetchJamOperasional = async () => {
+    try {
+      const res = await fetch("/api/v1/jam-operasional");
+      if (!res.ok) {
+        throw new Error("Gagal mengambil jam operasional");
+      }
+      const data: JamOperasional[] = await res.json();
+
+      // Ambil hari ini dalam bahasa Indonesia
+      const today = currentTime.toLocaleDateString("id-ID", {
+        weekday: "long",
+      });
+
+      // Cari entri untuk web dan hari ini
+      const webHours = data.find(
+        (item) =>
+          item.tipe_layanan === "web" &&
+          item.hari.toLowerCase() === today.toLowerCase()
+      );
+
+      setJamOperasional(webHours || null);
+
+      if (!webHours || webHours.status !== "buka") {
+        setIsServiceOpen(false);
+      } else {
+        const [bukaH, bukaM] = webHours.jam_buka.split(":").map(Number);
+        const [tutupH, tutupM] = webHours.jam_tutup.split(":").map(Number);
+
+        const currentTotalMinutes =
+          currentTime.getHours() * 60 + currentTime.getMinutes();
+        const bukaTotalMinutes = bukaH * 60 + bukaM;
+        const tutupTotalMinutes = tutupH * 60 + tutupM;
+
+        setIsServiceOpen(
+          currentTotalMinutes >= bukaTotalMinutes &&
+            currentTotalMinutes < tutupTotalMinutes
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching jam operasional:", error);
+      const hours = currentTime.getHours();
+      setIsServiceOpen(hours >= 10 && hours < 17);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    fetchJamOperasional();
+  }, [currentTime]);
 
   // Ambil daftar kota dari API saat komponen pertama kali dimuat
   useEffect(() => {
@@ -127,6 +198,22 @@ const Checkout: React.FC = () => {
   // Handle checkout
   const handleCheckout = async () => {
     if (!selectedAddress) return;
+
+    if (!isServiceOpen) {
+      const jamBuka = jamOperasional?.jam_buka.slice(0, 5) || "10.00";
+      const jamTutup = jamOperasional?.jam_tutup.slice(0, 5) || "17.00";
+      setAlerts({
+        show: true,
+        message: `Maaf, transaksi online hanya tersedia antara pukul ${jamBuka} - ${jamTutup} WIB. Silakan coba kembali nanti.`,
+        type: "error",
+      });
+      setTimeout(
+        () => setAlerts({ show: false, message: "", type: "success" }),
+        5000
+      );
+      return;
+    }
+
     const token =
       localStorage.getItem("token") || sessionStorage.getItem("token");
 

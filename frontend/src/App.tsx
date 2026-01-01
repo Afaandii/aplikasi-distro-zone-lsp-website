@@ -67,6 +67,7 @@ import RefundAdminDetail from "./pages/CustomerService/RefundAdminDetail";
 import RefundSaya from "./components/ui-toko/refund/RefundSaya";
 import KomplainAdmin from "./pages/CustomerService/KomplainAdmin";
 import KomplainAdminDetail from "./pages/CustomerService/KomplainAdminDetail";
+import KomplainSaya from "./components/ui-toko/komplain/KomplainSaya";
 
 export default function App() {
   return (
@@ -227,6 +228,7 @@ export default function App() {
             path="/detail-produk/:id_produk"
             element={<CardDetailProduct />}
           />
+          <Route path="/komplain-saya" element={<KomplainSaya />} />
           <Route path="/refund-saya" element={<RefundSaya />} />
           <Route path="/pesanan-list" element={<OrderList />} />
           <Route path="/cart-produk" element={<CartProduct />} />
