@@ -21,8 +21,8 @@ func (r *reportKasirPgRepository) FindTransaksiByKasir(
 
 	var transaksi []entities.Transaksi
 
-	err := r.db.Preload("User").
-		Where("id_user = ? AND status_transaksi = 'selesai'", kasirID).
+	err := r.db.Preload("Kasir").
+		Where("id_kasir = ? AND status_transaksi = 'selesai'", kasirID).
 		Order("created_at DESC").
 		Find(&transaksi).Error
 
@@ -37,8 +37,8 @@ func (r *reportKasirPgRepository) FindTransaksiByKasirAndPeriode(
 
 	var transaksi []entities.Transaksi
 
-	err := r.db.Preload("User").
-		Where("id_user = ? AND status_transaksi = 'selesai' AND DATE(created_at) BETWEEN ? AND ?", kasirID, startDate, endDate).
+	err := r.db.Preload("Kasir").
+		Where("id_kasir = ? AND status_transaksi = 'selesai' AND DATE(created_at) BETWEEN ? AND ?", kasirID, startDate, endDate).
 		Order("created_at DESC").
 		Find(&transaksi).Error
 
@@ -52,8 +52,8 @@ func (r *reportKasirPgRepository) FindDetailTransaksiByID(
 
 	// 1️⃣ Ambil header transaksi + relasi User (opsional tapi bagus)
 	var transaksi entities.Transaksi
-	err := r.db.Preload("User").
-		Where("id_transaksi = ? AND id_user = ? AND status_transaksi = 'selesai'", transaksiID, kasirID).
+	err := r.db.Preload("Kasir").
+		Where("id_transaksi = ? AND id_kasir = ? AND status_transaksi = 'selesai'", transaksiID, kasirID).
 		First(&transaksi).Error
 
 	if err != nil {
@@ -65,7 +65,7 @@ func (r *reportKasirPgRepository) FindDetailTransaksiByID(
 
 	// 2️⃣ Ambil detail transaksi dengan Preload Produk
 	var items []entities.DetailTransaksi
-	err = r.db.Preload("Produk").Preload("Transaksi").Preload("Transaksi.User").
+	err = r.db.Preload("Produk").Preload("Transaksi").Preload("Transaksi.Kasir").
 		Where("id_transaksi = ?", transaksiID).
 		Find(&items).Error
 

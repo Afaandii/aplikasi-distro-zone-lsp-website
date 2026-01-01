@@ -18,7 +18,7 @@ func (r *reportAdminPgRepository) FindAllTransaksi() ([]entities.Transaksi, erro
 	var transaksi []entities.Transaksi
 
 	err := r.db.
-		Preload("User").Preload("DetailTransaksi").Preload("DetailTransaksi.Produk").
+		Preload("Customer").Preload("Kasir").Preload("DetailTransaksi").Preload("DetailTransaksi.Produk").
 		Where("status_transaksi = ?", "selesai").
 		Order("created_at DESC").
 		Find(&transaksi).Error
@@ -29,7 +29,7 @@ func (r *reportAdminPgRepository) FindAllTransaksi() ([]entities.Transaksi, erro
 func (r *reportAdminPgRepository) FindDetailTransaksiByID(transaksiID int) ([]entities.DetailTransaksi, error) {
 	var items []entities.DetailTransaksi
 
-	err := r.db.Preload("Produk").Preload("Transaksi").Preload("Transaksi.User").
+	err := r.db.Preload("Customer").Preload("Kasir").Preload("Transaksi").Preload("Transaksi.User").
 		Where("id_transaksi = ?", transaksiID).
 		Find(&items).Error
 
@@ -44,7 +44,7 @@ func (r *reportAdminPgRepository) FindAllTransaksiByPeriode(start, end string) (
 	var transaksi []entities.Transaksi
 
 	err := r.db.
-		Preload("User").Preload("DetailTransaksi").Preload("DetailTransaksi.Produk").
+		Preload("Customer").Preload("Kasir").Preload("DetailTransaksi").Preload("DetailTransaksi.Produk").
 		Where(`
 			status_transaksi = 'selesai'
 			AND DATE(created_at) BETWEEN ? AND ?
