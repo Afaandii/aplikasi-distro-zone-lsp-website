@@ -11,30 +11,102 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 import UserDropdown from "../../header/UserDropdown";
-import { Link } from "react-router";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+interface JamOperasional {
+  id_jam_operasional: number;
+  tipe_layanan: string;
+  hari: string;
+  jam_buka: string;
+  jam_tutup: string;
+  status: string;
+}
 
 const CustomerService = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [jamOperasional, setJamOperasional] = useState<JamOperasional | null>(
+    null
+  );
+  const [isServiceOpen, setIsServiceOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
-  const checkServiceStatus = () => {
-    const hours = currentTime.getHours();
-    setIsOpen(hours >= 10 && hours < 17);
+  // Fungsi untuk fetch jam operasional dari backend
+  const fetchJamOperasional = async () => {
+    try {
+      const response = await axios.get<JamOperasional[]>(
+        "http://localhost:8080/api/v1/jam-operasional"
+      );
+
+      const data = response.data;
+
+      // Ambil hari ini dalam bahasa Indonesia (sesuai data di DB)
+      const today = currentTime.toLocaleDateString("id-ID", {
+        weekday: "long",
+      });
+
+      // Cari entri untuk web dan hari ini
+      const webHours = data.find(
+        (item) =>
+          item.tipe_layanan === "web" &&
+          item.hari.toLowerCase() === today.toLowerCase()
+      );
+
+      setJamOperasional(webHours || null);
+
+      if (!webHours || webHours.status !== "buka") {
+        setIsServiceOpen(false);
+      } else {
+        // Parse jam_buka & jam_tutup
+        const [bukaH, bukaM] = webHours.jam_buka.split(":").map(Number);
+        const [tutupH, tutupM] = webHours.jam_tutup.split(":").map(Number);
+
+        // Konversi waktu saat ini ke total menit
+        const currentTotalMinutes =
+          currentTime.getHours() * 60 + currentTime.getMinutes();
+        const bukaTotalMinutes = bukaH * 60 + bukaM;
+        const tutupTotalMinutes = tutupH * 60 + tutupM;
+
+        // Validasi: apakah saat ini dalam jam operasional
+        setIsServiceOpen(
+          currentTotalMinutes >= bukaTotalMinutes &&
+            currentTotalMinutes < tutupTotalMinutes
+        );
+      }
+    } catch (error: any) {
+      console.error("Error fetching jam operasional:", error);
+      if (error.response) {
+        console.error(
+          "Response error:",
+          error.response.status,
+          error.response.data
+        );
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+      } else {
+        console.error("Axios error:", error.message);
+      }
+
+      const hours = currentTime.getHours();
+      setIsServiceOpen(hours >= 10 && hours < 17);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Update waktu setiap menit
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
 
-    checkServiceStatus();
-
     return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
-    checkServiceStatus();
+    fetchJamOperasional();
   }, [currentTime]);
 
   const toggleFaq = (index: number) => {
@@ -48,6 +120,7 @@ const CustomerService = () => {
       description: "Cek status dan detail pesanan Anda",
       action: "Lihat Pesanan",
       link: "/pesanan-list",
+      requiresService: false,
     },
     {
       icon: <FaExclamationCircle className="text-3xl text-orange-600" />,
@@ -55,6 +128,7 @@ const CustomerService = () => {
       description: "Laporkan masalah dengan pesanan Anda",
       action: "Buat Komplain",
       link: "/complaint-form",
+      requiresService: true,
     },
     {
       icon: <FaUndo className="text-3xl text-red-600" />,
@@ -62,6 +136,7 @@ const CustomerService = () => {
       description: "Ajukan pembatalan pesanan atau pengembalian dana",
       action: "Ajukan Refund",
       link: "/refund-form",
+      requiresService: true,
     },
   ];
 
@@ -93,17 +168,40 @@ const CustomerService = () => {
     },
   ];
 
+  const handleButtonClick = (link: string, requiresService: boolean) => {
+    if (requiresService && !isServiceOpen) {
+      alert(
+        "Maaf, layanan customer service sedang tutup. Silakan coba kembali antara pukul 10.00 - 17.00 WIB."
+      );
+      return;
+    }
+    navigate(link);
+  };
+
+  // Hindari render sebelum data siap (opsional)
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Memuat jam operasional...</p>
+      </div>
+    );
+  }
+
+  const isOpen = isServiceOpen;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <img
-              src="/images/distro-zone.png"
-              alt="DistroZone"
-              className="h-12 object-cover"
-            />
+            <a href="/">
+              <img
+                src="/images/distro-zone.png"
+                alt="DistroZone"
+                className="h-12 object-cover"
+              />
+            </a>
             <UserDropdown />
           </div>
         </div>
@@ -146,7 +244,14 @@ const CustomerService = () => {
                 <div className="font-semibold text-gray-800">
                   Jam Operasional
                 </div>
-                <div className="text-gray-600">10.00 - 17.00 WIB</div>
+                <div className="text-gray-600">
+                  {jamOperasional
+                    ? `${jamOperasional.jam_buka.slice(
+                        0,
+                        5
+                      )} - ${jamOperasional.jam_tutup.slice(0, 5)} WIB`
+                    : "10.00 - 17.00 WIB"}
+                </div>
               </div>
             </div>
           </div>
@@ -171,12 +276,19 @@ const CustomerService = () => {
                   <p className="text-gray-600 text-sm mb-4">
                     {card.description}
                   </p>
-                  <Link
-                    to={card.link}
-                    className="mt-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 text-sm font-medium"
+                  <button
+                    onClick={() =>
+                      handleButtonClick(card.link, card.requiresService)
+                    }
+                    className={`mt-auto px-4 py-2 rounded-lg transition-colors duration-300 text-sm font-medium ${
+                      card.requiresService && !isServiceOpen
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    }`}
+                    disabled={card.requiresService && !isServiceOpen}
                   >
                     {card.action}
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}
