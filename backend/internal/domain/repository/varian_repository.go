@@ -8,4 +8,5 @@ type VarianRepository interface {
 	Create(v *entities.Varian) error
 	Update(v *entities.Varian) error
 	Delete(idVarian int) error
+	Search(keyword string) ([]entities.Varian, error)
 }

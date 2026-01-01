@@ -12,6 +12,7 @@ type FotoProdukUsecase interface {
 	Create(id_produk int, url_foto string) (*entities.FotoProduk, error)
 	Update(idFotoProduk int, id_produk int, url_foto string) (*entities.FotoProduk, error)
 	Delete(idFotoProduk int) error
+	Search(keyword string) ([]entities.FotoProduk, error)
 }
 
 type fotoProdukUsecase struct {
@@ -72,4 +73,8 @@ func (u *fotoProdukUsecase) Delete(idFotoProduk int) error {
 		return helper.ProdukImageNotFoundError(idFotoProduk)
 	}
 	return u.repo.Delete(idFotoProduk)
+}
+
+func (u *fotoProdukUsecase) Search(keyword string) ([]entities.FotoProduk, error) {
+	return u.repo.Search(keyword)
 }

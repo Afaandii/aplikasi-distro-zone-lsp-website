@@ -23,6 +23,7 @@ type UserUsecase interface {
 	UpdateAddress(idUser int, alamat string, kota string) (*entities.User, error)
 	GetTransaksiByUser(idUser int) ([]entities.Transaksi, error)
 	GetPesananByUser(idUser int) ([]entities.Pesanan, error)
+	Search(keyword string) ([]entities.User, error)
 }
 
 type userUsecase struct {
@@ -226,4 +227,11 @@ func (u *userUsecase) GetTransaksiByUser(idUser int) ([]entities.Transaksi, erro
 
 func (u *userUsecase) GetPesananByUser(idUser int) ([]entities.Pesanan, error) {
 	return u.repo.GetPesananByUser(idUser)
+}
+
+func (u *userUsecase) Search(keyword string) ([]entities.User, error) {
+	if keyword == "" {
+		return []entities.User{}, nil
+	}
+	return u.repo.Search(keyword)
 }

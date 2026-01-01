@@ -106,4 +106,12 @@ func RegisterUserRoutes(c *controller.UserController) {
 			c.GetPesananByUser(w, r)
 		}),
 	)
+
+	http.HandleFunc("/api/v1/user/search", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.Search(w, r)
+	}))
 }

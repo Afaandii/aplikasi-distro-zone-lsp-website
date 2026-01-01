@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -68,4 +69,24 @@ func (r *varianPGRepository) Delete(idVarian int) error {
 		return errors.New("no rows deleted")
 	}
 	return nil
+}
+
+func (r *varianPGRepository) Search(keyword string) ([]entities.Varian, error) {
+	var list []entities.Varian
+	query := "%" + strings.ToLower(keyword) + "%"
+	err := r.db.
+		Preload("Ukuran").
+		Preload("Warna").
+		Preload("Produk").
+		Joins("JOIN produk ON produk.id_produk = varian.id_produk").
+		Joins("JOIN ukuran ON ukuran.id_ukuran = varian.id_ukuran").
+		Joins("JOIN warna ON warna.id_warna = varian.id_warna").
+		Where("LOWER(produk.nama_kaos) LIKE ? OR LOWER(ukuran.nama_ukuran) LIKE ? OR LOWER(warna.nama_warna) LIKE ?", query, query, query).
+		Order("varian.id_varian ASC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

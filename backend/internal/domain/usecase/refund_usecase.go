@@ -64,11 +64,32 @@ func (u *RefundUsecase) ApproveRefund(id uint, adminNote string) error {
 		return err
 	}
 
-	fmt.Printf("🔍 Refunding MidtransOrderID: %s\n", refund.MidtransOrderID)
-
 	if refund.Status != "PENDING" {
 		return errors.New("refund sudah diproses")
 	}
+
+	metodePembayaran := refund.Transaksi.MetodePembayaran
+	upperMethod := strings.ToUpper(metodePembayaran)
+	manualMethods := []string{"BCA", "VA", "BANK", "MANDIRI", "BRI", "BNI", "PERMATA", "ALFAMART", "INDOMARET"}
+
+	isManual := false
+	for _, keyword := range manualMethods {
+		if strings.Contains(upperMethod, keyword) {
+			isManual = true
+			break
+		}
+	}
+
+	if isManual {
+		fmt.Printf("🔍 Processing Manual Refund for Metode: %s\n", metodePembayaran)
+
+		refund.Status = "APPROVED"
+		refund.AdminNote = &adminNote
+		refund.RefundKey = nil
+
+		return u.RefundRepo.Update(refund)
+	}
+	fmt.Printf("🔍 Processing API Refund for Metode: %s\n", metodePembayaran)
 
 	refundKey := fmt.Sprintf("refund-%d", time.Now().Unix())
 

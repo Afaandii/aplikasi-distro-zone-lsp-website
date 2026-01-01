@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -91,4 +92,31 @@ func (p *produkPGRepository) FindDetailByID(idProduk int) (*entities.Produk, err
 		return nil, err
 	}
 	return &pro, nil
+}
+
+func (p *produkPGRepository) SearchByName(name string) ([]entities.Produk, error) {
+	var produk []entities.Produk
+	query := p.db.Preload("Merk").Preload("Tipe")
+
+	if name != "" {
+		query = query.Where("LOWER(nama_kaos) LIKE ?", "%"+strings.ToLower(name)+"%")
+	}
+
+	err := query.Find(&produk).Error
+	return produk, err
+}
+
+func (p *produkPGRepository) SearchProdukForAdmin(keyword string) ([]entities.Produk, error) {
+	var produk []entities.Produk
+	query := "%" + strings.ToLower(keyword) + "%"
+	err := p.db.Model(&entities.Produk{}).
+		Preload("Merk").
+		Preload("Tipe").
+		Joins("LEFT JOIN merk ON merk.id_merk = produk.id_merk").
+		Joins("LEFT JOIN tipe ON tipe.id_tipe = produk.id_tipe").
+		Where("LOWER(produk.nama_kaos) LIKE ? OR LOWER(merk.nama_merk) LIKE ? OR LOWER(tipe.nama_tipe) LIKE ?", query, query, query).
+		Order("produk.id_produk ASC").
+		Find(&produk).Error
+
+	return produk, err
 }

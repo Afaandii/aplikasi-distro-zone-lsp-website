@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -66,4 +67,20 @@ func (r *fotoProdukPGRepository) Delete(idFotoProduk int) error {
 		return errors.New("no rows deleted")
 	}
 	return nil
+}
+
+func (r *fotoProdukPGRepository) Search(keyword string) ([]entities.FotoProduk, error) {
+	var list []entities.FotoProduk
+	query := "%" + strings.ToLower(keyword) + "%"
+	err := r.db.
+		Preload("Produk").
+		Joins("JOIN produk ON produk.id_produk = foto_produk.id_produk").
+		Where("LOWER(produk.nama_kaos) LIKE ?", query).
+		Order("id_foto_produk ASC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

@@ -67,4 +67,21 @@ func RegisterProdukRoutes(c *controller.ProdukController, ms *controller.MasterD
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
+
+	// Route untuk pencarian page customer
+	http.HandleFunc("/api/v1/produk/search", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.Search(w, r)
+	})
+
+	http.HandleFunc("/api/v1/produk/live/search", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.SearchForAdmin(w, r)
+	})
 }
