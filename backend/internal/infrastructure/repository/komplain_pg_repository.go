@@ -25,7 +25,7 @@ func (r *komplainPgRepository) FindKomplainByUser(
 ) ([]entities.Komplain, error) {
 
 	var data []entities.Komplain
-	err := r.db.
+	err := r.db.Preload("Pesanan").Preload("User").
 		Where("id_user = ?", userID).
 		Order("created_at DESC").
 		Find(&data).Error
