@@ -3,8 +3,8 @@ import axios from "axios";
 import DatePicker from "../../components/form/date-picker";
 import { Link } from "react-router";
 
-type User = {
-  id_user: number;
+type Kasir = {
+  id_kasir: number;
   nama: string;
   username: string;
 };
@@ -17,7 +17,7 @@ type Transaksi = {
   metode_pembayaran: string;
   status_transaksi: string;
   created_at: string;
-  User?: User;
+  Kasir?: Kasir;
 };
 
 export default function LaporanKeuanganAdmin() {
@@ -48,8 +48,8 @@ export default function LaporanKeuanganAdmin() {
         }
       );
 
-      // Respons dari backend langsung berupa array transaksi
-      setTransaksi(res.data);
+      const data = res.data;
+      setTransaksi(data);
     } catch (error) {
       console.error("Error fetching transaksi:", error);
     } finally {
@@ -248,7 +248,7 @@ export default function LaporanKeuanganAdmin() {
                     <tr key={trans.id_transaksi} className="hover:bg-gray-700">
                       <td className="px-4 py-3 text-white">{index + 1}</td>
                       <td className="px-4 py-3 text-white">
-                        {trans.User?.nama || "-"}
+                        {trans.Kasir?.nama || "-"}
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         {trans.kode_transaksi || "-"}
