@@ -66,3 +66,7 @@ func (uc *KomplainUsecase) UpdateStatus(
 
 	return uc.Repo.UpdateStatusKomplain(idKomplain, status)
 }
+
+func (uc *KomplainUsecase) GetKomplainByID(id int) (*entities.Komplain, error) {
+	return uc.Repo.FindKomplainByID(id)
+}

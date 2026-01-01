@@ -38,7 +38,7 @@ func (r *komplainPgRepository) FindAllKomplain() (
 	error,
 ) {
 	var data []entities.Komplain
-	err := r.db.
+	err := r.db.Preload("Pesanan").Preload("User").
 		Order("created_at DESC").
 		Find(&data).Error
 
@@ -51,7 +51,7 @@ func (r *komplainPgRepository) UpdateStatusKomplain(
 ) error {
 
 	result := r.db.Exec(`
-		UPDATE komplain_pesanan
+		UPDATE komplain
 		SET status_komplain = ?, updated_at = NOW()
 		WHERE id_komplain = ?
 	`, status, idKomplain)
@@ -61,4 +61,17 @@ func (r *komplainPgRepository) UpdateStatusKomplain(
 	}
 
 	return result.Error
+}
+
+func (r *komplainPgRepository) FindKomplainByID(id int) (*entities.Komplain, error) {
+	var komplain entities.Komplain
+	err := r.db.Preload("User").Preload("Pesanan").
+		Where("id_komplain = ?", id).
+		First(&komplain).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &komplain, nil
 }
