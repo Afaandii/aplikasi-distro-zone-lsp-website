@@ -9,4 +9,6 @@ type ProdukRepository interface {
 	Update(p *entities.Produk) error
 	Delete(idProduk int) error
 	FindDetailByID(idProduk int) (*entities.Produk, error)
+	SearchByName(name string) ([]entities.Produk, error)
+	SearchProdukForAdmin(keyword string) ([]entities.Produk, error)
 }

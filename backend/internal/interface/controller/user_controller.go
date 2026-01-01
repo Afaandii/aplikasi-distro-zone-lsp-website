@@ -373,3 +373,15 @@ func (c *UserController) GetPesananByUser(w http.ResponseWriter, r *http.Request
 
 	helper.WriteJSON(w, http.StatusOK, pesanan)
 }
+
+func (c *UserController) Search(w http.ResponseWriter, r *http.Request) {
+	keyword := r.URL.Query().Get("q")
+
+	users, err := c.UC.Search(keyword)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, users)
+}

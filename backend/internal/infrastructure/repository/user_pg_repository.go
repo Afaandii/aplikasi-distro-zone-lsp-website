@@ -157,3 +157,19 @@ func (r *userPGRepository) GetPesananByUser(idUser int) ([]entities.Pesanan, err
 
 	return pesanan, err
 }
+
+func (r *userPGRepository) Search(keyword string) ([]entities.User, error) {
+	var users []entities.User
+	searchQuery := "%" + keyword + "%"
+
+	err := r.db.
+		Preload("Role").
+		Where("nama ILIKE ? OR username ILIKE ? OR nik ILIKE ?", searchQuery, searchQuery, searchQuery).
+		Order("id_user ASC").
+		Find(&users).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}

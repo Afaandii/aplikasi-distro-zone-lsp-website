@@ -13,6 +13,8 @@ type ProdukUsecase interface {
 	Update(idProduk int, id_merk int, id_tipe int, nama_kaos string, harga_jual int, harga_pokok int, deskripsi string, spesifikasi string) (*entities.Produk, error)
 	Delete(idProduk int) error
 	GetProductDetailByID(idProduk int) (*entities.Produk, error)
+	SearchByName(name string) ([]entities.Produk, error)
+	SearchProdukForAdmin(keyword string) ([]entities.Produk, error)
 }
 
 type produkUsecase struct {
@@ -97,4 +99,12 @@ func (u *produkUsecase) Delete(idProduk int) error {
 		return helper.ProdukNotFoundError(idProduk)
 	}
 	return u.repo.Delete(idProduk)
+}
+
+func (u *produkUsecase) SearchByName(name string) ([]entities.Produk, error) {
+	return u.repo.SearchByName(name)
+}
+
+func (u *produkUsecase) SearchProdukForAdmin(keyword string) ([]entities.Produk, error) {
+	return u.repo.SearchProdukForAdmin(keyword)
 }

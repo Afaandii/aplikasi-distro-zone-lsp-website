@@ -15,4 +15,5 @@ type UserRepository interface {
 	UpdateAddress(idUser int, alamat string, kota string) (*entities.User, error)
 	GetTransaksiByUser(idUser int) ([]entities.Transaksi, error)
 	GetPesananByUser(idUser int) ([]entities.Pesanan, error)
+	Search(keyword string) ([]entities.User, error)
 }

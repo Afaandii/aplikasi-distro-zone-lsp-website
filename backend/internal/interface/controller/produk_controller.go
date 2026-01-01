@@ -135,3 +135,29 @@ func (p *ProdukController) GetProductDetailByID(w http.ResponseWriter, r *http.R
 
 	helper.WriteJSON(w, http.StatusOK, produk)
 }
+
+func (p *ProdukController) Search(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("q")
+
+	// Panggil usecase
+	produk, err := p.UC.SearchByName(name)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, produk)
+}
+
+func (p *ProdukController) SearchForAdmin(w http.ResponseWriter, r *http.Request) {
+	keyword := r.URL.Query().Get("q")
+
+	// Panggil usecase
+	produk, err := p.UC.SearchProdukForAdmin(keyword)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, produk)
+}

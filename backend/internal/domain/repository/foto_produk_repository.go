@@ -8,4 +8,5 @@ type FotoProdukRepository interface {
 	Create(fp *entities.FotoProduk) error
 	Update(fp *entities.FotoProduk) error
 	Delete(idFotoProduk int) error
+	Search(keyword string) ([]entities.FotoProduk, error)
 }
