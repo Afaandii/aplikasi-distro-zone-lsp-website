@@ -274,6 +274,12 @@ const AppSidebar: React.FC = () => {
           location.pathname.startsWith("/detail-refund")
         );
       }
+      if (path === "/komplain") {
+        return (
+          location.pathname.startsWith("/komplain") ||
+          location.pathname.startsWith("/detail-komplain")
+        );
+      }
 
       return (
         location.pathname.startsWith(path) &&

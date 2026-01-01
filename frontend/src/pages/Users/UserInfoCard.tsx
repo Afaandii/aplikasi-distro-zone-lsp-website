@@ -4,7 +4,13 @@ import { Modal } from "../../components/ui/modal";
 import Button from "../../components/ui/button/Button";
 import Input from "../../components/form/input/InputField";
 import Label from "../../components/form/Label";
-import { FaPencilAlt, FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import {
+  FaPencilAlt,
+  FaChevronRight,
+  FaChevronLeft,
+  FaUndo,
+  FaExclamationCircle,
+} from "react-icons/fa";
 import { BsBoxArrowLeft } from "react-icons/bs";
 import axios from "axios";
 import FileInput from "../../components/form/input/FileInput";
@@ -394,6 +400,30 @@ export default function UserInfoCard() {
                   <IoDocumentTextOutline className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-3" />
                   <span className="font-medium text-gray-900 dark:text-white/90">
                     Daftar Pesanan
+                  </span>
+                </div>
+                <FaChevronRight className="w-5 h-5 text-gray-400" />
+              </a>
+              <a
+                href="refund-saya"
+                className="w-full flex items-center justify-between px-6 lg:px-8 py-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-t border-gray-100 dark:border-gray-700"
+              >
+                <div className="flex items-center">
+                  <FaUndo className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-3" />
+                  <span className="font-medium text-gray-900 dark:text-white/90">
+                    Refund
+                  </span>
+                </div>
+                <FaChevronRight className="w-5 h-5 text-gray-400" />
+              </a>
+              <a
+                href="komplain-saya"
+                className="w-full flex items-center justify-between px-6 lg:px-8 py-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-t border-gray-100 dark:border-gray-700"
+              >
+                <div className="flex items-center">
+                  <FaExclamationCircle className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-3" />
+                  <span className="font-medium text-gray-900 dark:text-white/90">
+                    Komplain
                   </span>
                 </div>
                 <FaChevronRight className="w-5 h-5 text-gray-400" />

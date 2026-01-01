@@ -40,7 +40,7 @@ const AjukanKomplain = () => {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:8080/api/v1/complaint",
+        "http://localhost:8080/api/v1/customer/komplain",
         {
           id_pesanan: pesananId,
           jenis_komplain: jenisKomplain,

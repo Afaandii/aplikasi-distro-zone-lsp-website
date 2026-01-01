@@ -64,6 +64,9 @@ import AjukanRefund from "./components/ui-toko/customer-service/AjukanRefund";
 import AjukanKomplain from "./components/ui-toko/customer-service/AjukanKomplain";
 import RefundAdmin from "./pages/CustomerService/RefundAdmin";
 import RefundAdminDetail from "./pages/CustomerService/RefundAdminDetail";
+import RefundSaya from "./components/ui-toko/refund/RefundSaya";
+import KomplainAdmin from "./pages/CustomerService/KomplainAdmin";
+import KomplainAdminDetail from "./pages/CustomerService/KomplainAdminDetail";
 
 export default function App() {
   return (
@@ -87,7 +90,6 @@ export default function App() {
           >
             {/* Dashbord admin homepage */}
             <Route path="/dashboard" element={<Home />} />
-
             {/* Master menu */}
             {/* Merk Page */}
             <Route path="/merk" element={<Merk />} />
@@ -144,19 +146,16 @@ export default function App() {
               element={<EditJamOperasional />}
             />
             {/* Master menu end */}
-
             {/* Setting menu */}
             {/* Role page */}
             <Route path="/role" element={<Roles />} />
             <Route path="/create-role" element={<CreateRoles />} />
             <Route path="/edit-role/:id_role" element={<EditRoles />} />
-
             {/* User page */}
             <Route path="/user" element={<Users />} />
             <Route path="/create-user" element={<CreateUser />} />
             <Route path="/edit-user/:id_user" element={<EditUser />} />
             {/* Setting menu end */}
-
             {/* Transaksi page */}
             <Route
               path="/pesanan"
@@ -186,6 +185,11 @@ export default function App() {
                 // Jika role tidak valid, redirect ke home
                 return <Navigate to="/" replace />;
               })()}
+            />
+            <Route path="/komplain" element={<KomplainAdmin />} />
+            <Route
+              path="/detail-komplain/:id_komplain"
+              element={<KomplainAdminDetail />}
             />
             <Route path="/refund" element={<RefundAdmin />} />
             <Route
@@ -223,6 +227,7 @@ export default function App() {
             path="/detail-produk/:id_produk"
             element={<CardDetailProduct />}
           />
+          <Route path="/refund-saya" element={<RefundSaya />} />
           <Route path="/pesanan-list" element={<OrderList />} />
           <Route path="/cart-produk" element={<CartProduct />} />
           <Route path="/search" element={<SearchResults />} />
