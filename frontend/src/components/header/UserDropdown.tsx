@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { TbLogout2 } from "react-icons/tb";
-import { FaRegUserCircle } from "react-icons/fa";
+import { FaExclamationCircle, FaRegUserCircle, FaUndo } from "react-icons/fa";
 import axios from "axios";
 import { IoDocumentTextOutline } from "react-icons/io5";
 
@@ -159,6 +159,28 @@ export default function UserDropdown() {
             >
               <IoDocumentTextOutline className="size-5" />
               Daftar Pesanan
+            </DropdownItem>
+          </li>
+          <li>
+            <DropdownItem
+              onItemClick={closeDropdown}
+              tag="a"
+              to="/refund-saya"
+              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+            >
+              <FaUndo className="size-4" />
+              Refund Saya
+            </DropdownItem>
+          </li>
+          <li>
+            <DropdownItem
+              onItemClick={closeDropdown}
+              tag="a"
+              to="/komplain-saya"
+              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+            >
+              <FaExclamationCircle className="size-4" />
+              Komplain Saya
             </DropdownItem>
           </li>
         </ul>
