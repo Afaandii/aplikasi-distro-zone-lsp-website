@@ -12,6 +12,7 @@ type TipeUsecase interface {
 	Create(nama_tipe string, keterangan string) (*entities.Tipe, error)
 	Update(idTipe int, nama_tipe string, keterangan string) (*entities.Tipe, error)
 	Delete(idTipe int) error
+	Search(keyword string) ([]entities.Tipe, error)
 }
 
 type tipeUsecase struct {
@@ -72,4 +73,8 @@ func (u *tipeUsecase) Delete(idTipe int) error {
 		return helper.TipeNotFoundError(idTipe)
 	}
 	return u.repo.Delete(idTipe)
+}
+
+func (u *tipeUsecase) Search(keyword string) ([]entities.Tipe, error) {
+	return u.repo.Search(keyword)
 }

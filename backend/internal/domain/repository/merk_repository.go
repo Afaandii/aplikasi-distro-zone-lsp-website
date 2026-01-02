@@ -8,4 +8,5 @@ type MerkRepository interface {
 	Create(m *entities.Merk) error
 	Update(m *entities.Merk) error
 	Delete(idMerk int) error
+	Search(keyword string) ([]entities.Merk, error)
 }

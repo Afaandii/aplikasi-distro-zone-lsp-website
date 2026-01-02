@@ -173,3 +173,16 @@ func (jo *JamOperasionalController) Delete(w http.ResponseWriter, r *http.Reques
 	}
 	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "deleted successfully!"})
 }
+
+func (jo *JamOperasionalController) Search(w http.ResponseWriter, r *http.Request) {
+	keyword := r.URL.Query().Get("q")
+
+	// Panggil usecase
+	jop, err := jo.UC.Search(keyword)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, jop)
+}

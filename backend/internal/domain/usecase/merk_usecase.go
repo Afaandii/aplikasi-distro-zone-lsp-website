@@ -12,6 +12,7 @@ type MerkUsecase interface {
 	Create(nama_merk string, keterangan string) (*entities.Merk, error)
 	Update(idMerk int, nama_merk string, keterangan string) (*entities.Merk, error)
 	Delete(idMerk int) error
+	Search(keyword string) ([]entities.Merk, error)
 }
 
 type merkUsecase struct {
@@ -72,4 +73,7 @@ func (u *merkUsecase) Delete(idMerk int) error {
 		return helper.MerkNotFoundError(idMerk)
 	}
 	return u.repo.Delete(idMerk)
+}
+func (u *merkUsecase) Search(keyword string) ([]entities.Merk, error) {
+	return u.repo.Search(keyword)
 }

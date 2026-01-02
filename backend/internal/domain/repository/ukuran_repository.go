@@ -8,4 +8,5 @@ type UkuranRepository interface {
 	Create(u *entities.Ukuran) error
 	Update(u *entities.Ukuran) error
 	Delete(idUkuran int) error
+	Search(keyword string) ([]entities.Ukuran, error)
 }

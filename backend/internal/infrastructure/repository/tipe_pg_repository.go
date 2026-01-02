@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -66,4 +67,18 @@ func (r *tipePGRepository) Delete(idTipe int) error {
 		return errors.New("no rows deleted")
 	}
 	return nil
+}
+
+func (r *tipePGRepository) Search(keyword string) ([]entities.Tipe, error) {
+	var list []entities.Tipe
+	query := "%" + strings.ToLower(keyword) + "%"
+	err := r.db.
+		Where("LOWER(nama_tipe) LIKE ? OR LOWER(keterangan) LIKE ?", query, query).
+		Order("tipe.id_tipe ASC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

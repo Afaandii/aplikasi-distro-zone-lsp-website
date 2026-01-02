@@ -8,4 +8,5 @@ type WarnaRepository interface {
 	Create(w *entities.Warna) error
 	Update(w *entities.Warna) error
 	Delete(idWarna int) error
+	Search(keyword string) ([]entities.Warna, error)
 }
