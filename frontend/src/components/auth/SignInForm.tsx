@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { FaEyeSlash, FaEye, FaGoogle, FaFacebook } from "react-icons/fa";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
@@ -96,7 +96,7 @@ export default function SignInForm() {
           )}
 
           <div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+            {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
               <button
                 onClick={() => {
                   if (redirectUrl) {
@@ -123,8 +123,8 @@ export default function SignInForm() {
                 <FaFacebook className="fill-current size-5" />
                 Sign in with Facebook
               </button>
-            </div>
-            <div className="relative py-3 sm:py-5">
+            </div> */}
+            {/* <div className="relative py-3 sm:py-5">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
               </div>
@@ -133,7 +133,7 @@ export default function SignInForm() {
                   Or
                 </span>
               </div>
-            </div>
+            </div> */}
 
             <form onSubmit={handleLogin}>
               <div className="space-y-6">

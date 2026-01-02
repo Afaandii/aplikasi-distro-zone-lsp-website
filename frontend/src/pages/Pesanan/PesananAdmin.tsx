@@ -51,7 +51,6 @@ export default function PesananAdmin() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log(res.data);
       setPesanan(res.data);
     } catch (err) {
       console.error("Fetch error:", err);

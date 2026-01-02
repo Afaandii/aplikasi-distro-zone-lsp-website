@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
             <div className="mb-4">
               <a href="/" className="inline-block group">
                 <img
-                  src="images/distro-zone.png"
+                  src="/images/distro-zone.png"
                   alt="DistroZone"
                   className="h-16 w-56 object-contain -mt-3"
                 />
@@ -73,23 +73,6 @@ const Footer: React.FC = () => {
               Distro Zone lokal dengan desain original dan kualitas premium.
               Support karya anak bangsa, ekspresikan identitasmu.
             </p>
-
-            {/* Newsletter Subscription */}
-            <div>
-              <h4 className="text-white font-bold text-sm mb-3">
-                Subscribe DistoZone
-              </h4>
-              <div className="flex space-x-2">
-                <input
-                  type="email"
-                  placeholder="Email kamu..."
-                  className="flex-1 bg-zinc-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-                <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-lg transition-colors duration-200 shrink-0">
-                  <IoMdMail className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
           </div>
 
           {/* Navigation Links - 2 columns */}

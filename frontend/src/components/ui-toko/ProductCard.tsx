@@ -26,6 +26,20 @@ interface Tipe {
   nama_tipe: string;
 }
 
+// Skeleton Loading
+const ProductCardSkeleton = () => {
+  return (
+    <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm animate-pulse">
+      <div className="relative aspect-square bg-gray-200" />
+      <div className="p-4 space-y-3">
+        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 rounded w-full"></div>
+        <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+      </div>
+    </div>
+  );
+};
+
 // Product Card Component
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const [currentImage, setCurrentImage] = useState(product.gambar);
@@ -522,15 +536,35 @@ const ProductsPage: React.FC = () => {
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
           <div className="flex flex-col lg:flex-row gap-8">
+            {/* Sidebar Filter (tetap tampil tapi disabled) */}
             <aside className="lg:w-64 shrink-0">
-              <ProductFilter
-                filters={filters}
-                onFilterChange={setFilters}
-                types={types}
-              />
+              <div className="bg-white rounded-xl border border-gray-200 p-6 sticky top-34 shadow-sm animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-1/2 mb-6"></div>
+                <div className="space-y-4">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                    </div>
+                  ))}
+                  <div className="h-10 bg-gray-200 rounded mt-8"></div>
+                </div>
+              </div>
             </aside>
+
+            {/* Main Content */}
             <main className="flex-1">
-              <div className="text-center py-16">Memuat produk...</div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="h-5 bg-gray-200 rounded w-48"></div>
+                <div className="h-10 bg-gray-200 rounded w-32 lg:hidden"></div>
+                <div className="h-10 bg-gray-200 rounded w-40"></div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[...Array(12)].map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
             </main>
           </div>
         </div>

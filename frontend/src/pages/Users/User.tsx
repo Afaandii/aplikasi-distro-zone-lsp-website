@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaPlus, FaTrash, FaSearch } from "react-icons/fa";
 import axios from "axios";
 
 type User = {
@@ -21,15 +21,25 @@ export default function Users() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // TAMBAHAN: State untuk menampung input pencarian
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (query: string = "") => {
     try {
+      setLoading(true);
       const token = getToken();
 
-      const res = await axios.get("http://localhost:8080/api/v1/user/kasir", {
+      // Tentukan endpoint: jika ada query gunakan /search, jika tidak gunakan default /kasir
+      let url = "http://localhost:8080/api/v1/user/kasir";
+      if (query) {
+        url = `http://localhost:8080/api/v1/user/search?q=${query}`;
+      }
+
+      const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -45,9 +55,14 @@ export default function Users() {
     }
   };
 
+  // TAMBAHAN: Efek untuk menjalankan fetchUsers setiap kali searchQuery berubah
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchUsers(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   const handleDelete = async (id_user: number) => {
     if (!window.confirm("Anda yakin ingin menghapus user ini?")) return;
@@ -60,7 +75,8 @@ export default function Users() {
         },
       });
 
-      setUsers((prev) => prev.filter((user) => user.id_user !== id_user));
+      // Refresh data setelah hapus, pertahankan search query saat ini
+      fetchUsers(searchQuery);
       setSuccessMessage("User berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -87,10 +103,23 @@ export default function Users() {
 
       {/* Card Container */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
+        {/* Header DataTable dengan Search Input */}
+        <div className="px-4 py-3 bg-gray-700 border-b border-gray-600 flex justify-between items-center">
           <h3 className="text-lg font-semibold text-white">
             DataTable User Karyawan
           </h3>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <FaSearch />
+            </span>
+            <input
+              type="text"
+              placeholder="Cari Nama, Username, NIK..."
+              className="pl-10 pr-4 py-1.5 text-sm text-gray-200 bg-gray-600 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 w-64"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="p-4">
@@ -112,9 +141,15 @@ export default function Users() {
             <p className="text-gray-300 text-center">Loading Data...</p>
           ) : users.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-red-500 text-lg">Tidak ada data user</p>
+              <p className="text-red-500 text-lg">
+                {searchQuery
+                  ? "Tidak ada user yang cocok"
+                  : "Tidak ada data user"}
+              </p>
               <p className="text-gray-400 text-sm mt-2">
-                Silakan tambah user baru menggunakan tombol + di atas
+                {searchQuery
+                  ? "Coba kata kunci lain"
+                  : "Silakan tambah user baru menggunakan tombol + di atas"}
               </p>
             </div>
           ) : (

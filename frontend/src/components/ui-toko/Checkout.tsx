@@ -48,6 +48,7 @@ const Checkout: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const [ongkir, setOngkir] = useState<number>(0);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [nama, setNama] = useState("");
   const [alamat, setAlamat] = useState("");
   const [kota, setKota] = useState("");
   const [daftarKota, setDaftarKota] = useState<string[]>([]);
@@ -66,7 +67,7 @@ const Checkout: React.FC = () => {
   // Fungsi untuk fetch jam operasional
   const fetchJamOperasional = async () => {
     try {
-      const res = await fetch("/api/v1/jam-operasional");
+      const res = await fetch("http://localhost:8080/api/v1/jam-operasional");
       if (!res.ok) {
         throw new Error("Gagal mengambil jam operasional");
       }
@@ -197,7 +198,22 @@ const Checkout: React.FC = () => {
 
   // Handle checkout
   const handleCheckout = async () => {
-    if (!selectedAddress) return;
+    if (
+      !selectedAddress ||
+      !selectedAddress.fullAddress.trim() ||
+      selectedAddress.fullAddress.split(", ").pop().trim() === ""
+    ) {
+      setAlerts({
+        show: true,
+        message: "Mohon tambahkan alamat pengiriman terlebih dahulu.",
+        type: "error",
+      });
+      setTimeout(
+        () => setAlerts({ show: false, message: "", type: "success" }),
+        5000
+      );
+      return;
+    }
 
     if (!isServiceOpen) {
       const jamBuka = jamOperasional?.jam_buka.slice(0, 5) || "10.00";
@@ -310,11 +326,12 @@ const Checkout: React.FC = () => {
       const mappedAddress: Address = {
         id: String(userData.id_user),
         name: userData.nama,
-        phone: userData.no_hp || "",
+        phone: userData.no_telp,
         fullAddress: `${userData.alamat}, ${userData.kota}`,
       };
 
       setSelectedAddress(mappedAddress);
+      setNama(userData.nama);
       setAlamat(userData.alamat);
       setKota(userData.kota);
     }
@@ -331,6 +348,7 @@ const Checkout: React.FC = () => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        nama,
         alamat,
         kota,
       }),
@@ -344,11 +362,12 @@ const Checkout: React.FC = () => {
     const data = await res.json();
 
     // update state
+    const fullAddress = `${data.alamat}${data.kota ? `, ${data.kota}` : ""}`;
     setSelectedAddress({
       id: String(data.id),
       name: data.nama,
       phone: data.no_hp,
-      fullAddress: `${data.alamat}, ${data.kota}`,
+      fullAddress,
     });
 
     // update local storage
@@ -406,19 +425,17 @@ const Checkout: React.FC = () => {
                     Alamat Pengiriman
                   </h2>
                 </div>
-
-                {selectedAddress ? (
+                {selectedAddress &&
+                selectedAddress.fullAddress.trim() !== "" &&
+                selectedAddress.fullAddress.split(", ").pop().trim() !== "" ? (
                   <div className="border border-gray-200 rounded-lg p-4">
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-semibold text-gray-900">
                           {selectedAddress.name}
                         </p>
-                        <p className="text-gray-600 text-sm mt-1">
-                          {selectedAddress.phone}
-                        </p>
                         <p className="text-gray-700 text-sm mt-2">
-                          {selectedAddress.fullAddress}
+                          {selectedAddress.fullAddress.replace(/,\s*$/, "")}
                         </p>
                       </div>
                       <button
@@ -521,7 +538,11 @@ const Checkout: React.FC = () => {
 
                 <button
                   onClick={handleCheckout}
-                  disabled={!selectedAddress}
+                  disabled={
+                    !selectedAddress ||
+                    !selectedAddress.fullAddress.trim() ||
+                    selectedAddress.fullAddress.split(", ").pop().trim() === ""
+                  }
                   className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   Buat Pesanan
@@ -539,6 +560,18 @@ const Checkout: React.FC = () => {
             </h3>
 
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Nama Penerima
+                </label>
+                <input
+                  value={nama}
+                  onChange={(e) => setNama(e.target.value)}
+                  className="w-full border rounded-lg p-2"
+                  placeholder="Contoh: Ceplink"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Alamat Lengkap

@@ -46,7 +46,6 @@ import CreateRoles from "./pages/Roles/CreateRoles";
 import EditRoles from "./pages/Roles/EditRoles";
 import ProductsPage from "./components/ui-toko/ProductCard";
 import AboutSection from "./components/ui-toko/About";
-import ContactPage from "./components/ui-toko/Contact";
 import Varian from "./pages/Varian/Varian";
 import CreateVarian from "./pages/Varian/CreateVarian";
 import EditVarian from "./pages/Varian/EditVarian";
@@ -68,6 +67,32 @@ import RefundSaya from "./components/ui-toko/refund/RefundSaya";
 import KomplainAdmin from "./pages/CustomerService/KomplainAdmin";
 import KomplainAdminDetail from "./pages/CustomerService/KomplainAdminDetail";
 import KomplainSaya from "./components/ui-toko/komplain/KomplainSaya";
+
+function PesananRoute() {
+  const userData =
+    localStorage.getItem("user") || sessionStorage.getItem("user");
+
+  if (!userData) {
+    return <Navigate to="/login" replace />;
+  }
+
+  let user;
+  try {
+    user = JSON.parse(userData);
+  } catch {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (Number(user.id_role) === 1) {
+    return <PesananAdmin />;
+  }
+
+  if (Number(user.id_role) === 2) {
+    return <PesananKasir />;
+  }
+
+  return <Navigate to="/" replace />;
+}
 
 export default function App() {
   return (
@@ -158,35 +183,7 @@ export default function App() {
             <Route path="/edit-user/:id_user" element={<EditUser />} />
             {/* Setting menu end */}
             {/* Transaksi page */}
-            <Route
-              path="/pesanan"
-              element={(() => {
-                const userData =
-                  localStorage.getItem("user") ||
-                  sessionStorage.getItem("user");
-                let user = null;
-                try {
-                  user = userData ? JSON.parse(userData) : null;
-                } catch (e) {
-                  console.log("Error parsing user data:", e);
-                  return <Navigate to="/login" replace />;
-                }
-
-                if (!user) {
-                  return <Navigate to="/login" replace />;
-                }
-
-                // Render komponen berdasarkan role
-                if (user.id_role == 1) {
-                  return <PesananAdmin />;
-                } else if (user.id_role == 2) {
-                  return <PesananKasir />;
-                }
-
-                // Jika role tidak valid, redirect ke home
-                return <Navigate to="/" replace />;
-              })()}
-            />
+            <Route path="/pesanan" element={<PesananRoute />} />
             <Route path="/komplain" element={<KomplainAdmin />} />
             <Route
               path="/detail-komplain/:id_komplain"
@@ -234,7 +231,6 @@ export default function App() {
           <Route path="/cart-produk" element={<CartProduct />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/produk-list" element={<ProductsPage />} />
-          <Route path="/kontak-kami" element={<ContactPage />} />
           <Route path="/about-us" element={<AboutSection />} />
           <Route path="/checkout-produk-page" element={<Checkout />} />
           <Route path="/customer-service-page" element={<CustomerService />} />
