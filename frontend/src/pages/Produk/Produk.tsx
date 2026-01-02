@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
 import axios from "axios";
 
 type Produk = {
@@ -22,16 +22,22 @@ export default function Produk() {
   const [produk, setProduk] = useState<Produk[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchProduk = async () => {
+  const fetchProduk = async (query: string = "") => {
     try {
+      setLoading(true);
       const token = getToken();
 
-      const res = await axios.get("http://localhost:8080/api/v1/produk", {
+      const url = query
+        ? `http://localhost:8080/api/v1/produk/live/search?q=${query}`
+        : `http://localhost:8080/api/v1/produk`;
+
+      const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -42,14 +48,19 @@ export default function Produk() {
       }
     } catch (error) {
       console.error("Error fetching produk:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
+  // TAMBAHAN: Effect untuk menjalankan search otomatis
   useEffect(() => {
-    fetchProduk();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchProduk(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   const handleDelete = async (id_produk: number) => {
     if (!window.confirm("Anda yakin ingin menghapus produk ini?")) return;
@@ -62,7 +73,7 @@ export default function Produk() {
         },
       });
 
-      setProduk((prev) => prev.filter((prod) => prod.id_produk !== id_produk));
+      fetchProduk(searchQuery);
       setSuccessMessage("Produk berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -95,8 +106,22 @@ export default function Produk() {
 
       {/* Card Container */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
+        <div className="px-4 py-3 bg-gray-700 border-b border-gray-600 flex justify-between items-center">
           <h3 className="text-lg font-semibold text-white">DataTable Produk</h3>
+
+          {/* TAMBAHAN: Input Search di Kanan DataTable */}
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <FaSearch />
+            </span>
+            <input
+              type="text"
+              placeholder="Cari Nama / Merk..."
+              className="pl-10 pr-4 py-1.5 text-sm text-gray-200 bg-gray-600 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 w-64"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="p-4">
@@ -118,9 +143,15 @@ export default function Produk() {
             <p className="text-gray-300 text-center">Loading Data...</p>
           ) : produk.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-red-500 text-lg">Tidak ada data produk</p>
+              <p className="text-red-500 text-lg">
+                {searchQuery
+                  ? "Tidak ada produk yang cocok"
+                  : "Tidak ada data produk"}
+              </p>
               <p className="text-gray-400 text-sm mt-2">
-                Silakan tambah produk baru menggunakan tombol + di atas
+                {searchQuery
+                  ? "Coba kata kunci lain"
+                  : "Silakan tambah produk baru menggunakan tombol + di atas"}
               </p>
             </div>
           ) : (
@@ -138,13 +169,13 @@ export default function Produk() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Id Merk
+                      Merk
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Id Tipe
+                      Tipe
                     </th>
                     <th
                       scope="col"
@@ -168,13 +199,13 @@ export default function Produk() {
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Deskripsi Produk
+                      Deskripsi
                     </th>
                     <th
                       scope="col"
                       className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
                     >
-                      Spesifikasi Produk
+                      Spesifikasi
                     </th>
                     <th
                       scope="col"

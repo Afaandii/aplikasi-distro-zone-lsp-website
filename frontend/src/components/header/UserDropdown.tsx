@@ -25,6 +25,7 @@ export default function UserDropdown() {
     nama: "",
     username: "",
     foto_profile: "/images/default.jpg",
+    role: "",
   });
 
   // Ambil data user dari localStorage/sessionStorage
@@ -39,6 +40,7 @@ export default function UserDropdown() {
             nama: parsedUser.nama || "",
             username: parsedUser.username || "",
             foto_profile: parsedUser.foto_profile || "/images/default.jpg",
+            role: parsedUser.Role?.nama_role || "",
           });
         } catch (e) {
           console.error("Error parsing user data from storage:", e);
@@ -46,14 +48,15 @@ export default function UserDropdown() {
             nama: "",
             username: "",
             foto_profile: "/images/default.jpg",
+            role: "",
           });
         }
       } else {
-        // Jika tidak ada data user, kosongkan atau gunakan default
         setUserData({
           nama: "",
           username: "",
           foto_profile: "/images/default.jpg",
+          role: "",
         });
       }
     };
@@ -78,7 +81,9 @@ export default function UserDropdown() {
         }
       );
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
       window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
@@ -86,7 +91,6 @@ export default function UserDropdown() {
     }
   };
 
-  // Tidak perlu loading/error state karena ambil dari storage
   return (
     <div className="relative">
       <button
@@ -138,52 +142,56 @@ export default function UserDropdown() {
           </span>
         </div>
 
-        <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-          <li>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              to="/user-profile"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              <FaRegUserCircle className="size-5" />
-              Akun
-            </DropdownItem>
-          </li>
-          <li>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              to="/pesanan-list"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              <IoDocumentTextOutline className="size-5" />
-              Daftar Pesanan
-            </DropdownItem>
-          </li>
-          <li>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              to="/refund-saya"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              <FaUndo className="size-4" />
-              Refund Saya
-            </DropdownItem>
-          </li>
-          <li>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              to="/komplain-saya"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              <FaExclamationCircle className="size-4" />
-              Komplain Saya
-            </DropdownItem>
-          </li>
-        </ul>
+        {userData.role === "Customer" && (
+          <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+            <li>
+              <DropdownItem
+                onItemClick={closeDropdown}
+                tag="a"
+                to="/user-profile"
+                className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              >
+                <FaRegUserCircle className="size-5" />
+                Akun
+              </DropdownItem>
+            </li>
+            <li>
+              <DropdownItem
+                onItemClick={closeDropdown}
+                tag="a"
+                to="/pesanan-list"
+                className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              >
+                <IoDocumentTextOutline className="size-5" />
+                Daftar Pesanan
+              </DropdownItem>
+            </li>
+            <li>
+              <DropdownItem
+                onItemClick={closeDropdown}
+                tag="a"
+                to="/refund-saya"
+                className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              >
+                <FaUndo className="size-4" />
+                Refund Saya
+              </DropdownItem>
+            </li>
+            <li>
+              <DropdownItem
+                onItemClick={closeDropdown}
+                tag="a"
+                to="/komplain-saya"
+                className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              >
+                <FaExclamationCircle className="size-4" />
+                Komplain Saya
+              </DropdownItem>
+            </li>
+          </ul>
+        )}
+
+        {/* Tombol Logout tetap muncul untuk semua role */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"

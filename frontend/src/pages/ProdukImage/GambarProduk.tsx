@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
 import axios from "axios";
 
 type FotoProduk = {
@@ -17,15 +17,22 @@ export default function GambarProduk() {
   const [fotoProduk, setFotoProduk] = useState<FotoProduk[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchFotoProduk = async () => {
+  const fetchFotoProduk = async (query: string = "") => {
     try {
+      setLoading(true);
       const token = getToken();
-      const res = await axios.get("http://localhost:8080/api/v1/foto-produk", {
+
+      const url = query
+        ? `http://localhost:8080/api/v1/foto-produk/live/search?q=${query}`
+        : `http://localhost:8080/api/v1/foto-produk`;
+
+      const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,14 +43,18 @@ export default function GambarProduk() {
       }
     } catch (error) {
       console.error("Error fetching product images:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   useEffect(() => {
-    fetchFotoProduk();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchFotoProduk(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   const handleDelete = async (id_foto_produk: number) => {
     if (!window.confirm("Anda yakin ingin menghapus foto produk ini?")) return;
@@ -58,10 +69,7 @@ export default function GambarProduk() {
           },
         }
       );
-
-      setFotoProduk((prev) =>
-        prev.filter((brand) => brand.id_foto_produk !== id_foto_produk)
-      );
+      fetchFotoProduk(searchQuery);
       setSuccessMessage("Foto produk berhasil dihapus.");
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -88,10 +96,22 @@ export default function GambarProduk() {
 
       {/* Card Container */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
+        <div className="px-4 py-3 bg-gray-700 border-b border-gray-600 flex justify-between items-center">
           <h3 className="text-lg font-semibold text-white">
             DataTable Gambar Produk
           </h3>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <FaSearch />
+            </span>
+            <input
+              type="text"
+              placeholder="Cari Nama Produk..."
+              className="pl-10 pr-4 py-1.5 text-sm text-gray-200 bg-gray-600 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 w-64"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
 
         {/* Card Body */}
@@ -138,8 +158,17 @@ export default function GambarProduk() {
                   </tr>
                 ) : fotoProduk.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="text-center py-4 text-red-500">
-                      Tidak ada data gambar produk
+                    <td colSpan={4} className="text-center py-8">
+                      <p className="text-red-500 text-lg">
+                        {searchQuery
+                          ? "Tidak ada gambar produk yang cocok"
+                          : "Tidak ada data gambar produk"}
+                      </p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        {searchQuery
+                          ? "Coba kata kunci lain"
+                          : "Silakan tambah foto produk baru"}
+                      </p>
                     </td>
                   </tr>
                 ) : (

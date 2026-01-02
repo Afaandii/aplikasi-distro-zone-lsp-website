@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { FaEyeSlash, FaEye, FaGoogle, FaFacebook } from "react-icons/fa";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import axios from "axios";
@@ -85,7 +85,7 @@ export default function SignUpForm() {
           )}
 
           <div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+            {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
               <button
                 onClick={() =>
                   (window.location.href =
@@ -117,7 +117,7 @@ export default function SignUpForm() {
                   Or
                 </span>
               </div>
-            </div>
+            </div> */}
 
             {/* FORM */}
             <form onSubmit={handleRegister}>

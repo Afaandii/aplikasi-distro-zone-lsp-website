@@ -5,9 +5,7 @@ import SignUpForm from "../../components/auth/SignUpForm";
 export default function SignUp() {
   return (
     <>
-      <PageMeta
-        title="E-commerce SignUp Page | Katalog Produk Dashboard"
-      />
+      <PageMeta title="DistroZone | Signup Page" />
       <AuthLayout>
         <SignUpForm />
       </AuthLayout>

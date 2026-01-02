@@ -1,7 +1,6 @@
 import React from "react";
 import { FaAward, FaHeart, FaShieldAlt } from "react-icons/fa";
 import { IoSparkles } from "react-icons/io5";
-import Navbar from "./Navigation";
 import Footer from "./Footer";
 
 interface ValueItem {
@@ -68,28 +67,12 @@ const AboutSection: React.FC = () => {
               <div className="relative aspect-square rounded-2xl overflow-hidden bg-linear-to-br from-zinc-800 to-zinc-900 border border-white/10">
                 {/* Image Placeholder with Pattern */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div
-                    className="absolute inset-0 opacity-30"
-                    style={{
-                      backgroundImage: `
-                      linear-gradient(30deg, #f97316 12%, transparent 12.5%, transparent 87%, #f97316 87.5%, #f97316),
-                      linear-gradient(150deg, #f97316 12%, transparent 12.5%, transparent 87%, #f97316 87.5%, #f97316),
-                      linear-gradient(30deg, #f97316 12%, transparent 12.5%, transparent 87%, #f97316 87.5%, #f97316),
-                      linear-gradient(150deg, #f97316 12%, transparent 12.5%, transparent 87%, #f97316 87.5%, #f97316)
-                    `,
-                      backgroundSize: "80px 140px",
-                      backgroundPosition: "0 0, 0 0, 40px 70px, 40px 70px",
-                      opacity: 0.05,
-                    }}
+                  <div className="absolute inset-0 opacity-30" />
+                  <img
+                    src="/images/distro-zone.png"
+                    alt="DistroZone"
+                    className="w-full h-48"
                   />
-                  <div className="relative text-center p-8">
-                    <div className="text-6xl md:text-8xl font-black text-white/10 mb-4">
-                      DZ
-                    </div>
-                    <p className="text-gray-600 font-medium">
-                      [Your Brand Photo Here]
-                    </p>
-                  </div>
                 </div>
 
                 {/* Hover Overlay */}

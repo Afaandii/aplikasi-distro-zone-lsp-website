@@ -5,9 +5,7 @@ import SignInForm from "../../components/auth/SignInForm";
 export default function SignIn() {
   return (
     <>
-      <PageMeta
-        title="E-commerce SignIn Page | Katalog Produk Dashboard"
-      />
+      <PageMeta title="DistroZone | Sign Page" />
       <AuthLayout>
         <SignInForm />
       </AuthLayout>

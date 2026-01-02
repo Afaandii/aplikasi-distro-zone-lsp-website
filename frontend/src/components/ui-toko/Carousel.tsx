@@ -7,7 +7,7 @@ interface CarouselSlide {
   subtitle: string;
   highlight: string;
   bgColor: string;
-  image: string; // URL gambar
+  image: string;
 }
 
 export default function Carousel() {
@@ -17,27 +17,27 @@ export default function Carousel() {
   const slides: CarouselSlide[] = [
     {
       id: 1,
-      title: "MakinTENANG~",
-      subtitle: "Gajian Anti Boros",
-      highlight: "Diskon 50% s.d. Rp600rb*",
-      bgColor: "from-green-700 via-green-600 to-green-500",
-      image: "https://picsum.photos/800/600?random=1",
+      title: "DistroZone — Kaos Kerenmu",
+      subtitle: "Model Terbaru • Banyak Warna & Ukuran",
+      highlight: "Harga Terjangkau, Kualitas Premium",
+      bgColor: "from-orange-700 via-orange-600 to-orange-500",
+      image: "/images/kaos.png",
     },
     {
       id: 2,
-      title: "NEW YEAR JOY",
-      subtitle: "Belanja Hemat Tahun Baru",
-      highlight: "Diskon hingga 74%",
+      title: "Belanja Online Setiap Hari",
+      subtitle: "Transaksi Aktif Pukul 10.00 – 17.00 WIB",
+      highlight: "Di Luar Jam Ini Diproses Esok Hari",
       bgColor: "from-blue-700 via-blue-600 to-blue-500",
-      image: "https://picsum.photos/800/600?random=2",
+      image: "/images/jam-operasional.png",
     },
     {
       id: 3,
-      title: "FLASH SALE",
-      subtitle: "Kejutan Setiap Hari",
-      highlight: "Diskon s.d. 80%",
-      bgColor: "from-red-700 via-red-600 to-red-500",
-      image: "https://picsum.photos/800/600?random=3",
+      title: "Belanja Aman & Nyaman",
+      subtitle: "Didukung Customer Service & Sistem Refund",
+      highlight: "Tukar / Refund Maks. 3 Hari",
+      bgColor: "from-green-700 via-green-600 to-green-500",
+      image: "/images/refund.jpg",
     },
   ];
 
@@ -83,26 +83,6 @@ export default function Carousel() {
               <div
                 className={`bg-linear-to-r ${slide.bgColor} relative overflow-hidden`}
               >
-                {/* Decorative Elements (hanya untuk desktop/tablet) */}
-                <div className="absolute top-8 left-12 text-4xl opacity-70 hidden sm:block">
-                  🌙
-                </div>
-                <div className="absolute top-16 left-24 text-2xl opacity-60 hidden sm:block">
-                  ✨
-                </div>
-                <div className="absolute top-12 left-32 text-2xl opacity-50 hidden sm:block">
-                  ✨
-                </div>
-                <div className="absolute bottom-20 left-20 text-3xl opacity-40 rotate-12 hidden sm:block">
-                  🍃
-                </div>
-                <div className="absolute top-1/3 right-1/4 text-2xl opacity-30 hidden sm:block">
-                  💳
-                </div>
-                <div className="absolute bottom-32 right-1/3 text-3xl opacity-40 -rotate-12 hidden sm:block">
-                  🍃
-                </div>
-
                 {/* Glowing Effects (hanya untuk desktop/tablet) */}
                 <div className="absolute top-0 right-1/4 w-96 h-96 bg-yellow-300 rounded-full blur-3xl opacity-20 hidden sm:block"></div>
                 <div className="absolute top-1/4 right-1/3 w-72 h-72 bg-green-300 rounded-full blur-3xl opacity-15 hidden sm:block"></div>
@@ -142,10 +122,6 @@ export default function Carousel() {
                           alt={slide.title}
                           className="w-full h-full object-cover"
                         />
-                      </div>
-                      {/* Floating Card */}
-                      <div className="absolute -top-4 -right-4 sm:-top-6 sm:-right-6 bg-yellow-300 rounded-2xl p-1 sm:p-2 shadow-lg transform rotate-12 animate-pulse">
-                        <div className="text-lg sm:text-xl">💳</div>
                       </div>
                     </div>
                   </div>

@@ -33,20 +33,8 @@ const navItems: NavItem[] = [
     name: "Transaksi",
     subItems: [
       {
-        name: "Pembayaran",
-        path: "/pembayaran",
-        pro: false,
-        roles: ["admin"],
-      },
-      {
         name: "Pesanan",
         path: "/pesanan",
-        pro: false,
-        roles: ["admin", "kasir"],
-      },
-      {
-        name: "Transaksi",
-        path: "/transaksi",
         pro: false,
         roles: ["admin", "kasir"],
       },
@@ -254,20 +242,6 @@ const AppSidebar: React.FC = () => {
       }
 
       // Transaksi logic
-      if (path === "/transaksi") {
-        return (
-          location.pathname.startsWith("/transaksi") ||
-          location.pathname.startsWith("/edit-transaksi") ||
-          location.pathname.startsWith("/create-transaksi")
-        );
-      }
-      if (path === "/detail-transaksi") {
-        return (
-          location.pathname.startsWith("/detail-transaksi") ||
-          location.pathname.startsWith("/edit-detail-transaksi") ||
-          location.pathname.startsWith("/create-detail-transaksi")
-        );
-      }
       if (path === "/refund") {
         return (
           location.pathname.startsWith("/refund") ||

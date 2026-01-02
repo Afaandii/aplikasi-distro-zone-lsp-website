@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
 import axios from "axios";
 
 type TarifPengiriman = {
@@ -13,23 +13,25 @@ export default function TarifPengiriman() {
   const [tarifPengiriman, setTarifPengiriman] = useState<TarifPengiriman[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
-  const fetchTarifPengiriman = async () => {
+  const fetchTarifPengiriman = async (query: string = "") => {
     try {
       const token = getToken();
 
-      const res = await axios.get(
-        "http://localhost:8080/api/v1/tarif-pengiriman",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const url = query
+        ? `http://localhost:8080/api/v1/tarif-pengiriman/live/search?q=${query}`
+        : `http://localhost:8080/api/v1/tarif-pengiriman`;
+
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (res.status === 200) {
         setTarifPengiriman(res.data);
@@ -42,8 +44,12 @@ export default function TarifPengiriman() {
   };
 
   useEffect(() => {
-    fetchTarifPengiriman();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchTarifPengiriman(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   const handleDelete = async (id_tarif_pengiriman: number) => {
     if (!window.confirm("Anda yakin ingin menghapus tarif pengiriman ini?"))
@@ -91,10 +97,22 @@ export default function TarifPengiriman() {
 
       {/* Card Container */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
+        <div className="px-4 py-3 bg-gray-700 border-b border-gray-600 flex justify-between">
           <h3 className="text-lg font-semibold text-white">
             DataTable Tarif Pengiriman
           </h3>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <FaSearch />
+            </span>
+            <input
+              type="text"
+              placeholder="Cari Nama Wilayah / Harga..."
+              className="pl-10 pr-4 py-1.5 text-sm text-gray-200 bg-gray-600 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 w-64"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="p-4">
