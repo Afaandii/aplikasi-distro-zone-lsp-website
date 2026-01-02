@@ -9,8 +9,8 @@ import (
 type FotoProdukUsecase interface {
 	GetAll() ([]entities.FotoProduk, error)
 	GetByID(idFotoProduk int) (*entities.FotoProduk, error)
-	Create(id_produk int, url_foto string) (*entities.FotoProduk, error)
-	Update(idFotoProduk int, id_produk int, url_foto string) (*entities.FotoProduk, error)
+	Create(id_produk int, id_warna int, url_foto string) (*entities.FotoProduk, error)
+	Update(idFotoProduk int, id_produk int, id_warna int, url_foto string) (*entities.FotoProduk, error)
 	Delete(idFotoProduk int) error
 	Search(keyword string) ([]entities.FotoProduk, error)
 }
@@ -38,8 +38,8 @@ func (u *fotoProdukUsecase) GetByID(idFotoProduk int) (*entities.FotoProduk, err
 	return fp, nil
 }
 
-func (u *fotoProdukUsecase) Create(id_produk int, url_foto string) (*entities.FotoProduk, error) {
-	fp := &entities.FotoProduk{ProdukRef: id_produk, UrlFoto: url_foto}
+func (u *fotoProdukUsecase) Create(id_produk int, id_warna int, url_foto string) (*entities.FotoProduk, error) {
+	fp := &entities.FotoProduk{ProdukRef: id_produk, WarnaRef: id_warna, UrlFoto: url_foto}
 	err := u.repo.Create(fp)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (u *fotoProdukUsecase) Create(id_produk int, url_foto string) (*entities.Fo
 	return fp, nil
 }
 
-func (u *fotoProdukUsecase) Update(idFotoProduk int, id_produk int, url_foto string) (*entities.FotoProduk, error) {
+func (u *fotoProdukUsecase) Update(idFotoProduk int, id_produk int, id_warna int, url_foto string) (*entities.FotoProduk, error) {
 	existing, err := u.repo.FindByID(idFotoProduk)
 	if err != nil {
 		return nil, err
@@ -56,6 +56,7 @@ func (u *fotoProdukUsecase) Update(idFotoProduk int, id_produk int, url_foto str
 		return nil, helper.ProdukImageNotFoundError(idFotoProduk)
 	}
 	existing.ProdukRef = id_produk
+	existing.WarnaRef = id_warna
 	existing.UrlFoto = url_foto
 	err = u.repo.Update(existing)
 	if err != nil {
