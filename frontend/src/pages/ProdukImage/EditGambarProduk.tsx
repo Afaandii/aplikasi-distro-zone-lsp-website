@@ -9,9 +9,15 @@ type Produk = {
   nama_kaos: string;
 };
 
+type Warna = {
+  id_warna: number;
+  nama_warna: string;
+};
+
 type FotoProduk = {
   id_foto_produk: number;
   id_produk: number;
+  id_warna: number;
   url_foto: string | null;
   Produk: Produk;
 };
@@ -24,6 +30,8 @@ export default function EditGambarProduk() {
   const [selectedProductId, setSelectedProductId] = useState<number | null>(
     null
   );
+  const [warna, setWarna] = useState<Warna[]>([]);
+  const [selectedWarnaId, setSelectedWarnaId] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +47,7 @@ export default function EditGambarProduk() {
 
       try {
         const token = getToken();
-        const [fotoRes, produkRes] = await Promise.all([
+        const [fotoRes, produkRes, warnaRes] = await Promise.all([
           axios.get(
             `http://localhost:8080/api/v1/foto-produk/${id_foto_produk}`,
             {
@@ -49,6 +57,9 @@ export default function EditGambarProduk() {
           axios.get(`http://localhost:8080/api/v1/produk`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          axios.get(`http://localhost:8080/api/v1/warna`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
 
         if (fotoRes.status === 200) {
@@ -56,8 +67,9 @@ export default function EditGambarProduk() {
 
           setFotoProduk(fotoData);
           setSelectedProductId(fotoData.id_produk);
-          // ini ambil data master produk
+          setSelectedWarnaId(fotoData.id_warna);
           setProduk(produkRes.data);
+          setWarna(warnaRes.data);
         }
       } catch (err) {
         console.error("Gagal memuat data foto produk:", err);
@@ -75,8 +87,18 @@ export default function EditGambarProduk() {
     label: prod.nama_kaos,
   }));
 
+  const warnaOptions = warna.map((w) => ({
+    value: w.id_warna.toString(),
+    label: w.nama_warna,
+  }));
+
   const handleSelectChangeProductImage = (value: string | number) => {
     setSelectedProductId(Number(value));
+    setError(null);
+  };
+
+  const handleSelectChangeWarna = (value: string | number) => {
+    setSelectedWarnaId(Number(value));
     setError(null);
   };
 
@@ -105,6 +127,7 @@ export default function EditGambarProduk() {
 
     const formData = new FormData();
     formData.append("id_produk", selectedProductId.toString());
+    formData.append("id_warna", selectedWarnaId.toString());
 
     if (selectedFile) {
       formData.append("url_foto", selectedFile);
@@ -165,6 +188,23 @@ export default function EditGambarProduk() {
                 id="id_produk"
                 name="id_produk"
                 defaultValue={selectedProductId?.toString()}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="id_warna"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Warna
+              </label>
+              <Select
+                options={warnaOptions}
+                placeholder="Pilih Warna"
+                onChange={handleSelectChangeWarna}
+                id="id_warna"
+                name="id_warna"
+                defaultValue={selectedWarnaId ? selectedWarnaId.toString() : ""}
               />
             </div>
 
