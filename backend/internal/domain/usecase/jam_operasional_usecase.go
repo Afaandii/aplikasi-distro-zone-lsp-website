@@ -12,6 +12,7 @@ type JamOperasionalUsecase interface {
 	Create(tipe_layanan string, hari string, jam_buka string, jam_tutup string, status string) (*entities.JamOperasional, error)
 	Update(idJamOperasional int, tipe_layanan string, hari string, jam_buka string, jam_tutup string, status string) (*entities.JamOperasional, error)
 	Delete(idJamOperasional int) error
+	Search(keyword string) ([]entities.JamOperasional, error)
 }
 
 type jamOperasionalUsecase struct {
@@ -81,4 +82,7 @@ func (u *jamOperasionalUsecase) Delete(idJamOperasional int) error {
 		return helper.JamOperasionalNotFoundError(idJamOperasional)
 	}
 	return u.repo.Delete(idJamOperasional)
+}
+func (u *jamOperasionalUsecase) Search(keyword string) ([]entities.JamOperasional, error) {
+	return u.repo.Search(keyword)
 }

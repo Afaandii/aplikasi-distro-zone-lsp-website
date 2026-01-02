@@ -12,6 +12,7 @@ type UkuranUsecase interface {
 	Create(nama_ukuran string, keterangan string) (*entities.Ukuran, error)
 	Update(idUkuran int, nama_ukuran string, keterangan string) (*entities.Ukuran, error)
 	Delete(idUkuran int) error
+	Search(keyword string) ([]entities.Ukuran, error)
 }
 
 type ukuranUsecase struct {
@@ -72,4 +73,8 @@ func (u *ukuranUsecase) Delete(idUkuran int) error {
 		return helper.UkuranNotFoundError(idUkuran)
 	}
 	return u.repo.Delete(idUkuran)
+}
+
+func (u *ukuranUsecase) Search(keyword string) ([]entities.Ukuran, error) {
+	return u.repo.Search(keyword)
 }

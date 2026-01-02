@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -66,4 +67,18 @@ func (r *ukuranPGRepository) Delete(idUkuran int) error {
 		return errors.New("no rows deleted")
 	}
 	return nil
+}
+
+func (r *ukuranPGRepository) Search(keyword string) ([]entities.Ukuran, error) {
+	var list []entities.Ukuran
+	query := "%" + strings.ToLower(keyword) + "%"
+	err := r.db.
+		Where("LOWER(nama_ukuran) LIKE ? OR LOWER(keterangan) LIKE ?", query, query).
+		Order("ukuran.id_ukuran ASC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

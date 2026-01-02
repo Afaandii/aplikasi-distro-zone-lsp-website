@@ -93,3 +93,16 @@ func (wr *WarnaController) Delete(w http.ResponseWriter, r *http.Request, idWarn
 	}
 	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "deleted successfully!"})
 }
+
+func (wr *WarnaController) Search(w http.ResponseWriter, r *http.Request) {
+	keyword := r.URL.Query().Get("q")
+
+	// Panggil usecase
+	warna, err := wr.UC.Search(keyword)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, warna)
+}

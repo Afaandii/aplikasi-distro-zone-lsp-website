@@ -12,6 +12,7 @@ type TarifPengirimanUsecase interface {
 	Create(wilayah string, harga_per_kg int) (*entities.TarifPengiriman, error)
 	Update(idTarifPengiriman int, wilayah string, harga_per_kg int) (*entities.TarifPengiriman, error)
 	Delete(idTarifPengiriman int) error
+	Search(keyword string) ([]entities.TarifPengiriman, error)
 }
 
 type tarifPengirimanUsecase struct {
@@ -72,4 +73,8 @@ func (u *tarifPengirimanUsecase) Delete(idTarifPengiriman int) error {
 		return helper.TarifPengirimanNotFoundError(idTarifPengiriman)
 	}
 	return u.repo.Delete(idTarifPengiriman)
+}
+
+func (u *tarifPengirimanUsecase) Search(keyword string) ([]entities.TarifPengiriman, error) {
+	return u.repo.Search(keyword)
 }

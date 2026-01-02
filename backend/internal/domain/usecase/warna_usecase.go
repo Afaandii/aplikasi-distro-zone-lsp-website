@@ -12,6 +12,7 @@ type WarnaUsecase interface {
 	Create(nama_warna string, keterangan string) (*entities.Warna, error)
 	Update(idWarna int, nama_warna string, keterangan string) (*entities.Warna, error)
 	Delete(idWarna int) error
+	Search(keyword string) ([]entities.Warna, error)
 }
 
 type warnaUsecase struct {
@@ -72,4 +73,8 @@ func (u *warnaUsecase) Delete(idWarna int) error {
 		return helper.WarnaNotFoundError(idWarna)
 	}
 	return u.repo.Delete(idWarna)
+}
+
+func (u *warnaUsecase) Search(keyword string) ([]entities.Warna, error) {
+	return u.repo.Search(keyword)
 }

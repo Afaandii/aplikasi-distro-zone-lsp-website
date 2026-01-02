@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -66,4 +67,18 @@ func (r *merkPGRepository) Delete(idMerk int) error {
 		return errors.New("no rows deleted")
 	}
 	return nil
+}
+
+func (r *merkPGRepository) Search(keyword string) ([]entities.Merk, error) {
+	var list []entities.Merk
+	query := "%" + strings.ToLower(keyword) + "%"
+	err := r.db.
+		Where("LOWER(nama_merk) LIKE ? OR LOWER(keterangan) LIKE ?", query, query).
+		Order("merk.id_merk ASC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

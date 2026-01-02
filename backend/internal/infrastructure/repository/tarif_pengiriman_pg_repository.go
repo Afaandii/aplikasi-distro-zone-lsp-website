@@ -4,6 +4,8 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"strconv"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -83,4 +85,22 @@ func (tp *tarifPengirimanPGRepository) Delete(idTarifPengiriman int) error {
 		return errors.New("no rows deleted")
 	}
 	return nil
+}
+
+func (r *tarifPengirimanPGRepository) Search(keyword string) ([]entities.TarifPengiriman, error) {
+	var list []entities.TarifPengiriman
+	if harga, err := strconv.Atoi(keyword); err == nil {
+		err = r.db.
+			Where("harga_per_kg = ?", harga).
+			Order("tarif_pengiriman.id_tarif_pengiriman ASC").
+			Find(&list).Error
+	} else {
+		query := "%" + strings.ToLower(keyword) + "%"
+		err = r.db.
+			Where("LOWER(wilayah) LIKE ?", query).
+			Order("tarif_pengiriman.id_tarif_pengiriman ASC").
+			Find(&list).Error
+	}
+
+	return list, nil
 }

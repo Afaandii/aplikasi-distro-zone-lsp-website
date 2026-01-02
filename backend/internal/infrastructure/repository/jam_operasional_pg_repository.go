@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -69,4 +70,18 @@ func (jo *jamOperasionalPGRepository) Delete(idJamOperasional int) error {
 		return errors.New("no rows deleted")
 	}
 	return nil
+}
+
+func (r *jamOperasionalPGRepository) Search(keyword string) ([]entities.JamOperasional, error) {
+	var list []entities.JamOperasional
+	query := "%" + strings.ToLower(keyword) + "%"
+	err := r.db.
+		Where("LOWER(tipe_layanan) LIKE ? OR LOWER(hari) LIKE ?", query, query).
+		Order("jam_operasional.id_jam_operasional ASC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

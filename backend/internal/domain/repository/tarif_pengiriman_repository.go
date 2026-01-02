@@ -9,4 +9,5 @@ type TarifPengirimanRepository interface {
 	Create(tp *entities.TarifPengiriman) error
 	Update(tp *entities.TarifPengiriman) error
 	Delete(idTarifPengiriman int) error
+	Search(keyword string) ([]entities.TarifPengiriman, error)
 }

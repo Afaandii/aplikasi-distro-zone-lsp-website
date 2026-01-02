@@ -42,4 +42,12 @@ func RegisterUkuranRoutes(c *controller.UkuranController) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
+
+	http.HandleFunc("/api/v1/ukuran/live/search", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		c.Search(w, r)
+	})
 }

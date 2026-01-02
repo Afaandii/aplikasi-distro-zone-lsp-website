@@ -8,4 +8,5 @@ type JamOperasionalRepository interface {
 	Create(jo *entities.JamOperasional) error
 	Update(jo *entities.JamOperasional) error
 	Delete(idJamOperasional int) error
+	Search(keyword string) ([]entities.JamOperasional, error)
 }

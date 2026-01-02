@@ -93,3 +93,16 @@ func (m *MerkController) Delete(w http.ResponseWriter, r *http.Request, idMerk i
 	}
 	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "deleted successfully!"})
 }
+
+func (m *MerkController) Search(w http.ResponseWriter, r *http.Request) {
+	keyword := r.URL.Query().Get("q")
+
+	// Panggil usecase
+	merk, err := m.UC.Search(keyword)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	helper.WriteJSON(w, http.StatusOK, merk)
+}

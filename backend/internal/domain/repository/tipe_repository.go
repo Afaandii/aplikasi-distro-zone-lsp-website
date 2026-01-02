@@ -8,4 +8,5 @@ type TipeRepository interface {
 	Create(t *entities.Tipe) error
 	Update(t *entities.Tipe) error
 	Delete(idTipe int) error
+	Search(keyword string) ([]entities.Tipe, error)
 }
