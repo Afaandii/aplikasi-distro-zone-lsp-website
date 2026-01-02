@@ -70,7 +70,7 @@ func (u *RefundUsecase) ApproveRefund(id uint, adminNote string) error {
 
 	metodePembayaran := refund.Transaksi.MetodePembayaran
 	upperMethod := strings.ToUpper(metodePembayaran)
-	manualMethods := []string{"BCA", "VA", "BANK", "MANDIRI", "BRI", "BNI", "PERMATA", "ALFAMART", "INDOMARET"}
+	manualMethods := []string{"BCA", "VA", "BANK", "MANDIRI", "BRI", "BNI", "PERMATA", "ALFAMART", "INDOMARET", "DANA"}
 
 	isManual := false
 	for _, keyword := range manualMethods {
@@ -99,7 +99,10 @@ func (u *RefundUsecase) ApproveRefund(id uint, adminNote string) error {
 		refundKey,
 	)
 	if err != nil {
-		return err
+		msg := fmt.Sprintf("%v", err)
+		if !strings.Contains(msg, "Duplicate") && !strings.Contains(msg, "406") {
+			return err
+		}
 	}
 
 	refund.Status = "APPROVED"
