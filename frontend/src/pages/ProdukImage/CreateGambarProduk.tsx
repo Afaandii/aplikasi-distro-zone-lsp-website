@@ -9,11 +9,18 @@ type Produk = {
   nama_kaos: string;
 };
 
+type Warna = {
+  id_warna: number;
+  nama_warna: string;
+};
+
 export default function CreateGambarProduk() {
   const [produk, setProduk] = useState<Produk[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(
     null
   );
+  const [warna, setWarna] = useState<Warna[]>([]);
+  const [selectedWarnaId, setSelectedWarnaId] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -38,6 +45,16 @@ export default function CreateGambarProduk() {
         if (res.status === 200) {
           setProduk(res.data);
         }
+
+        const resWarna = await axios.get("http://localhost:8080/api/v1/warna", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (resWarna.status === 200) {
+          setWarna(resWarna.data);
+        }
       } catch (err) {
         console.error("Gagal memuat data gambar produk:", err);
         setError("Gagal memuat daftar produk. Silakan coba lagi.");
@@ -54,8 +71,18 @@ export default function CreateGambarProduk() {
     label: product.nama_kaos,
   }));
 
+  const warnaOptions = warna.map((w) => ({
+    value: w.id_warna.toString(),
+    label: w.nama_warna,
+  }));
+
   const handleSelectChangeProductImage = (value: string | number) => {
     setSelectedProductId(Number(value));
+    setError(null);
+  };
+
+  const handleSelectChangeWarna = (value: string | number) => {
+    setSelectedWarnaId(Number(value));
     setError(null);
   };
 
@@ -83,6 +110,7 @@ export default function CreateGambarProduk() {
 
     const formData = new FormData();
     formData.append("id_produk", selectedProductId.toString());
+    formData.append("id_warna", selectedWarnaId.toString());
     formData.append("url_foto", selectedFile);
 
     try {
@@ -138,6 +166,23 @@ export default function CreateGambarProduk() {
                 onChange={handleSelectChangeProductImage}
                 id="id_produk"
                 name="id_produk"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="id_warna"
+                className="block text-sm font-medium text-white mb-1"
+              >
+                Warna
+              </label>
+              <Select
+                options={warnaOptions}
+                defaultValue={selectedWarnaId ? selectedWarnaId.toString() : ""}
+                placeholder="Pilih Warna"
+                onChange={handleSelectChangeWarna}
+                id="id_warna"
+                name="id_warna"
               />
             </div>
 
