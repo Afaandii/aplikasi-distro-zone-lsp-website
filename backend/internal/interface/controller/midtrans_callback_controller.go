@@ -37,11 +37,10 @@ func mapMetodePembayaran(notif map[string]interface{}) string {
 	switch paymentType {
 
 	case "bank_transfer":
-		// 🔥 ambil dari va_numbers
 		if vaNumbers, ok := notif["va_numbers"].([]interface{}); ok && len(vaNumbers) > 0 {
 			if va, ok := vaNumbers[0].(map[string]interface{}); ok {
 				if bank, ok := va["bank"].(string); ok {
-					return strings.ToUpper(bank) // BCA / BNI / BRI
+					return strings.ToUpper(bank)
 				}
 			}
 		}
