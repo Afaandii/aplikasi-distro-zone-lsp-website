@@ -45,6 +45,7 @@ func (r *fotoProdukPGRepository) Update(c *entities.FotoProduk) error {
 		Where("id_foto_produk = ?", c.IDFotoProduk).
 		Updates(map[string]interface{}{
 			"id_produk": c.ProdukRef,
+			"id_warna":  c.WarnaRef,
 			"url_foto":  c.UrlFoto,
 		})
 	if result.Error != nil {

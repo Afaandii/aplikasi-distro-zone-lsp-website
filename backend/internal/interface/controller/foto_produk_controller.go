@@ -54,6 +54,13 @@ func (fp *FotoProdukController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	idWarnaStr := r.FormValue("id_warna")
+	idWarna, err := strconv.Atoi(idWarnaStr)
+	if err != nil {
+		helper.WriteJSON(w, 400, map[string]string{"error": "invalid id_produk"})
+		return
+	}
+
 	file, handler, err := r.FormFile("url_foto")
 
 	var urlFoto string
@@ -78,6 +85,7 @@ func (fp *FotoProdukController) Create(w http.ResponseWriter, r *http.Request) {
 
 	created, err := fp.UC.Create(
 		idProduk,
+		idWarna,
 		urlFoto,
 	)
 	if err != nil {
@@ -95,6 +103,13 @@ func (fp *FotoProdukController) Update(w http.ResponseWriter, r *http.Request, i
 	idProduk, err := strconv.Atoi(idProdukStr)
 	if err != nil {
 		helper.WriteJSON(w, 400, map[string]string{"error": "invalid id_role"})
+		return
+	}
+
+	idWarnaStr := r.FormValue("id_warna")
+	idWarna, err := strconv.Atoi(idWarnaStr)
+	if err != nil {
+		helper.WriteJSON(w, 400, map[string]string{"error": "invalid id_produk"})
 		return
 	}
 
@@ -118,6 +133,7 @@ func (fp *FotoProdukController) Update(w http.ResponseWriter, r *http.Request, i
 	updated, err := fp.UC.Update(
 		idFotoProduk,
 		idProduk,
+		idWarna,
 		urlFoto,
 	)
 	if err != nil {
