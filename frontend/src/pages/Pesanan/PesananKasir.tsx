@@ -12,6 +12,7 @@ type Pesanan = {
   status_pembayaran: string;
   status_pesanan: string;
   metode_pembayaran: string;
+  created_at: string;
 
   Pemesan?: {
     nama: string;
@@ -89,6 +90,24 @@ export default function PesananKasir() {
     }
   };
 
+  // Format tanggal ke "DD MMM YYYY HH:mm"
+  const formatDate = (isoString: string) => {
+    const date = new Date(isoString);
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+
+    let formatted = date.toLocaleString("id-ID", options);
+    formatted = formatted.replace(/(\d{2})\.(\d{2})$/, "$1:$2");
+
+    return formatted;
+  };
+
   return (
     <>
       {/* Header */}
@@ -145,6 +164,9 @@ export default function PesananKasir() {
                     <th className="px-4 py-3 text-xs text-gray-300">
                       Metode Pembayaran
                     </th>
+                    <th className="px-16 py-3 text-xs text-gray-300">
+                      Tanggal Pesanan
+                    </th>
                     <th className="px-4 py-3 text-xs text-gray-300">Aksi</th>
                   </tr>
                 </thead>
@@ -171,6 +193,9 @@ export default function PesananKasir() {
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         {p.metode_pembayaran}
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        {formatDate(p.created_at)}
                       </td>
                       <td className="px-4 py-3 flex gap-2">
                         <button

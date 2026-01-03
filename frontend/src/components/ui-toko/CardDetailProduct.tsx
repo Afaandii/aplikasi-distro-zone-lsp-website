@@ -221,6 +221,8 @@ export default function CardDetailProduct() {
             size: currentVariant.ukuran,
             quantity: quantity,
             price: price,
+            warna_id: currentVariant.id_warna,
+            ukuran_id: currentVariant.id_ukuran,
           },
         ],
       },
