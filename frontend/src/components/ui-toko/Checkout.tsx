@@ -17,6 +17,8 @@ interface Product {
   image: string;
   color: string;
   size: string;
+  warna_id: number;
+  ukuran_id: number;
   quantity: number;
   price: number;
 }
@@ -182,6 +184,8 @@ const Checkout: React.FC = () => {
           items: products.map((p) => ({
             id: Number(p.id),
             quantity: p.quantity,
+            warna_id: p.warna_id,
+            ukuran_id: p.ukuran_id,
           })),
         }),
       });
@@ -245,6 +249,8 @@ const Checkout: React.FC = () => {
           items: products.map((p) => ({
             id: Number(p.id),
             quantity: p.quantity,
+            warna_id: p.warna_id,
+            ukuran_id: p.ukuran_id,
           })),
         }),
       });
