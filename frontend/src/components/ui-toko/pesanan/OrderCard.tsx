@@ -10,6 +10,9 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
   const firstProduct = order.products[0];
+  if (!firstProduct) {
+    return null;
+  }
   const totalItems = order.products.reduce((sum, p) => sum + p.quantity, 0);
 
   return (

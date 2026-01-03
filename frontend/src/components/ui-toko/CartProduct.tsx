@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { MdDeleteOutline } from "react-icons/md";
 import { IoChevronBack } from "react-icons/io5";
 import Navigation from "./Navigation";
 import Footer from "./Footer";
 
-// Interface untuk item keranjang dari API
 interface ApiCartItem {
   id: number;
   cart_id: number;
@@ -13,6 +13,8 @@ interface ApiCartItem {
   price: number;
   created_at: string;
   updated_at: string;
+  warna: string;
+  ukuran: string;
   product: {
     id: number;
     product_name: string;
@@ -20,7 +22,6 @@ interface ApiCartItem {
   };
 }
 
-// Interface yang digunakan oleh UI
 interface CartItem {
   id: string;
   product_id: number;
@@ -28,6 +29,8 @@ interface CartItem {
   image: string;
   price: number;
   quantity: number;
+  warna: string;
+  ukuran: string;
   product: {
     id: number;
     product_name: string;
@@ -36,17 +39,13 @@ interface CartItem {
 }
 
 const CartProduct = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [totalPrice, setTotalPrice] = useState(0);
-
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-  });
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -71,7 +70,7 @@ const CartProduct = () => {
     window.dispatchEvent(event);
   };
 
-  // Fungsi untuk mengambil data keranjang (dibuat menjadi reusable)
+  // Fungsi untuk mengambil data keranjang
   const fetchCartData = async () => {
     try {
       setLoading(true);
@@ -84,7 +83,7 @@ const CartProduct = () => {
       }
 
       const response = await fetch(
-        "http://localhost:8000/api/v1/cart-product",
+        "http://localhost:8080/api/v1/cart-product",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -111,14 +110,16 @@ const CartProduct = () => {
             image: item.product.image_url || "/placeholder-image.jpg",
             price: item.price,
             quantity: item.quantity,
+            warna: item.warna,
+            ukuran: item.ukuran,
           })
         );
 
         setItems(transformedItems);
 
+        // Opsional: Otomatis pilih item pertama atau biarkan kosong
         if (transformedItems.length > 0) {
-          const firstItemId = transformedItems[0].id;
-          setSelectedItems(new Set([firstItemId]));
+          setSelectedItems(new Set([transformedItems[0].id]));
           setSelectAll(false);
         }
       } else {
@@ -198,7 +199,7 @@ const CartProduct = () => {
     try {
       const token = getToken();
       const response = await fetch(
-        "http://localhost:8000/api/v1/cart-product-update",
+        "http://localhost:8080/api/v1/cart-product-update",
         {
           method: "PUT",
           headers: {
@@ -234,7 +235,7 @@ const CartProduct = () => {
     try {
       const token = getToken();
       const response = await fetch(
-        "http://localhost:8000/api/v1/cart-product-delete",
+        "http://localhost:8080/api/v1/cart-product-delete",
         {
           method: "DELETE",
           headers: {
@@ -277,7 +278,7 @@ const CartProduct = () => {
     try {
       const token = getToken();
       const response = await fetch(
-        "http://localhost:8000/api/v1/cart-product-delete-all",
+        "http://localhost:8080/api/v1/cart-product-delete-all",
         {
           method: "DELETE",
           headers: {
@@ -310,67 +311,8 @@ const CartProduct = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const token = getToken();
-      if (!token) return;
-
-      try {
-        const response = await fetch("http://localhost:8000/api/v1/auth/user", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.status === "Ok") {
-            setUserData({
-              name: data.data.name,
-              email: data.data.email,
-            });
-          }
-        }
-      } catch (err: any) {
-        console.error("Gagal mengambil data user:", err);
-        // Biarkan saja nilai default jika gagal mengambil data
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  const clearSelectedItemsAfterPayment = async () => {
-    // Gunakan Promise.all untuk menghapus semua item yang dipilih secara bersamaan
-    const deletePromises = Array.from(selectedItems).map((id) => {
-      const token = getToken();
-      return fetch("http://localhost:8000/api/v1/cart-product-delete", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cart_item_id: parseInt(id),
-        }),
-      });
-    });
-
-    try {
-      await Promise.all(deletePromises);
-      fetchCartData();
-      showNotification("Pembayaran berhasil! Keranjang diperbarui.", "success");
-    } catch (err: any) {
-      setError(err.message);
-      showNotification(
-        "Pembayaran berhasil, tapi gagal memperbarui keranjang.",
-        "error"
-      );
-    }
-  };
-
-  const handleBuyNow = async () => {
-    const token = getToken();
+  // Fungsi untuk pindah ke halaman Checkout
+  const handleCheckout = () => {
     if (selectedItems.size === 0) {
       alert("Pilih minimal satu produk untuk dibeli.");
       return;
@@ -380,54 +322,13 @@ const CartProduct = () => {
       selectedItems.has(item.id)
     );
 
-    try {
-      // 1. Hit API Laravel → dapatkan snap token
-      const response = await fetch("http://localhost:8000/api/v1/payment", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: totalPrice,
-          name: userData.name,
-          email: userData.email,
-          cart_items: selectedCartItems.map((item) => ({
-            product_id: item.product_id,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!data.token) {
-        alert("Gagal membuat invoice Midtrans");
-        return;
-      }
-
-      // 2. Buka popup pembayaran Midtrans
-      window.snap.pay(data.token, {
-        onSuccess: function (result: any) {
-          console.log("Success:", result);
-          // 3. Jika sukses, hapus item yang dibayar dari keranjang
-          clearSelectedItemsAfterPayment();
-        },
-        onPending: function (result: any) {
-          console.log("Pending:", result);
-        },
-        onError: function (result: any) {
-          console.log("Error:", result);
-        },
-        onClose: function () {
-          console.log("Menutup Pop Up");
-        },
-      });
-    } catch (err) {
-      console.error(err);
-      alert("Terjadi error saat memulai pembayaran");
-    }
+    // Arahkan ke halaman checkout sambil membawa data item yang dipilih
+    navigate("/checkout-produk-page", {
+      state: {
+        products: selectedCartItems,
+        totalPrice: totalPrice,
+      },
+    });
   };
 
   if (loading) {
@@ -649,7 +550,7 @@ const CartProduct = () => {
                     disabled
                     className="w-full bg-gray-300 cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-colors"
                   >
-                    Beli (0)
+                    Beli Langsung (0)
                   </button>
                 </div>
               </div>
@@ -837,6 +738,15 @@ const CartProduct = () => {
                           </h3>
                         </a>
 
+                        <div className="text-xs text-gray-600 mb-1">
+                          <span className="font-medium">Warna:</span>{" "}
+                          {item.warna || ""}
+                        </div>
+                        <div className="text-xs text-gray-600 mb-2">
+                          <span className="font-medium">Ukuran:</span>{" "}
+                          {item.ukuran || ""}
+                        </div>
+
                         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 lg:gap-0">
                           <div>
                             <span className="text-base lg:text-lg font-bold">
@@ -910,9 +820,9 @@ const CartProduct = () => {
                   </span>
                 </div>
 
-                {/* ✅ Tambahkan onClick untuk memanggil handleBuyNow */}
+                {/* Button Checkout Desktop */}
                 <button
-                  onClick={handleBuyNow}
+                  onClick={handleCheckout}
                   className={`w-full ${
                     selectedCount > 0
                       ? "bg-green-500 hover:bg-green-600"
@@ -920,7 +830,7 @@ const CartProduct = () => {
                   } text-white font-bold py-3 px-6 rounded-lg transition-colors`}
                   disabled={selectedCount === 0}
                 >
-                  Beli ({selectedCount})
+                  Beli Langsung ({selectedCount})
                 </button>
               </div>
             </div>
@@ -963,22 +873,20 @@ const CartProduct = () => {
                 </span>
               </div>
             </div>
+            {/* Button Checkout Mobile */}
             <button
-              onClick={handleBuyNow}
+              onClick={handleCheckout}
               className={`bg-green-500 hover:bg-green-600 text-white font-semibold py-2.5 px-6 rounded-lg transition-colors ${
                 selectedCount === 0 ? "disabled:bg-gray-300" : ""
               }`}
               disabled={selectedCount === 0}
             >
-              Beli ({selectedCount})
+              Beli Langsung ({selectedCount})
             </button>
           </div>
         </div>
       </div>
 
-      {/* <div className="hidden lg:block">
-        <Footer />
-      </div> */}
       <Footer />
     </>
   );

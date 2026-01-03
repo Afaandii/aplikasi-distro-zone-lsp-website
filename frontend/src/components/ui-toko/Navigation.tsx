@@ -56,13 +56,13 @@ export default function Navigation() {
         return;
       }
 
-      const res = await axios.get("http://localhost:8000/api/v1/cart-product", {
+      const res = await axios.get("http://localhost:8080/api/v1/cart-product", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const totalItems = res.data?.data?.total_items ?? 0;
+      const totalItems = res.data?.data?.items?.length ?? 0;
       setCartCount(totalItems);
     } catch (error) {
       console.error("Gagal mengambil cart:", error);
