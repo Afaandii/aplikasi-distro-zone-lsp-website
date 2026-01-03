@@ -30,6 +30,7 @@ type User struct {
 	Penerima            []ChatCS     `gorm:"foreignKey:IDPenerima;references:IDUser"`
 	Komplain            []Komplain   `gorm:"foreignKey:UserRef;references:IDUser"`
 	Refund              []Refund     `gorm:"foreignKey:UserRef;references:IDUser"`
+	Cart                []Cart       `gorm:"foreignKey:UserRef;references:IDUser"`
 }
 
 func (User) TableName() string {

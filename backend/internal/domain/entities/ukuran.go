@@ -10,7 +10,8 @@ type Ukuran struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 
 	// hasmany ke produk
-	Varian []Varian `gorm:"foreignKey:UkuranRef;references:IDUkuran"`
+	Varian   []Varian   `gorm:"foreignKey:UkuranRef;references:IDUkuran"`
+	CartItem []CartItem `gorm:"foreignKey:UkuranRef;references:IDUkuran"`
 }
 
 func (Ukuran) TableName() string {
