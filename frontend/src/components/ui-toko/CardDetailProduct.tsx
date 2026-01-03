@@ -47,11 +47,31 @@ export default function CardDetailProduct() {
   const [mainImage, setMainImage] = useState<string>("");
   const [hoverImage, setHoverImage] = useState<string | null>(null);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [alertState, setAlertState] = useState<AlertState>({
+    show: false,
+    message: "",
+    type: "success",
+  });
   const navigate = useNavigate();
 
   const condition = "Baru";
   const minOrder = 1;
   const features: string[] = [];
+
+  const getToken = () => {
+    return localStorage.getItem("token") || sessionStorage.getItem("token");
+  };
+
+  const showCustomAlert = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setAlertState({ show: true, message, type });
+    setTimeout(() => {
+      setAlertState((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   useEffect(() => {
     const fetchDetailProduk = async () => {
@@ -201,6 +221,56 @@ export default function CardDetailProduct() {
   const getImageByWarna = (idWarna: number | null) => {
     if (!idWarna) return null;
     return images.find((img) => img.id_warna === idWarna)?.url || null;
+  };
+
+  const handleAddToCart = async () => {
+    if (!currentVariant || !selectedUkuran || !selectedWarna) {
+      alert("Pilih warna dan ukuran terlebih dahulu");
+      return;
+    }
+
+    const token = getToken();
+    if (!token) {
+      alert("Anda belum login. Silakan login terlebih dahulu.");
+      navigate("/login");
+      return;
+    }
+
+    setIsAddingToCart(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/cart-product",
+        {
+          product_id: parseInt(id_produk || "0"),
+          quantity: quantity,
+          price: price,
+          warna_id: currentVariant.id_warna,
+          ukuran_id: currentVariant.id_ukuran,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        showCustomAlert("Produk berhasil ditambahkan ke keranjang", "success");
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+      } else {
+        alert(response.data.message || "Gagal menambahkan ke keranjang");
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(
+        err.response?.data?.message ||
+          "Terjadi kesalahan saat menambahkan ke keranjang"
+      );
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   // handling  data payload buat ke halaman checkout
@@ -365,6 +435,15 @@ export default function CardDetailProduct() {
     <>
       <Navigation />
       <div className="min-h-screen bg-gray-50">
+        {alertState.show && (
+          <div
+            className={`fixed top-18 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg text-white font-medium shadow-lg transition-opacity duration-300 ${
+              alertState.type === "success" ? "bg-green-600" : "bg-red-600"
+            }`}
+          >
+            {alertState.message}
+          </div>
+        )}
         <div className="max-w-275 mx-auto px-2 sm:px-4 mt-4 sm:mt-6 lg:mt-40 mb-10">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Left Column - Product Images */}
@@ -726,8 +805,14 @@ export default function CardDetailProduct() {
                 </div>
 
                 <div className="space-y-2 sm:space-y-3">
-                  <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-sm sm:text-base py-2 rounded-xl transition-colors shadow-md">
-                    + Keranjang
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart}
+                    className={`w-full bg-green-600 hover:bg-green-700 text-white font-bold text-sm sm:text-base py-2 rounded-xl transition-colors shadow-md ${
+                      isAddingToCart ? "opacity-70 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    {isAddingToCart ? "Menambahkan..." : "+ Keranjang"}
                   </button>
                   <button
                     onClick={handleBuyNow}

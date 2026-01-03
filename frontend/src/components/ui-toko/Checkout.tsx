@@ -224,7 +224,7 @@ const Checkout: React.FC = () => {
       const jamTutup = jamOperasional?.jam_tutup.slice(0, 5) || "17.00";
       setAlerts({
         show: true,
-        message: `Maaf, transaksi online hanya tersedia antara pukul ${jamBuka} - ${jamTutup} WIB. Silakan coba kembali nanti.`,
+        message: `Mohon maaf, transaksi online hanya tersedia antara pukul ${jamBuka} - ${jamTutup} WIB. Silakan coba kembali sesuai jam operasional toko.`,
         type: "error",
       });
       setTimeout(
