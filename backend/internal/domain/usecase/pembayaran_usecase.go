@@ -5,6 +5,7 @@ import (
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
 	"math"
+	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -19,6 +20,7 @@ type PembayaranUsecase struct {
 	ProdukRepo     repo.ProdukRepository
 	UserRepo       repo.UserRepository
 	TarifRepo      repo.TarifPengirimanRepository
+	VarianRepo     repo.VarianRepository
 }
 
 type ItemRequest struct {
@@ -26,6 +28,8 @@ type ItemRequest struct {
 	Name     string `json:"name"`
 	Price    int    `json:"price"`
 	Quantity int    `json:"quantity"`
+	WarnaID  int    `json:"warna_id"`
+	UkuranID int    `json:"ukuran_id"`
 }
 
 func mapKotaKeWilayah(kota string) string {
@@ -236,13 +240,39 @@ func (u *PembayaranUsecase) CreatePembayaran(
 		return "", err
 	}
 
-	// 8. Simpan detail pesanan
+	// 8. Simpan detail pesanan & kurangi stok varian
 	for _, item := range items {
+		if item.WarnaID == 0 || item.UkuranID == 0 {
+			return "", errors.New("warna_id dan ukuran_id wajib diisi untuk setiap item")
+		}
+
+		// Ambil produk
 		produk, err := u.ProdukRepo.FindByID(item.ID)
 		if err != nil {
 			return "", err
 		}
 
+		// Cari varian spesifik
+		varian, err := u.VarianRepo.FindByProdukWarnaUkuran(item.ID, item.WarnaID, item.UkuranID)
+		if err != nil {
+			return "", err
+		}
+		if varian == nil {
+			return "", errors.New("varian tidak ditemukan untuk produk ID=" + strconv.Itoa(item.ID))
+		}
+
+		// Validasi stok
+		if varian.StokKaos < item.Quantity {
+			return "", errors.New("stok tidak mencukupi untuk " + produk.NamaKaos)
+		}
+
+		// Kurangi stok
+		varian.StokKaos -= item.Quantity
+		if err := u.VarianRepo.Update(varian); err != nil {
+			return "", err
+		}
+
+		// Simpan detail pesanan
 		detail := entities.DetailPesanan{
 			PesananRef:  pesanan.IDPesanan,
 			ProdukRef:   produk.IDProduk,
@@ -250,7 +280,6 @@ func (u *PembayaranUsecase) CreatePembayaran(
 			HargaSatuan: produk.HargaJual,
 			Total:       produk.HargaJual * item.Quantity,
 		}
-
 		if err := u.DetailPesanan.Create(&detail); err != nil {
 			return "", err
 		}

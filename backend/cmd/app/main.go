@@ -102,7 +102,7 @@ func main() {
 	refundUc := usecase.NewRefundUsecase(refundRepo, paymentGateway)
 	refundCtrl := controller.NewRefundController(refundUc)
 	pembayaranRepo := repo.NewPembayaranPgRepository(db)
-	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo, DetailPesanan: detailPesananRepo}
+	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo, DetailPesanan: detailPesananRepo, VarianRepo: varianRepo}
 	checkoutCtrl := &controller.CheckoutController{PembayaranUC: pembayaranUc}
 	callbackCtrl := &controller.MidtransCallbackController{PesananRepo: pesananRepo, PembayaranRepo: pembayaranRepo}
 

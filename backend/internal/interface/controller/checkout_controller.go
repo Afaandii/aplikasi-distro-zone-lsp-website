@@ -70,11 +70,8 @@ func (c *CheckoutController) Preview(w http.ResponseWriter, r *http.Request) {
 
 func (c *CheckoutController) Checkout(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		AlamatPengiriman string `json:"alamat_pengiriman"`
-		Items            []struct {
-			ID       int `json:"id"`
-			Quantity int `json:"quantity"`
-		} `json:"items"`
+		AlamatPengiriman string                `json:"alamat_pengiriman"`
+		Items            []usecase.ItemRequest `json:"items"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -110,7 +107,7 @@ func (c *CheckoutController) Checkout(w http.ResponseWriter, r *http.Request) {
 	snapToken, err := c.PembayaranUC.CreatePembayaran(
 		claims.UserID,
 		req.AlamatPengiriman,
-		items,
+		req.Items,
 	)
 
 	if err != nil {

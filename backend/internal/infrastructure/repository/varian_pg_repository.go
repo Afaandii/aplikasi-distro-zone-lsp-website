@@ -90,3 +90,12 @@ func (r *varianPGRepository) Search(keyword string) ([]entities.Varian, error) {
 	}
 	return list, nil
 }
+
+func (r *varianPGRepository) FindByProdukWarnaUkuran(idProduk, idWarna, idUkuran int) (*entities.Varian, error) {
+	var v entities.Varian
+	err := r.db.Where("id_produk = ? AND id_warna = ? AND id_ukuran = ?", idProduk, idWarna, idUkuran).First(&v).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	return &v, err
+}

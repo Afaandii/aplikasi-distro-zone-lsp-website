@@ -9,4 +9,5 @@ type VarianRepository interface {
 	Update(v *entities.Varian) error
 	Delete(idVarian int) error
 	Search(keyword string) ([]entities.Varian, error)
+	FindByProdukWarnaUkuran(idProduk, idWarna, idUkuran int) (*entities.Varian, error)
 }
