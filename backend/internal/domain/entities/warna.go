@@ -12,6 +12,7 @@ type Warna struct {
 	// hasmany ke produk
 	Varian     []Varian     `gorm:"foreignKey:WarnaRef;references:IDWarna"`
 	FotoProduk []FotoProduk `gorm:"foreignKey:WarnaRef;references:IDWarna"`
+	CartItem   []CartItem   `gorm:"foreignKey:WarnaRef;references:IDWarna"`
 }
 
 func (Warna) TableName() string {

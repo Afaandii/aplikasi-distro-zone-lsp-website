@@ -23,6 +23,7 @@ type Produk struct {
 	DetailPesanan   []DetailPesanan   `gorm:"foreignKey:ProdukRef;references:IDProduk"`
 	DetailTransaksi []DetailTransaksi `gorm:"foreignKey:PrudukRef;references:IDProduk"`
 	Varian          []Varian          `gorm:"foreignKey:ProdukRef;references:IDProduk"`
+	CartItem        []CartItem        `gorm:"foreignKey:ProdukRef;references:IDProduk"`
 }
 
 func (Produk) TableName() string {

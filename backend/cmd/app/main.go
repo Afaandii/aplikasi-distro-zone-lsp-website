@@ -42,6 +42,8 @@ func main() {
 	db.AutoMigrate(&entities.Pembayaran{})
 	db.AutoMigrate(&entities.Komplain{})
 	db.AutoMigrate(&entities.Refund{})
+	db.AutoMigrate(&entities.Cart{})
+	db.AutoMigrate(&entities.CartItem{})
 	supabase.InitStorage()
 
 	roleRepo := repo.NewRolePGRepository(db)
@@ -102,6 +104,9 @@ func main() {
 	refundUc := usecase.NewRefundUsecase(refundRepo, paymentGateway)
 	refundCtrl := controller.NewRefundController(refundUc)
 	pembayaranRepo := repo.NewPembayaranPgRepository(db)
+	cartRepo := repo.NewCartRepository(db)
+	cartUc := usecase.NewCartUsecase(cartRepo)
+	cartCtrl := controller.NewCartController(cartUc)
 	pembayaranUc := &usecase.PembayaranUsecase{PesananRepo: pesananRepo, ProdukRepo: produkrepo, UserRepo: userRepo, TarifRepo: tarifPengirimanRepo, DetailPesanan: detailPesananRepo, VarianRepo: varianRepo}
 	checkoutCtrl := &controller.CheckoutController{PembayaranUC: pembayaranUc}
 	callbackCtrl := &controller.MidtransCallbackController{PesananRepo: pesananRepo, PembayaranRepo: pembayaranRepo}
@@ -125,6 +130,7 @@ func main() {
 	server.RegisterAdminReportRoutes(reportAdminCtrl)
 	server.RegisterKomplainRoutes(komplainCtrl)
 	server.RegisterRefundRoutes(refundCtrl)
+	server.RegisterCartRoutes(cartCtrl)
 
 	port := os.Getenv("PORT")
 	handleCors := config.CorsMiddleware(http.DefaultServeMux)
