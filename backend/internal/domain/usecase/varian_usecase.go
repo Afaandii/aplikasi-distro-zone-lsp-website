@@ -13,6 +13,8 @@ type VarianUsecase interface {
 	Update(idVarian int, id_produk int, id_ukuran int, id_warna int, stok_kaos int) (*entities.Varian, error)
 	Delete(idVarian int) error
 	Search(keyword string) ([]entities.Varian, error)
+	GetAllByProduk(idProduk int) ([]entities.Varian, error)
+	DeleteByProduk(idProduk int) error
 }
 
 type varianUsecase struct {
@@ -84,4 +86,11 @@ func (u *varianUsecase) Delete(idVarian int) error {
 
 func (u *varianUsecase) Search(keyword string) ([]entities.Varian, error) {
 	return u.repo.Search(keyword)
+}
+
+func (u *varianUsecase) GetAllByProduk(idProduk int) ([]entities.Varian, error) {
+	return u.repo.FindByProduk(idProduk)
+}
+func (u *varianUsecase) DeleteByProduk(idProduk int) error {
+	return u.repo.DeleteByProduk(idProduk)
 }

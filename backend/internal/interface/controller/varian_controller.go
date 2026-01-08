@@ -120,3 +120,21 @@ func (v *VarianController) Search(w http.ResponseWriter, r *http.Request) {
 
 	helper.WriteJSON(w, http.StatusOK, varian)
 }
+
+func (v *VarianController) GetAllByProduk(w http.ResponseWriter, r *http.Request, idProduk int) {
+	varian, err := v.UC.GetAllByProduk(idProduk)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	helper.WriteJSON(w, http.StatusOK, varian)
+}
+
+func (v *VarianController) DeleteByProduk(w http.ResponseWriter, r *http.Request, idProduk int) {
+	err := v.UC.DeleteByProduk(idProduk)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "Varian berhasil dihapus!"})
+}

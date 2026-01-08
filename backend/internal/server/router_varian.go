@@ -43,6 +43,28 @@ func RegisterVarianRoutes(c *controller.VarianController) {
 		}
 	})
 
+	http.HandleFunc("/api/v1/varian/produk/", func(w http.ResponseWriter, r *http.Request) {
+		parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+		if len(parts) < 5 {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		idStr := parts[len(parts)-1]
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		switch r.Method {
+		case http.MethodGet:
+			c.GetAllByProduk(w, r, id)
+		case http.MethodDelete:
+			c.DeleteByProduk(w, r, id)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+
 	http.HandleFunc("/api/v1/varian/live/search", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			w.WriteHeader(http.StatusMethodNotAllowed)
