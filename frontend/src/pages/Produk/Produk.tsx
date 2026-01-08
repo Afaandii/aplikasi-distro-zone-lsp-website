@@ -67,18 +67,30 @@ export default function Produk() {
 
     const token = getToken();
     try {
+      // Hapus varian berdasarkan id_produk
+      await axios.delete(
+        `http://localhost:8080/api/v1/varian/produk/${id_produk}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Hapus foto berdasarkan id_produk
+      await axios.delete(
+        `http://localhost:8080/api/v1/foto-produk/produk/${id_produk}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Hapus produk
       await axios.delete(`http://localhost:8080/api/v1/produk/${id_produk}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       fetchProduk(searchQuery);
       setSuccessMessage("Produk berhasil dihapus.");
-
       setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (err) {
-      console.error("Deleted failed Product:", err);
+    } catch (err: any) {
+      console.error("Error deleting product:", err);
+      const msg = err.response?.data?.message || "Gagal menghapus produk.";
+      alert(msg);
     }
   };
 

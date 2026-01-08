@@ -68,18 +68,6 @@ const navItems: NavItem[] = [
         roles: ["admin", "kasir"],
       },
       {
-        name: "Gambar Produk",
-        path: "/foto-produk",
-        pro: false,
-        roles: ["admin", "kasir"],
-      },
-      {
-        name: "Varian",
-        path: "/varian",
-        pro: false,
-        roles: ["admin", "kasir"],
-      },
-      {
         name: "Tarif Pengiriman",
         path: "/tarif-pengiriman",
         pro: false,
@@ -181,20 +169,6 @@ const AppSidebar: React.FC = () => {
           location.pathname.startsWith("/produk") ||
           location.pathname.startsWith("/edit-produk") ||
           location.pathname.startsWith("/create-produk")
-        );
-      }
-      if (path === "/foto-produk") {
-        return (
-          location.pathname.startsWith("/foto-produk") ||
-          location.pathname.startsWith("/edit-foto-produk") ||
-          location.pathname.startsWith("/create-foto-produk")
-        );
-      }
-      if (path === "/varian") {
-        return (
-          location.pathname.startsWith("/varian") ||
-          location.pathname.startsWith("/edit-varian") ||
-          location.pathname.startsWith("/create-varian")
         );
       }
       if (path === "/tarif-pengiriman") {
