@@ -111,9 +111,6 @@ export default function LaporanKeuanganKasir() {
     }).format(angka);
   };
 
-  const totalTransaksi = transaksi.reduce((sum, t) => sum + t.total, 0);
-  const jumlahTransaksi = transaksi.length;
-
   // Handler untuk Tanggal Mulai
   const handleStartDateChange = (_: Date[], dateStr: string, instance: any) => {
     if (endDate && new Date(dateStr) > new Date(endDate)) {
@@ -177,20 +174,6 @@ export default function LaporanKeuanganKasir() {
         >
           Filter
         </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div className="bg-gray-700 p-4 rounded-lg">
-          <p className="text-gray-300 text-sm">Jumlah Transaksi</p>
-          <p className="text-2xl font-bold text-white">{jumlahTransaksi}</p>
-        </div>
-
-        <div className="bg-gray-700 p-4 rounded-lg">
-          <p className="text-gray-300 text-sm">Total Omzet</p>
-          <p className="text-2xl font-bold text-green-400">
-            {formatRupiah(totalTransaksi)}
-          </p>
-        </div>
       </div>
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
