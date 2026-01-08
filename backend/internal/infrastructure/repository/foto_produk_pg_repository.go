@@ -85,3 +85,26 @@ func (r *fotoProdukPGRepository) Search(keyword string) ([]entities.FotoProduk, 
 	}
 	return list, nil
 }
+
+func (r *fotoProdukPGRepository) FindByProduk(idProduk int) ([]entities.FotoProduk, error) {
+	var list []entities.FotoProduk
+	err := r.db.Preload("Produk").Preload("Warna").
+		Where("id_produk = ?", idProduk).
+		Order("id_foto_produk").
+		Find(&list).Error
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
+func (r *fotoProdukPGRepository) DeleteByProduk(idProduk int) error {
+	result := r.db.Where("id_produk = ?", idProduk).Delete(&entities.FotoProduk{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("no rows deleted")
+	}
+	return nil
+}

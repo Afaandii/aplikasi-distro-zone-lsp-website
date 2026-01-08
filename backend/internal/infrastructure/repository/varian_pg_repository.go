@@ -99,3 +99,26 @@ func (r *varianPGRepository) FindByProdukWarnaUkuran(idProduk, idWarna, idUkuran
 	}
 	return &v, err
 }
+
+func (r *varianPGRepository) FindByProduk(idProduk int) ([]entities.Varian, error) {
+	var list []entities.Varian
+	err := r.db.Preload("Ukuran").Preload("Warna").Preload("Produk").
+		Where("id_produk = ?", idProduk).
+		Order("id_varian").
+		Find(&list).Error
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
+func (r *varianPGRepository) DeleteByProduk(idProduk int) error {
+	result := r.db.Where("id_produk = ?", idProduk).Delete(&entities.Varian{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("no rows deleted")
+	}
+	return nil
+}

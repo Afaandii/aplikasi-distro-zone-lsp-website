@@ -102,14 +102,14 @@ func (fp *FotoProdukController) Update(w http.ResponseWriter, r *http.Request, i
 	idProdukStr := r.FormValue("id_produk")
 	idProduk, err := strconv.Atoi(idProdukStr)
 	if err != nil {
-		helper.WriteJSON(w, 400, map[string]string{"error": "invalid id_role"})
+		helper.WriteJSON(w, 400, map[string]string{"error": "invalid id_produk"})
 		return
 	}
 
 	idWarnaStr := r.FormValue("id_warna")
 	idWarna, err := strconv.Atoi(idWarnaStr)
 	if err != nil {
-		helper.WriteJSON(w, 400, map[string]string{"error": "invalid id_produk"})
+		helper.WriteJSON(w, 400, map[string]string{"error": "invalid id_warna"})
 		return
 	}
 
@@ -174,4 +174,22 @@ func (fp *FotoProdukController) Search(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helper.WriteJSON(w, http.StatusOK, fotoProduk)
+}
+
+func (fp *FotoProdukController) GetAllByProduk(w http.ResponseWriter, r *http.Request, idProduk int) {
+	fotoProduk, err := fp.UC.GetAllByProduk(idProduk)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	helper.WriteJSON(w, http.StatusOK, fotoProduk)
+}
+
+func (fp *FotoProdukController) DeleteByProduk(w http.ResponseWriter, r *http.Request, idProduk int) {
+	err := fp.UC.DeleteByProduk(idProduk)
+	if err != nil {
+		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	helper.WriteJSON(w, http.StatusOK, map[string]string{"message": "Foto produk berhasil dihapus!"})
 }

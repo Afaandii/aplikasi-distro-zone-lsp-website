@@ -13,6 +13,8 @@ type FotoProdukUsecase interface {
 	Update(idFotoProduk int, id_produk int, id_warna int, url_foto string) (*entities.FotoProduk, error)
 	Delete(idFotoProduk int) error
 	Search(keyword string) ([]entities.FotoProduk, error)
+	GetAllByProduk(idProduk int) ([]entities.FotoProduk, error)
+	DeleteByProduk(idProduk int) error
 }
 
 type fotoProdukUsecase struct {
@@ -78,4 +80,11 @@ func (u *fotoProdukUsecase) Delete(idFotoProduk int) error {
 
 func (u *fotoProdukUsecase) Search(keyword string) ([]entities.FotoProduk, error) {
 	return u.repo.Search(keyword)
+}
+
+func (u *fotoProdukUsecase) GetAllByProduk(idProduk int) ([]entities.FotoProduk, error) {
+	return u.repo.FindByProduk(idProduk)
+}
+func (u *fotoProdukUsecase) DeleteByProduk(idProduk int) error {
+	return u.repo.DeleteByProduk(idProduk)
 }
