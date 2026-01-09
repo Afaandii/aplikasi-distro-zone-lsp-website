@@ -26,11 +26,16 @@ export default function LaporanKeuanganAdmin() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  // State untuk Filter
+  const [selectedMethod, setSelectedMethod] = useState<string>("all");
+  const [selectedKasir, setSelectedKasir] = useState<string>("all");
+
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
   const fetchTransaksi = async () => {
+    setLoading(true);
     try {
       const token = getToken();
       if (!token) {
@@ -63,6 +68,7 @@ export default function LaporanKeuanganAdmin() {
       return;
     }
 
+    setLoading(true);
     try {
       const token = getToken();
       const res = await axios.get(
@@ -77,6 +83,8 @@ export default function LaporanKeuanganAdmin() {
       setTransaksi(res.data);
     } catch (error) {
       console.error("Error filter transaksi:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,24 +119,53 @@ export default function LaporanKeuanganAdmin() {
     }).format(angka);
   };
 
-  const totalTransaksi = transaksi.reduce((sum, t) => sum + t.total, 0);
-  const jumlahTransaksi = transaksi.length;
+  // --- LOGIKA FILTER DINAMIS ---
 
-  // Handler untuk Tanggal Mulai
+  // 1. Ambil Metode Pembayaran Unik
+  const uniqueMethods = Array.from(
+    new Set(transaksi.map((item) => item.metode_pembayaran))
+  );
+
+  // 2. Ambil Nama Kasir Unik (Handle null safety)
+  const uniqueKasirs = Array.from(
+    new Set(
+      transaksi
+        .filter((item) => item.Kasir) // Pastikan ada data kasir
+        .map((item) => item.Kasir!.nama)
+    )
+  );
+
+  // 3. Filter Data
+  const filteredTransaksi = transaksi.filter((item) => {
+    // Filter Metode Pembayaran
+    const matchMethod =
+      selectedMethod === "all" || item.metode_pembayaran === selectedMethod;
+
+    // Filter Kasir (Mengecek nama kasir)
+    const matchKasir =
+      selectedKasir === "all" || item.Kasir?.nama === selectedKasir;
+
+    return matchMethod && matchKasir;
+  });
+
+  // 4. Hitung Total Berdasarkan Data yang Sudah Difilter
+  // Ini membuat summary (Total Omzet) berubah sesuai filter
+  const totalTransaksi = filteredTransaksi.reduce((sum, t) => sum + t.total, 0);
+  const jumlahTransaksi = filteredTransaksi.length;
+
   const handleStartDateChange = (_: Date[], dateStr: string, instance: any) => {
     if (endDate && new Date(dateStr) > new Date(endDate)) {
       alert("Tanggal mulai tidak boleh lebih dari tanggal akhir!");
-      instance.setDate(startDate, false); // Rollback input
+      instance.setDate(startDate, false);
       return;
     }
     setStartDate(dateStr);
   };
 
-  // Handler untuk Tanggal Akhir
   const handleEndDateChange = (_: Date[], dateStr: string, instance: any) => {
     if (startDate && new Date(dateStr) < new Date(startDate)) {
       alert("Tanggal akhir tidak boleh kurang dari tanggal mulai!");
-      instance.setDate(endDate, false); // Rollback input
+      instance.setDate(endDate, false);
       return;
     }
     setEndDate(dateStr);
@@ -143,8 +180,9 @@ export default function LaporanKeuanganAdmin() {
         </div>
       </section>
 
-      {/* Filter Periode */}
+      {/* Filter Periode & Dropdowns */}
       <div className="bg-gray-700 p-4 rounded-lg mb-4 flex flex-wrap gap-4 items-end">
+        {/* Tanggal Mulai */}
         <div className="w-full md:w-auto">
           <label className="block text-gray-300 text-sm mb-1">
             Tanggal Mulai
@@ -157,6 +195,7 @@ export default function LaporanKeuanganAdmin() {
           />
         </div>
 
+        {/* Tanggal Akhir */}
         <div className="w-full md:w-auto">
           <label className="block text-gray-300 text-sm mb-1">
             Tanggal Akhir
@@ -169,14 +208,52 @@ export default function LaporanKeuanganAdmin() {
           />
         </div>
 
+        {/* Tombol Filter Tanggal */}
         <button
           onClick={fetchTransaksiByPeriode}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold h-10.5 whitespace-nowrap"
         >
-          Filter
+          Filter Tanggal
         </button>
+
+        {/* Dropdown Metode Pembayaran Dinamis */}
+        <div className="w-full md:w-auto">
+          <label className="block text-gray-300 text-sm mb-1">
+            Metode Pembayaran
+          </label>
+          <select
+            value={selectedMethod}
+            onChange={(e) => setSelectedMethod(e.target.value)}
+            className="bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:border-blue-500 h-10.5 w-full md:w-45"
+          >
+            <option value="all">Semua Metode</option>
+            {uniqueMethods.map((method) => (
+              <option key={method} value={method}>
+                {method}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Dropdown Nama Kasir Dinamis */}
+        <div className="w-full md:w-auto">
+          <label className="block text-gray-300 text-sm mb-1">Nama Kasir</label>
+          <select
+            value={selectedKasir}
+            onChange={(e) => setSelectedKasir(e.target.value)}
+            className="bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:border-blue-500 h-10.5 w-full md:w-45"
+          >
+            <option value="all">Semua Kasir</option>
+            {uniqueKasirs.map((namaKasir) => (
+              <option key={namaKasir} value={namaKasir}>
+                {namaKasir}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
+      {/* Summary Cards (Menggunakan filteredTransaksi agar angka ikut berubah) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div className="bg-gray-700 p-4 rounded-lg">
           <p className="text-gray-300 text-sm">Jumlah Transaksi</p>
@@ -191,6 +268,7 @@ export default function LaporanKeuanganAdmin() {
         </div>
       </div>
 
+      {/* Table Section */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
           <h3 className="text-lg font-semibold text-white">
@@ -203,13 +281,15 @@ export default function LaporanKeuanganAdmin() {
             <p className="text-gray-300 text-center">
               Loading data transaksi...
             </p>
-          ) : transaksi.length === 0 ? (
+          ) : filteredTransaksi.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-red-500 text-lg">
-                Tidak ada transaksi selesai
+                Tidak ada transaksi ditemukan
               </p>
               <p className="text-gray-400 text-sm mt-2">
-                Belum ada transaksi dengan status &quot;selesai&quot;.
+                {transaksi.length > 0
+                  ? "Coba ubah filter metode pembayaran atau nama kasir."
+                  : "Belum ada transaksi dengan status selesai."}
               </p>
             </div>
           ) : (
@@ -244,7 +324,7 @@ export default function LaporanKeuanganAdmin() {
                   </tr>
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
-                  {transaksi.map((trans, index) => (
+                  {filteredTransaksi.map((trans, index) => (
                     <tr key={trans.id_transaksi} className="hover:bg-gray-700">
                       <td className="px-4 py-3 text-white">{index + 1}</td>
                       <td className="px-4 py-3 text-white">

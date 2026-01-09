@@ -59,6 +59,7 @@ const Checkout: React.FC = () => {
     null
   );
   const [isServiceOpen, setIsServiceOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [alerts, setAlerts] = useState<AlertStates>({
     show: false,
     message: "",
@@ -66,6 +67,13 @@ const Checkout: React.FC = () => {
   });
   const products: Product[] = location.state?.products || [];
 
+  useEffect(() => {
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
+    const user = localStorage.getItem("user") || sessionStorage.getItem("user");
+
+    setIsLoggedIn(!!token && !!user);
+  }, []);
   // Fungsi untuk fetch jam operasional
   const fetchJamOperasional = async () => {
     try {
@@ -445,7 +453,26 @@ const Checkout: React.FC = () => {
                         </p>
                       </div>
                       <button
-                        onClick={() => setShowAddressModal(true)}
+                        onClick={() => {
+                          if (!isLoggedIn) {
+                            setAlerts({
+                              show: true,
+                              message:
+                                "Anda harus login terlebih dahulu untuk mengubah alamat.",
+                              type: "error",
+                            });
+                            setTimeout(() => {
+                              setAlerts({
+                                show: false,
+                                message: "",
+                                type: "success",
+                              });
+                              navigate("/login", { state: { from: location } });
+                            }, 3000);
+                            return;
+                          }
+                          setShowAddressModal(true);
+                        }}
                         className="text-green-600 text-sm font-medium hover:text-green-700"
                       >
                         Ubah
@@ -461,7 +488,25 @@ const Checkout: React.FC = () => {
                           Alamat pengiriman belum ditambahkan
                         </p>
                         <button
-                          onClick={() => setShowAddressModal(true)}
+                          onClick={() => {
+                            if (!isLoggedIn) {
+                              setAlerts({
+                                show: true,
+                                message:
+                                  "Maaf, Anda harus login terlebih dahulu untuk menambahkan alamat.",
+                                type: "error",
+                              });
+                              setTimeout(() => {
+                                setAlerts({
+                                  show: false,
+                                  message: "",
+                                  type: "success",
+                                });
+                              }, 3000);
+                              return;
+                            }
+                            setShowAddressModal(true);
+                          }}
                           className="mt-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700"
                         >
                           Tambah Alamat

@@ -614,13 +614,13 @@ export default function CreateProduk() {
                   saving ? "bg-blue-800" : "bg-blue-600 hover:bg-blue-700"
                 } text-white font-medium rounded-md transition`}
               >
-                {saving ? "Menyimpan..." : "Simpan Produk"}
+                {saving ? "Menyimpan..." : "Simpan"}
               </button>
               <Link
                 to="/produk"
                 className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition"
               >
-                Batal
+                Kembali
               </Link>
             </div>
           </form>

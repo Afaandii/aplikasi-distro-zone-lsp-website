@@ -23,10 +23,31 @@ export default function Produk() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [userRole, setUserRole] = useState<number | null>(null);
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
+
+  const getUserRole = () => {
+    const userStr =
+      localStorage.getItem("user") || sessionStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        return user.id_role;
+      } catch (e) {
+        console.error("Error parsing user data:", e);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    const role = getUserRole();
+    setUserRole(role);
+  }, []);
 
   const fetchProduk = async (query: string = "") => {
     try {
@@ -107,12 +128,14 @@ export default function Produk() {
         <div className="flex items-center justify-between p-3 rounded-t-lg">
           <h1 className="text-2xl font-bold text-white">Manage Tabel Produk</h1>
           {/* Tombol Tambah */}
-          <Link
-            to="/create-produk"
-            className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
-          >
-            <FaPlus className="text-lg" />
-          </Link>
+          {userRole === 1 && (
+            <Link
+              to="/create-produk"
+              className="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
+            >
+              <FaPlus className="text-lg" />
+            </Link>
+          )}
         </div>
       </section>
 
@@ -263,12 +286,14 @@ export default function Produk() {
                           <FaEdit className="text-lg" />
                         </Link>
                         {/* Tombol Hapus */}
-                        <button
-                          onClick={() => handleDelete(prod.id_produk)}
-                          className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors duration-200"
-                        >
-                          <FaTrash className="text-lg" />
-                        </button>
+                        {userRole === 1 && (
+                          <button
+                            onClick={() => handleDelete(prod.id_produk)}
+                            className="inline-flex items-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors duration-200"
+                          >
+                            <FaTrash className="text-lg" />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
