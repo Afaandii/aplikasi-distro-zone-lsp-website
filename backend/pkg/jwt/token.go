@@ -21,7 +21,7 @@ type Claims struct {
 // GenerateToken membuat token baru untuk user yang berhasil login
 func GenerateToken(userID int, username, role string) (string, error) {
 	// Waktu kadaluarsa token, misalnya 24 jam
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(7 * 24 * time.Hour)
 
 	claims := &Claims{
 		UserID:   userID,

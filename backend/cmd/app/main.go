@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -131,6 +132,22 @@ func main() {
 	server.RegisterKomplainRoutes(komplainCtrl)
 	server.RegisterRefundRoutes(refundCtrl)
 	server.RegisterCartRoutes(cartCtrl)
+
+	go func() {
+		log.Println("Starting Auto-Cancel Orders Worker...")
+		// Buat ticker yang berjalan setiap 5 menit
+		ticker := time.NewTicker(5 * time.Second)
+
+		for range ticker.C {
+			count, err := pesananUc.AutoCancelExpiredOrders()
+			if err != nil {
+				log.Printf("Error auto-canceling orders: %v", err)
+			} else if count > 0 {
+				// Log hanya jika ada pesanan yang dibatalkan
+				log.Printf("Auto-Cancel: Successfully canceled %d expired orders.", count)
+			}
+		}
+	}()
 
 	port := os.Getenv("PORT")
 	handleCors := config.CorsMiddleware(http.DefaultServeMux)
