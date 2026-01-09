@@ -25,6 +25,27 @@ export default function EditProduk() {
   const [tipe, setTipe] = useState<{ value: string; label: string }[]>([]);
   const [ukuran, setUkuran] = useState<{ value: string; label: string }[]>([]);
   const [warna, setWarna] = useState<{ value: string; label: string }[]>([]);
+  const [userRole, setUserRole] = useState<number | null>(null);
+
+  const getUserRole = () => {
+    const userStr =
+      localStorage.getItem("user") || sessionStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        return user.id_role; // misalnya: 1 = admin, 2 = kasir
+      } catch (e) {
+        console.error("Error parsing user data:", e);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    const role = getUserRole();
+    setUserRole(role);
+  }, []);
 
   const [formData, setFormData] = useState({
     id_merk: "",
@@ -755,20 +776,22 @@ export default function EditProduk() {
 
             {/* Tombol Simpan & Kembali */}
             <div className="flex justify-between">
-              <button
-                type="submit"
-                disabled={saving}
-                className={`inline-flex items-center px-4 py-2 ${
-                  saving ? "bg-blue-800" : "bg-blue-600 hover:bg-blue-700"
-                } text-white font-medium rounded-md transition`}
-              >
-                {saving ? "Menyimpan..." : "Simpan Perubahan"}
-              </button>
+              {userRole === 1 && (
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className={`inline-flex items-center px-4 py-2 ${
+                    saving ? "bg-blue-800" : "bg-blue-600 hover:bg-blue-700"
+                  } text-white font-medium rounded-md transition`}
+                >
+                  {saving ? "Menyimpan..." : "Simpan"}
+                </button>
+              )}
               <Link
                 to="/produk"
                 className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition"
               >
-                Batal
+                Kembali
               </Link>
             </div>
           </form>

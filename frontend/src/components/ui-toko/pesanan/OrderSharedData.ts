@@ -10,7 +10,7 @@ export interface Product {
 export interface Order {
   id: string;
   storeName: string;
-  status: "waiting" | "processing" | "packing" | "shipping" | "completed";
+  status: "waiting" | "processing" | "packing" | "shipping" | "completed" | "cancelled";
   statusLabel: string;
   products: Product[];
   totalAmount: number;

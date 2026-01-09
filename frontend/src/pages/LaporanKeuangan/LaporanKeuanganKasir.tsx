@@ -26,11 +26,15 @@ export default function LaporanKeuanganKasir() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  // State untuk menyimpan metode pembayaran yang dipilih (Default: 'all')
+  const [selectedMethod, setSelectedMethod] = useState<string>("all");
+
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
   };
 
   const fetchTransaksi = async () => {
+    setLoading(true);
     try {
       const token = getToken();
       if (!token) {
@@ -48,7 +52,6 @@ export default function LaporanKeuanganKasir() {
         }
       );
 
-      // Respons dari backend langsung berupa array transaksi
       setTransaksi(res.data);
     } catch (error) {
       console.error("Error fetching transaksi:", error);
@@ -63,6 +66,7 @@ export default function LaporanKeuanganKasir() {
       return;
     }
 
+    setLoading(true);
     try {
       const token = getToken();
       const res = await axios.get(
@@ -77,6 +81,8 @@ export default function LaporanKeuanganKasir() {
       setTransaksi(res.data);
     } catch (error) {
       console.error("Error filter transaksi:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,7 +90,7 @@ export default function LaporanKeuanganKasir() {
     fetchTransaksi();
   }, []);
 
-  // Format tanggal ke "DD MMM YYYY HH:mm"
+  // Format tanggal
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
     const options: Intl.DateTimeFormatOptions = {
@@ -111,25 +117,37 @@ export default function LaporanKeuanganKasir() {
     }).format(angka);
   };
 
-  // Handler untuk Tanggal Mulai
   const handleStartDateChange = (_: Date[], dateStr: string, instance: any) => {
     if (endDate && new Date(dateStr) > new Date(endDate)) {
       alert("Tanggal mulai tidak boleh lebih dari tanggal akhir!");
-      instance.setDate(startDate, false); // Rollback input
+      instance.setDate(startDate, false);
       return;
     }
     setStartDate(dateStr);
   };
 
-  // Handler untuk Tanggal Akhir
   const handleEndDateChange = (_: Date[], dateStr: string, instance: any) => {
     if (startDate && new Date(dateStr) < new Date(startDate)) {
       alert("Tanggal akhir tidak boleh kurang dari tanggal mulai!");
-      instance.setDate(endDate, false); // Rollback input
+      instance.setDate(endDate, false);
       return;
     }
     setEndDate(dateStr);
   };
+
+  // --- LOGIKA FILTER DINAMIS ---
+
+  // 1. Ambil daftar metode pembayaran unik dari data transaksi yang sedang dimuat
+  // Ini akan otomatis mengisi opsi dropdown sesuai database
+  const uniqueMethods = Array.from(
+    new Set(transaksi.map((item) => item.metode_pembayaran))
+  );
+
+  // 2. Filter data transaksi berdasarkan metode pembayaran yang dipilih
+  const filteredTransaksi = transaksi.filter((item) => {
+    if (selectedMethod === "all") return true; // Jika pilih "Semua", tampilkan semua
+    return item.metode_pembayaran === selectedMethod; // Bandingkan string secara eksak
+  });
 
   return (
     <>
@@ -142,8 +160,9 @@ export default function LaporanKeuanganKasir() {
         </div>
       </section>
 
-      {/* Filter Periode */}
+      {/* Filter Section */}
       <div className="bg-gray-700 p-4 rounded-lg mb-4 flex flex-wrap gap-4 items-end">
+        {/* Filter Tanggal */}
         <div className="w-full md:w-auto">
           <label className="block text-gray-300 text-sm mb-1">
             Tanggal Mulai
@@ -170,12 +189,33 @@ export default function LaporanKeuanganKasir() {
 
         <button
           onClick={fetchTransaksiByPeriode}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold h-10.5 whitespace-nowrap"
         >
-          Filter
+          Filter Tanggal
         </button>
+
+        {/* Filter Metode Pembayaran Dinamis */}
+        <div className="w-full md:w-auto">
+          <label className="block text-gray-300 text-sm mb-1">
+            Metode Pembayaran
+          </label>
+          <select
+            value={selectedMethod}
+            onChange={(e) => setSelectedMethod(e.target.value)}
+            className="bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:border-blue-500 h-10.5 w-full md:w-50"
+          >
+            <option value="all">Semua Metode</option>
+            {/* Mapping opsi secara dinamis dari database */}
+            {uniqueMethods.map((method) => (
+              <option key={method} value={method}>
+                {method}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
+      {/* Table Section */}
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
           <h3 className="text-lg font-semibold text-white">
@@ -188,13 +228,15 @@ export default function LaporanKeuanganKasir() {
             <p className="text-gray-300 text-center">
               Loading data transaksi...
             </p>
-          ) : transaksi.length === 0 ? (
+          ) : filteredTransaksi.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-red-500 text-lg">
-                Tidak ada transaksi selesai
+                Tidak ada transaksi ditemukan
               </p>
               <p className="text-gray-400 text-sm mt-2">
-                Belum ada transaksi dengan status &quot;selesai&quot;.
+                {selectedMethod !== "all"
+                  ? `Tidak ada transaksi dengan metode "${selectedMethod}" pada periode ini.`
+                  : "Belum ada transaksi dengan status selesai."}
               </p>
             </div>
           ) : (
@@ -226,7 +268,7 @@ export default function LaporanKeuanganKasir() {
                   </tr>
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-600">
-                  {transaksi.map((trans, index) => (
+                  {filteredTransaksi.map((trans, index) => (
                     <tr key={trans.id_transaksi} className="hover:bg-gray-700">
                       <td className="px-4 py-3 text-white">{index + 1}</td>
                       <td className="px-4 py-3 text-gray-300">

@@ -80,33 +80,37 @@ interface ExtendedOrder extends Order {
 
 // Fungsi helper untuk mengkonversi data backend ke format yang digunakan UI
 const convertBackendToOrder = (backendData: BackendPesanan): ExtendedOrder => {
-  // Map status pesanan backend ke status UI
+  // 1. Map Status Backend ke Status UI (Untuk Filtering & Tracker)
   const statusMap: Record<string, Order["status"]> = {
+    menunggu_pembayaran: "waiting",
     menunggu_verifikasi_kasir: "waiting",
     diproses: "processing",
     dikemas: "packing",
     dikirim: "shipping",
     selesai: "completed",
+    dibatalkan: "cancelled",
   };
 
-  // Default status jika tidak ditemukan di map
   const status: Order["status"] =
     statusMap[backendData.status_pesanan] || "waiting";
 
-  // Map label status
-  const statusLabelMap: Record<Order["status"], string> = {
-    waiting: "Menunggu Verifikasi",
-    processing: "Diproses",
-    packing: "Dikemas",
-    shipping: "Dikirim",
-    completed: "Selesai",
+  // 2. Map Label (Dynamic)
+  // Kita pakai backend string langsung untuk menentukan label agar akurat
+  const labelMap: Record<string, string> = {
+    menunggu_pembayaran: "Menunggu Pembayaran",
+    menunggu_verifikasi_kasir: "Menunggu Verifikasi",
+    diproses: "Diproses",
+    dikemas: "Dikemas",
+    dikirim: "Dikirim",
+    selesai: "Selesai",
+    dibatalkan: "Dibatalkan",
   };
 
   return {
     id: backendData.kode_pesanan,
     storeName: "DistroZone",
     status: status,
-    statusLabel: statusLabelMap[status],
+    statusLabel: labelMap[backendData.status_pesanan] || "Menunggu",
     createdAt: new Date(backendData.created_at).toLocaleDateString("id-ID"),
     products: backendData.DetailPesanan.map((p) => {
       const produk = p.Produk;
@@ -157,14 +161,12 @@ const OrderList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [detailLoading, setDetailLoading] = useState<boolean>(false);
 
-  // Ambil data pesanan dari API saat komponen pertama kali dimuat
+  // --- INTEGRASI FETCH AWAL + POLLING (Satu Effect Saja) ---
   useEffect(() => {
     const fetchOrders = async () => {
-      setLoading(true);
       try {
         const token =
           localStorage.getItem("token") || sessionStorage.getItem("token");
-
         const response = await fetch(
           "http://localhost:8080/api/v1/pesanan/my",
           {
@@ -176,26 +178,31 @@ const OrderList: React.FC = () => {
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Gagal mengambil data pesanan");
-        }
+        if (!response.ok) throw new Error("Gagal mengambil data pesanan");
 
         const data = await response.json();
-
-        // Konversi data backend ke format UI
         const convertedOrders = data.map(convertBackendToOrder);
-
         setOrders(convertedOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);
-        setOrders([]);
+        // Jangan setOrders([]) jika error, biarkan data lama tetap tampil
       } finally {
+        // Hanya set loading false di awal, jangan saat polling agar tidak kedip
         setLoading(false);
       }
     };
 
+    // 1. Fetch Pertama Kali
     fetchOrders();
+
+    // 2. Polling (Setiap 60 detik)
+    const intervalId = setInterval(() => {
+      fetchOrders();
+    }, 60000);
+
+    return () => clearInterval(intervalId);
   }, []);
+  // ----------------------------------------------------------
 
   // Fungsi baru untuk mengambil detail pesanan
   const fetchOrderDetail = async (backendId: number) => {
@@ -234,11 +241,12 @@ const OrderList: React.FC = () => {
 
   const tabs = [
     { key: "all", label: "Semua" },
-    { key: "waiting", label: "Menunggu" },
+    { key: "waiting", label: "Menunggu" }, // Kategori ini menampung "Menunggu Pembayaran" & "Menunggu Verifikasi"
     { key: "processing", label: "Diproses" },
     { key: "packing", label: "Dikemas" },
     { key: "shipping", label: "Dikirim" },
     { key: "completed", label: "Selesai" },
+    { key: "cancelled", label: "Dibatalkan" },
   ];
 
   const filteredOrders =
@@ -262,7 +270,6 @@ const OrderList: React.FC = () => {
   }
 
   if (selectedOrder) {
-    // Cast ke tipe Order karena komponen OrderDetail tidak perlu tahu tentang backendId
     return (
       <OrderDetail
         order={selectedOrder}
@@ -307,7 +314,6 @@ const OrderList: React.FC = () => {
         {/* Order List */}
         <div className="max-w-6xl mx-auto px-4 mt-6">
           {loading ? (
-            // Tampilkan skeleton loader sederhana jika sedang loading
             <div className="text-center py-16">
               <div className="animate-pulse">
                 <div className="bg-gray-300 h-16 w-16 rounded-full mx-auto mb-4"></div>
