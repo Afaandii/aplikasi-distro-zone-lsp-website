@@ -4,6 +4,7 @@ import (
 	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
 	repo "aplikasi-distro-zone-lsp-website/internal/domain/repository"
 	"errors"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -141,4 +142,20 @@ func (r *pesananPGRepository) FindDetailByUserAndPesananID(userID int, pesananID
 		return nil, err
 	}
 	return &pesanan, nil
+}
+
+func (r *pesananPGRepository) AutoCancelExpiredOrders() (int64, error) {
+	// Hitung waktu batas (24 jam yang lalu)
+	threshold := time.Now().Add(-24 * time.Hour)
+
+	result := r.db.Model(&entities.Pesanan{}).
+		Where("status_pesanan = ?", "menunggu_pembayaran").
+		Where("created_at < ?", threshold).
+		Update("status_pesanan", "dibatalkan")
+
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	return result.RowsAffected, nil // Mengembalikan berapa banyak data yang diubah
 }

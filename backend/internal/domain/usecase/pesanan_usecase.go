@@ -15,6 +15,7 @@ type PesananUsecase interface {
 
 	GetByUser(userID int) ([]entities.Pesanan, error)
 	GetDetailByUser(userID int, pesananID int) (*entities.Pesanan, error)
+	AutoCancelExpiredOrders() (int64, error)
 }
 
 type pesananUsecase struct {
@@ -115,4 +116,8 @@ func (u *pesananUsecase) GetDetailByUser(userID int, pesananID int) (*entities.P
 		return nil, helper.PesananNotFoundError(pesananID)
 	}
 	return pesanan, nil
+}
+
+func (u *pesananUsecase) AutoCancelExpiredOrders() (int64, error) {
+	return u.repo.AutoCancelExpiredOrders()
 }

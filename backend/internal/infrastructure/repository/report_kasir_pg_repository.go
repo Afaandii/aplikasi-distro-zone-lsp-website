@@ -29,19 +29,24 @@ func (r *reportKasirPgRepository) FindTransaksiByKasir(
 	return transaksi, err
 }
 
+// internal/domain/repository/report_kasir_pg_repository.go
 func (r *reportKasirPgRepository) FindTransaksiByKasirAndPeriode(
 	kasirID int,
 	startDate string,
 	endDate string,
+	metodePembayaran string, // ← tambahkan
 ) ([]entities.Transaksi, error) {
 
+	db := r.db.Preload("Kasir").
+		Where("id_kasir = ? AND status_transaksi = 'selesai' AND DATE(created_at) BETWEEN ? AND ?", kasirID, startDate, endDate)
+
+	// Tambahkan filter metode jika bukan "all"
+	if metodePembayaran != "" && metodePembayaran != "all" {
+		db = db.Where("metode_pembayaran = ?", metodePembayaran)
+	}
+
 	var transaksi []entities.Transaksi
-
-	err := r.db.Preload("Kasir").
-		Where("id_kasir = ? AND status_transaksi = 'selesai' AND DATE(created_at) BETWEEN ? AND ?", kasirID, startDate, endDate).
-		Order("created_at DESC").
-		Find(&transaksi).Error
-
+	err := db.Order("created_at DESC").Find(&transaksi).Error
 	return transaksi, err
 }
 

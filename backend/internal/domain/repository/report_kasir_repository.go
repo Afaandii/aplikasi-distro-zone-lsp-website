@@ -8,6 +8,7 @@ type ReportKasirRepository interface {
 		kasirID int,
 		startDate string,
 		endDate string,
+		metodePembayaran string,
 	) ([]entities.Transaksi, error)
 	FindDetailTransaksiByID(
 		transaksiID int,

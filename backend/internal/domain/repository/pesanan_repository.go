@@ -20,4 +20,5 @@ type PesananRepository interface {
 	) error
 	FindByUserID(userID int) ([]entities.Pesanan, error)
 	FindDetailByUserAndPesananID(userID int, pesananID int) (*entities.Pesanan, error)
+	AutoCancelExpiredOrders() (int64, error)
 }

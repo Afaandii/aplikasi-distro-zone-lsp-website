@@ -39,6 +39,7 @@ func (c *ReportKasirController) FindLaporanByKasir(w http.ResponseWriter, r *htt
 	response.WriteJSON(w, http.StatusOK, data)
 }
 
+// internal/interface/controller/report_kasir_controller.go
 func (c *ReportKasirController) FindLaporanByKasirAndPeriode(w http.ResponseWriter, r *http.Request, startDate string, endDate string) {
 	claims, ok := r.Context().Value(middleware.UserContextKey).(jwt.Claims)
 	if !ok {
@@ -53,10 +54,14 @@ func (c *ReportKasirController) FindLaporanByKasirAndPeriode(w http.ResponseWrit
 		return
 	}
 
+	// 🔥 Ambil metode dari query string
+	metode := r.URL.Query().Get("metode")
+
 	data, err := c.Usecase.FindTransaksiByKasirAndPeriode(
 		kasirID,
 		startDate,
 		endDate,
+		metode,
 	)
 
 	if err != nil {

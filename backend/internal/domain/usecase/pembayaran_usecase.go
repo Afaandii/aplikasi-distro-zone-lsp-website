@@ -69,7 +69,7 @@ func mapKotaKeWilayah(kota string) string {
 	jabar := []string{
 		"bandung", "cimahi", "cirebon", "sukabumi", "tasikmalaya",
 		"garut", "majalengka", "sumedang", "indramayu", "subang",
-		"purwakarta", "karawang", "cianjur", "kuningan", "banjar", "seluruh wilayah jawa barat",
+		"purwakarta", "karawang", "cianjur", "kuningan", "banjar",
 	}
 	for _, kotaJabar := range jabar {
 		if k == kotaJabar {
@@ -83,7 +83,7 @@ func mapKotaKeWilayah(kota string) string {
 		"tegal", "salatiga", "banyumas", "kebumen", "wonosobo",
 		"purworejo", "klaten", "sragen", "karanganyar", "boyolali",
 		"grobogan", "demak", "rembang", "pati", "kudus", "jepara",
-		"blora", "purwodadi", "cilacap", "banyumas", "purbalingga", "seluruh wilayah jawa tengah",
+		"blora", "purwodadi", "cilacap", "banyumas", "purbalingga",
 	}
 	for _, kotaJateng := range jateng {
 		if k == kotaJateng {
@@ -96,7 +96,7 @@ func mapKotaKeWilayah(kota string) string {
 		"jombang", "kediri", "madiun", "blitar", "tulungagung",
 		"banyuwangi", "probolinggo", "pasuruan", "lumajang", "jember",
 		"situbondo", "bondowoso", "pamekasan", "sumenep", "sampang",
-		"bangkalan", "batu", "nganjuk", "bojonegoro", "lamongan", "seluruh wilayah jawa timur",
+		"bangkalan", "batu", "nganjuk", "bojonegoro", "lamongan",
 	}
 	for _, kotaJatim := range jatim {
 		if k == kotaJatim {
@@ -151,7 +151,7 @@ func (u *PembayaranUsecase) HitungCheckoutPreview(
 	}
 	beratKg := int(math.Ceil(float64(totalKaos) / 3.0))
 
-	wilayah := user.Kota
+	wilayah := mapKotaKeWilayah(user.Kota)
 	if wilayah == "" {
 		return 0, 0, 0, errors.New("wilayah tidak dikenali")
 	}
@@ -205,8 +205,8 @@ func (u *PembayaranUsecase) CreatePembayaran(
 	beratKg := int(math.Ceil(float64(totalKaos) / 3.0))
 
 	// 4. Tentukan wilayah
-	// wilayah := mapKotaKeWilayah(strings.ToLower(user.Kota))
-	wilayah := user.Kota
+	wilayah := mapKotaKeWilayah(user.Kota)
+	// wilayah := user.Kota
 	if wilayah == "" {
 		return "", errors.New("wilayah tidak dikenali")
 	}

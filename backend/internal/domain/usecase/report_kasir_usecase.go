@@ -22,15 +22,18 @@ func (uc *ReportKasirUsecase) FindTransaksiByKasir(
 	)
 }
 
+// internal/domain/usecase/report_kasir_usecase.go
 func (uc *ReportKasirUsecase) FindTransaksiByKasirAndPeriode(
 	kasirID int,
 	startDate string,
 	endDate string,
+	metodePembayaran string, // ← tambahkan
 ) ([]entities.Transaksi, error) {
 	return uc.Repo.FindTransaksiByKasirAndPeriode(
 		kasirID,
 		startDate,
 		endDate,
+		metodePembayaran,
 	)
 }
 
