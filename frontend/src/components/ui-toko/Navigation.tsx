@@ -147,7 +147,7 @@ export default function Navigation() {
                 />
                 <button
                   onClick={handleSearch}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 mr-1 rounded-md transition-colors"
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 mr-1 rounded-md transition-colors"
                 >
                   <FiSearch size={24} />
                 </button>
