@@ -19,9 +19,18 @@ type Claims struct {
 }
 
 // GenerateToken membuat token baru untuk user yang berhasil login
-func GenerateToken(userID int, username, role string) (string, error) {
-	// Waktu kadaluarsa token, misalnya 24 jam
-	expirationTime := time.Now().Add(7 * 24 * time.Hour)
+func GenerateToken(userID int, username, role string, rememberMe bool) (string, error) {
+	var expirationTime time.Time
+
+	// 2. Logika durasi berdasarkan Remember Me
+	if rememberMe {
+		// Jika Remember Me dicentang: Token bertahan lama (misal 30 hari / 1 bulan)
+		expirationTime = time.Now().Add(30 * 24 * time.Hour)
+	} else {
+		// Jika Tidak dicentang: Token bertahan singkat (misal 2 jam)
+		// Saat ini di code lama Anda 7 hari, sebaiknya dipersingkat untuk keamanan
+		expirationTime = time.Now().Add(8 * time.Hour)
+	}
 
 	claims := &Claims{
 		UserID:   userID,
