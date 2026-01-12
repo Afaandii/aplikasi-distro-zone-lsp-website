@@ -21,8 +21,9 @@ type UserController struct {
 }
 
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	RememberMe bool   `json:"remember_me"`
 }
 
 type RegisterRequest struct {
@@ -242,7 +243,7 @@ func (usr *UserController) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Terima token dari usecase
-	user, token, err := usr.UC.Login(req.Username, req.Password)
+	user, token, err := usr.UC.Login(req.Username, req.Password, req.RememberMe)
 	if err != nil {
 		var authErr *helperPkg.AuthenticationError
 		if errors.As(err, &authErr) {

@@ -18,7 +18,7 @@ type UserUsecase interface {
 	Update(idUser int, id_role int, nama string, username string, password string, nik string, alamat string, kota string, no_telp string, foto_profile string) (*entities.User, error)
 	Delete(idUser int) error
 
-	Login(username, password string) (*entities.User, string, error)
+	Login(username, password string, rememberMe bool) (*entities.User, string, error)
 	Register(nama string, username string, password string, no_telp string) (*entities.User, error)
 	UpdateAddress(idUser int, alamat string, kota string) (*entities.User, error)
 	GetTransaksiByUser(idUser int) ([]entities.Transaksi, error)
@@ -131,7 +131,7 @@ func (u *userUsecase) Delete(idUser int) error {
 	return u.repo.Delete(idUser)
 }
 
-func (u *userUsecase) Login(username, password string) (*entities.User, string, error) {
+func (u *userUsecase) Login(username, password string, rememberMe bool) (*entities.User, string, error) {
 	user, err := u.repo.FindByUsername(username)
 	if err != nil {
 		return nil, "", err
@@ -153,7 +153,7 @@ func (u *userUsecase) Login(username, password string) (*entities.User, string, 
 		roleName = "User"
 	}
 
-	tokenString, err := jwt.GenerateToken(user.IDUser, user.Username, roleName)
+	tokenString, err := jwt.GenerateToken(user.IDUser, user.Username, roleName, rememberMe)
 	if err != nil {
 		// Jika gagal buat token, return error
 		return nil, "", err
