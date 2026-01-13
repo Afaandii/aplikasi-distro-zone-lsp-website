@@ -15,6 +15,7 @@ func CorsMiddleware(next http.Handler) http.Handler {
 		// Set header untuk mengizinkan header tertentu dalam request
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		// Tangani preflight request (OPTIONS)
 		// Browser akan mengirimkan request OPTIONS sebelum request sebenarnya
 		if r.Method == "OPTIONS" {

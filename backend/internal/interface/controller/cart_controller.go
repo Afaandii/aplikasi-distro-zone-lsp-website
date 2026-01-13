@@ -49,7 +49,19 @@ func (c *CartController) GetCartProducts(w http.ResponseWriter, r *http.Request)
 			namaUkuran = item.Ukuran.NamaUkuran
 		}
 		var imageUrl string
+		targetWarnaID := item.WarnaRef
+		found := false
 		if len(item.Produk.FotoProduk) > 0 {
+			for _, foto := range item.Produk.FotoProduk {
+				// Jika foto ini punya id_warna yang sama dengan id_warna di keranjang
+				if foto.WarnaRef == targetWarnaID {
+					imageUrl = foto.UrlFoto
+					found = true
+					break
+				}
+			}
+		}
+		if !found && len(item.Produk.FotoProduk) > 0 {
 			imageUrl = item.Produk.FotoProduk[0].UrlFoto
 		}
 		responseItems[i] = map[string]interface{}{
@@ -60,6 +72,8 @@ func (c *CartController) GetCartProducts(w http.ResponseWriter, r *http.Request)
 			"price":      item.Price,
 			"created_at": item.CreatedAt,
 			"updated_at": item.UpdatedAt,
+			"id_warna":   item.Warna.IDWarna,
+			"id_ukuran":  item.Ukuran.IDUkuran,
 			"warna":      namaWarna,
 			"ukuran":     namaUkuran,
 			"product": map[string]interface{}{

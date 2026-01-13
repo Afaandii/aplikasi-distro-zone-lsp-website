@@ -242,6 +242,14 @@ func (usr *UserController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set cookie
+	var maxAge int
+	if req.RememberMe {
+		maxAge = 30 * 24 * 60 * 60
+	} else {
+		maxAge = 8 * 60 * 60
+	}
+
 	// Terima token dari usecase
 	user, token, err := usr.UC.Login(req.Username, req.Password, req.RememberMe)
 	if err != nil {
@@ -253,6 +261,17 @@ func (usr *UserController) Login(w http.ResponseWriter, r *http.Request) {
 		helper.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Expires:  time.Now().Add(time.Duration(maxAge) * time.Second),
+		MaxAge:   maxAge,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
 
 	// --- LOGIKA BARU: KIRIM TOKEN KE FRONTEND ---
 	helper.WriteJSON(w, http.StatusOK, map[string]interface{}{
@@ -295,6 +314,15 @@ func (usr *UserController) Register(w http.ResponseWriter, r *http.Request) {
 
 func (usr *UserController) Logout(w http.ResponseWriter, r *http.Request) {
 	// Untuk JWT, logout sebenarnya terjadi di sisi klien dengan menghapus token
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
 
 	helper.WriteJSON(w, http.StatusOK, map[string]string{
 		"message": "Logout successful",
