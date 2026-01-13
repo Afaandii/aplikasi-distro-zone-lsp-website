@@ -13,11 +13,14 @@ interface ApiCartItem {
   price: number;
   created_at: string;
   updated_at: string;
+  id_warna: number;
   warna: string;
+  id_ukuran: number;
   ukuran: string;
   product: {
     id: number;
     product_name: string;
+    harga_jual: number;
     image_url: string;
   };
 }
@@ -29,11 +32,14 @@ interface CartItem {
   image: string;
   price: number;
   quantity: number;
+  id_warna: number;
   warna: string;
+  id_ukuran: number;
   ukuran: string;
   product: {
     id: number;
     product_name: string;
+    harga_jual: number;
     image_url: string;
   };
 }
@@ -100,16 +106,19 @@ const CartProduct = () => {
       }
 
       const data = await response.json();
+      console.log(data);
 
       if (data.status === "success") {
         const transformedItems: CartItem[] = data.data.items.map(
           (item: ApiCartItem) => ({
             id: item.id.toString(),
-            product_id: item.product.id,
+            id_produk: item.product.id,
             name: item.product.product_name,
-            image: item.product.image_url || "/placeholder-image.jpg",
-            price: item.price,
+            image: item.product.image_url,
+            price: item.product.harga_jual ?? item.price,
             quantity: item.quantity,
+            warna_id: item.id_warna,
+            ukuran_id: item.id_ukuran,
             warna: item.warna,
             ukuran: item.ukuran,
           })
@@ -728,11 +737,7 @@ const CartProduct = () => {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <a
-                          href={`/detail-produk/${slugify(item.name)}/${
-                            item.product_id
-                          }`}
-                        >
+                        <a href={`/detail-produk/${item.product_id}`}>
                           <h3 className="text-sm font-medium mb-1 line-clamp-2">
                             {item.name}
                           </h3>

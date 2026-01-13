@@ -13,10 +13,11 @@ interface Address {
 
 interface Product {
   id: string;
+  id_produk: number;
   name: string;
   image: string;
-  color: string;
-  size: string;
+  warna: string;
+  ukuran: string;
   warna_id: number;
   ukuran_id: number;
   quantity: number;
@@ -177,6 +178,13 @@ const Checkout: React.FC = () => {
   useEffect(() => {
     if (!selectedAddress || products.length === 0) return;
 
+    // Hitung subtotal dari harga yang sudah dikirim dari halaman sebelumnya
+    const calculatedSubtotal = products.reduce(
+      (acc, product) => acc + product.price * product.quantity,
+      0
+    );
+    setSubtotal(calculatedSubtotal);
+
     const fetchPreview = async () => {
       const token =
         localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -190,7 +198,7 @@ const Checkout: React.FC = () => {
         body: JSON.stringify({
           alamat_pengiriman: selectedAddress.fullAddress,
           items: products.map((p) => ({
-            id: Number(p.id),
+            id: Number(p.id_produk),
             quantity: p.quantity,
             warna_id: p.warna_id,
             ukuran_id: p.ukuran_id,
@@ -255,7 +263,7 @@ const Checkout: React.FC = () => {
         body: JSON.stringify({
           alamat_pengiriman: selectedAddress.fullAddress,
           items: products.map((p) => ({
-            id: Number(p.id),
+            id: Number(p.id_produk),
             quantity: p.quantity,
             warna_id: p.warna_id,
             ukuran_id: p.ukuran_id,
@@ -542,8 +550,8 @@ const Checkout: React.FC = () => {
                           {product.name}
                         </h3>
                         <div className="mt-1 text-sm text-gray-600">
-                          <p>Warna: {product.color}</p>
-                          <p>Ukuran: {product.size}</p>
+                          <p>Warna: {product.warna}</p>
+                          <p>Ukuran: {product.ukuran}</p>
                         </div>
                         <div className="mt-2 flex items-center justify-between">
                           <span className="text-sm text-gray-600">
