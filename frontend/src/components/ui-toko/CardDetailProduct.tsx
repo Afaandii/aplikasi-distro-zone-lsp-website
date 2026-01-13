@@ -284,11 +284,11 @@ export default function CardDetailProduct() {
       state: {
         products: [
           {
-            id: id_produk,
+            id_produk: id_produk,
             name: title,
             image: mainImage,
-            color: currentVariant.warna,
-            size: currentVariant.ukuran,
+            warna: currentVariant.warna,
+            ukuran: currentVariant.ukuran,
             quantity: quantity,
             price: price,
             warna_id: currentVariant.id_warna,
@@ -576,6 +576,9 @@ export default function CardDetailProduct() {
                           onMouseEnter={() => {
                             const img = getImageByWarna(v.id_warna);
                             if (img) setHoverImage(img);
+                          }}
+                          onMouseLeave={() => {
+                            setHoverImage(null);
                           }}
                           className={`px-3 py-2 border-2 rounded-lg transition flex items-center gap-2
                             ${

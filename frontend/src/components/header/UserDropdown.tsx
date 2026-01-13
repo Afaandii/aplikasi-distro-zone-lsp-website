@@ -80,14 +80,14 @@ export default function UserDropdown() {
           },
         }
       );
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
       window.location.href = "/";
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("Logout gagal!");
     }
   };
 
