@@ -47,7 +47,7 @@ export default function SignUpForm() {
             sessionStorage.setItem("token", token);
 
             // 4. Arahkan ke homepage
-            window.location.href = "/";
+            window.location.href = "/login";
           }
         } catch (loginError: any) {
           setErrorMessage(

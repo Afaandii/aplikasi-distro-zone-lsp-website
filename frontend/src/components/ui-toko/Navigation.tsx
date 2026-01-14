@@ -129,7 +129,7 @@ export default function Navigation() {
                 <img
                   src="/images/distro-zone.png"
                   alt="DistroZone"
-                  className="w-46 h-14"
+                  className="w-40 h-12"
                 />
               </a>
             </div>
