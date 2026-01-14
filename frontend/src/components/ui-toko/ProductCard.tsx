@@ -97,6 +97,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
                 className="w-8 h-8 border border-gray-300 rounded-sm overflow-hidden cursor-pointer hover:border-orange-500 transition-colors duration-200 relative group"
                 onClick={() => setCurrentImage(photoUrl)}
                 onMouseEnter={() => setCurrentImage(photoUrl)}
+                onMouseLeave={() => setCurrentImage(product.gambar)}
               >
                 <img
                   src={photoUrl}

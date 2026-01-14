@@ -6,8 +6,8 @@ import Footer from "./Footer";
 
 const ProductCardSkeleton = () => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden w-full max-w-xs animate-pulse">
-      <div className="w-full h-64 bg-gray-200"></div>
+    <div className="bg-white rounded-lg shadow-md overflow-hidden w-full animate-pulse">
+      <div className="w-full aspect-square bg-gray-200"></div>
       <div className="p-4">
         <div className="h-6 bg-gray-200 rounded mb-3"></div>
         <div className="h-6 bg-gray-200 rounded w-3/4"></div>
@@ -72,6 +72,7 @@ const ProductCard = ({ product }: { product: any }) => {
                   className="w-8 h-8 border border-gray-300 rounded-sm overflow-hidden cursor-pointer hover:border-orange-500 transition-colors duration-200 relative group"
                   onClick={() => setCurrentImage(photoUrl)}
                   onMouseEnter={() => setCurrentImage(photoUrl)}
+                  onMouseLeave={() => setCurrentImage(product.gambar)}
                 >
                   <img
                     src={photoUrl}
@@ -515,7 +516,7 @@ export default function SearchResults() {
                 </div>
 
                 {/* Product Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filteredAndSortedProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}

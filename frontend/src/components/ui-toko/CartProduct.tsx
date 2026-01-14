@@ -106,7 +106,6 @@ const CartProduct = () => {
       }
 
       const data = await response.json();
-      console.log(data);
 
       if (data.status === "success") {
         const transformedItems: CartItem[] = data.data.items.map(
@@ -737,7 +736,7 @@ const CartProduct = () => {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <a href={`/detail-produk/${item.product_id}`}>
+                        <a href={`/detail-produk/${item.id}`}>
                           <h3 className="text-sm font-medium mb-1 line-clamp-2">
                             {item.name}
                           </h3>
