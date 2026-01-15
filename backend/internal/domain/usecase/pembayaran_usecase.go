@@ -7,6 +7,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/midtrans/midtrans-go"
@@ -69,7 +70,7 @@ func mapKotaKeWilayah(kota string) string {
 	jabar := []string{
 		"bandung", "cimahi", "cirebon", "sukabumi", "tasikmalaya",
 		"garut", "majalengka", "sumedang", "indramayu", "subang",
-		"purwakarta", "karawang", "cianjur", "kuningan", "banjar",
+		"purwakarta", "karawang", "cianjur", "kuningan", "banjar", "seluruh wilayah jawa barat",
 	}
 	for _, kotaJabar := range jabar {
 		if k == kotaJabar {
@@ -83,7 +84,7 @@ func mapKotaKeWilayah(kota string) string {
 		"tegal", "salatiga", "banyumas", "kebumen", "wonosobo",
 		"purworejo", "klaten", "sragen", "karanganyar", "boyolali",
 		"grobogan", "demak", "rembang", "pati", "kudus", "jepara",
-		"blora", "purwodadi", "cilacap", "banyumas", "purbalingga",
+		"blora", "purwodadi", "cilacap", "banyumas", "purbalingga", "seluruh wilayah jawa tengah",
 	}
 	for _, kotaJateng := range jateng {
 		if k == kotaJateng {
@@ -96,7 +97,7 @@ func mapKotaKeWilayah(kota string) string {
 		"jombang", "kediri", "madiun", "blitar", "tulungagung",
 		"banyuwangi", "probolinggo", "pasuruan", "lumajang", "jember",
 		"situbondo", "bondowoso", "pamekasan", "sumenep", "sampang",
-		"bangkalan", "batu", "nganjuk", "bojonegoro", "lamongan",
+		"bangkalan", "batu", "nganjuk", "bojonegoro", "lamongan", "seluruh wilayah jawa timur",
 	}
 	for _, kotaJatim := range jatim {
 		if k == kotaJatim {
@@ -290,10 +291,17 @@ func (u *PembayaranUsecase) CreatePembayaran(
 }
 
 func (u *PembayaranUsecase) createMidtransSnap(p entities.Pesanan) (string, error) {
+	loc, _ := time.LoadLocation("Asia/Jakarta")
+	startTime := time.Now().In(loc).Format("2006-01-02 15:04:05 +0700")
 	req := &snap.Request{
 		TransactionDetails: midtrans.TransactionDetails{
 			OrderID:  p.KodePesanan,
 			GrossAmt: int64(p.TotalBayar),
+		},
+		Expiry: &snap.ExpiryDetails{
+			StartTime: startTime,
+			Unit:      "hour",
+			Duration:  24,
 		},
 	}
 

@@ -135,7 +135,6 @@ func main() {
 
 	go func() {
 		log.Println("Starting Auto-Cancel Orders Worker...")
-		// Buat ticker yang berjalan setiap 5 menit
 		ticker := time.NewTicker(5 * time.Second)
 
 		for range ticker.C {
