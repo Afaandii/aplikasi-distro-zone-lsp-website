@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"aplikasi-distro-zone-lsp-website/internal/domain/entities"
+	"aplikasi-distro-zone-lsp-website/internal/shared/entity"
 	"aplikasi-distro-zone-lsp-website/pkg/supabase"
 
 	"gorm.io/gorm"
@@ -9,27 +9,27 @@ import (
 
 func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(
-		&entities.Role{},
-		&entities.User{},
-		&entities.Merk{},
-		&entities.Tipe{},
-		&entities.Ukuran{},
-		&entities.Warna{},
-		&entities.Produk{},
-		&entities.FotoProduk{},
-		&entities.Varian{},
-		&entities.JamOperasional{},
-		&entities.TarifPengiriman{},
-		&entities.ChatCS{},
-		&entities.Pesanan{},
-		&entities.DetailPesanan{},
-		&entities.Transaksi{},
-		&entities.DetailTransaksi{},
-		&entities.Pembayaran{},
-		&entities.Komplain{},
-		&entities.Refund{},
-		&entities.Cart{},
-		&entities.CartItem{},
+		&entity.Role{},
+		&entity.User{},
+		&entity.Merk{},
+		&entity.Tipe{},
+		&entity.Ukuran{},
+		&entity.Warna{},
+		&entity.Produk{},
+		&entity.FotoProduk{},
+		&entity.Varian{},
+		&entity.JamOperasional{},
+		&entity.TarifPengiriman{},
+		&entity.ChatCS{},
+		&entity.Pesanan{},
+		&entity.DetailPesanan{},
+		&entity.Transaksi{},
+		&entity.DetailTransaksi{},
+		&entity.Pembayaran{},
+		&entity.Komplain{},
+		&entity.Refund{},
+		&entity.Cart{},
+		&entity.CartItem{},
 	)
 
 	supabase.InitStorage()
