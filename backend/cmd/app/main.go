@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"aplikasi-distro-zone-lsp-website/internal/bootstrap"
-	"aplikasi-distro-zone-lsp-website/internal/infrastructure/database"
+	"aplikasi-distro-zone-lsp-website/internal/shared/database"
 	config "aplikasi-distro-zone-lsp-website/pkg/config"
 	"aplikasi-distro-zone-lsp-website/pkg/midtrans"
 )
@@ -18,9 +18,12 @@ func main() {
 	}
 
 	bootstrap.AutoMigrate(db)
-	controllers := bootstrap.InitControllers(db)
-	bootstrap.RegisterRoutes(controllers)
-	bootstrap.StartAutoCancelWorker(controllers.PesananUC)
+
+	app := bootstrap.InitApp(db)
+	app.RegisterAllRoutes()
+
+	bootstrap.StartAutoCancelWorker(app.OrderMod.PesananSvc)
+
 	midtrans.Init()
 
 	port := os.Getenv("PORT")
