@@ -114,10 +114,11 @@ const convertBackendToOrder = (backendData: BackendPesanan): ExtendedOrder => {
     createdAt: new Date(backendData.created_at).toLocaleDateString("id-ID"),
     products: backendData.DetailPesanan.map((p) => {
       const produk = p.Produk;
-      const firstVarian = produk.Varian[0] || {};
-      const warna = firstVarian.Warna?.nama_warna || "Warna Tidak Diketahui";
+      const firstVarian = produk.Varian[0];
+      const warna =
+        (firstVarian as any)?.Warna?.nama_warna || "Warna Tidak Diketahui";
       const ukuran =
-        firstVarian.Ukuran?.nama_ukuran || "Ukuran Tidak Diketahui";
+        (firstVarian as any)?.Ukuran?.nama_ukuran || "Ukuran Tidak Diketahui";
       const gambar = produk.FotoProduk[0]?.url_foto || "";
       const variant = `${warna}, ${ukuran}`;
 
@@ -155,7 +156,7 @@ const convertBackendToOrder = (backendData: BackendPesanan): ExtendedOrder => {
 const OrderList: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<ExtendedOrder | null>(
-    null
+    null,
   );
   const [orders, setOrders] = useState<ExtendedOrder[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -175,7 +176,7 @@ const OrderList: React.FC = () => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (!response.ok) throw new Error("Gagal mengambil data pesanan");
@@ -219,7 +220,7 @@ const OrderList: React.FC = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {

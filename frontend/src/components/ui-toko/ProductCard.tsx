@@ -332,7 +332,7 @@ const Pagination: React.FC<{
           totalPages - 3,
           totalPages - 2,
           totalPages - 1,
-          totalPages
+          totalPages,
         );
       } else {
         pages.push(
@@ -342,7 +342,7 @@ const Pagination: React.FC<{
           currentPage,
           currentPage + 1,
           "...",
-          totalPages
+          totalPages,
         );
       }
     }
@@ -377,7 +377,7 @@ const Pagination: React.FC<{
           <span key={index} className="text-gray-400 px-2">
             {page}
           </span>
-        )
+        ),
       )}
 
       <button
@@ -410,14 +410,14 @@ const ProductsPage: React.FC = () => {
 
   const fetchTypes = async () => {
     try {
-      const response = await axios.get<{ data: any[] }>(
-        "http://localhost:8080/api/v1/tipe"
+      const response = await axios.get<Tipe[]>(
+        "http://localhost:8080/api/v1/tipe",
       );
       setTypes(
-        response.data.map((t: any) => ({
+        (response.data as any).data?.map((t: any) => ({
           id_tipe: t.id_tipe,
           nama_tipe: t.nama_tipe,
-        }))
+        })) || []
       );
     } catch (err) {
       console.error("Error fetching types:", err);
@@ -429,15 +429,16 @@ const ProductsPage: React.FC = () => {
     setError(null);
     try {
       const productsResponse = await axios.get<{ data: any[] }>(
-        "http://localhost:8080/api/v1/produk"
+        "http://localhost:8080/api/v1/produk",
       );
       const photosResponse = await axios.get<{ data: any[] }>(
-        "http://localhost:8080/api/v1/foto-produk"
+        "http://localhost:8080/api/v1/foto-produk",
       );
 
       // Kelompokkan SEMUA foto per produk (tanpa butuh id_warna)
       const photosByProduct: Record<number, string[]> = {};
-      photosResponse.data.forEach((photo: any) => {
+      const photosData = (photosResponse.data as any).data || [];
+      photosData.forEach((photo: any) => {
         if (!photosByProduct[photo.id_produk]) {
           photosByProduct[photo.id_produk] = [];
         }
@@ -446,7 +447,8 @@ const ProductsPage: React.FC = () => {
         }
       });
 
-      const transformedProducts = productsResponse.data.map((p: any) => {
+      const productsData = (productsResponse.data as any).data || [];
+      const transformedProducts = productsData.map((p: any) => {
         const tipeObj = types.find((t) => t.id_tipe === p.id_tipe);
         const tipeNama = tipeObj
           ? tipeObj.nama_tipe
@@ -528,7 +530,7 @@ const ProductsPage: React.FC = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = sortedProducts.slice(
     startIndex,
-    startIndex + itemsPerPage
+    startIndex + itemsPerPage,
   );
 
   if (loading) {

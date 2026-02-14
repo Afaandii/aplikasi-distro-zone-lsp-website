@@ -20,6 +20,12 @@ type VariantType = {
   warna: string;
 };
 
+interface AlertState {
+  show: boolean;
+  message: string;
+  type: "success" | "error";
+}
+
 export default function CardDetailProduct() {
   const { id_produk } = useParams<{ id_produk: string }>();
   const [loading, setLoading] = useState(true);

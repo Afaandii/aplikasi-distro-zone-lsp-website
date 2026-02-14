@@ -7,7 +7,7 @@ type ChartData = {
   laba: number[];
 };
 
-export default function LineChartOne({ data }: { data: ChartData }) {
+export default function LineChartOne({ data }: { data?: ChartData }) {
   const options: ApexOptions = {
     legend: {
       show: false,
@@ -63,13 +63,14 @@ export default function LineChartOne({ data }: { data: ChartData }) {
     },
     xaxis: {
       type: "category",
-      categories: data.dates.map((date) => {
-        const d = new Date(date);
-        return d.toLocaleDateString("id-ID", {
-          day: "2-digit",
-          month: "short",
-        });
-      }),
+      categories:
+        data?.dates?.map((date) => {
+          const d = new Date(date);
+          return d.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+          });
+        }) || [],
       axisBorder: {
         show: false,
       },
@@ -99,11 +100,11 @@ export default function LineChartOne({ data }: { data: ChartData }) {
   const series = [
     {
       name: "Penjualan",
-      data: data.penjualan,
+      data: data?.penjualan || [],
     },
     {
       name: "Laba Bersih",
-      data: data.laba,
+      data: data?.laba || [],
     },
   ];
 
