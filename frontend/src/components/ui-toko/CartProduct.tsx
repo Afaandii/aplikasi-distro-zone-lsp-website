@@ -160,14 +160,7 @@ const CartProduct = () => {
     return `Rp${price.toLocaleString("id-ID")}`;
   };
 
-  const slugify = (text: string): string => {
-    return text
-      .toLowerCase()
-      .replace(/[^a-zA-Z0-9\s]/g, "") // Hapus karakter khusus
-      .replace(/\s+/g, "-") // Ganti spasi dengan -
-      .replace(/-+/g, "-") // Hindari multiple -
-      .replace(/^-|-$/g, ""); // Bersihkan awal/akhir
-  };
+
 
   const toggleSelectAll = () => {
     if (selectAll) {
