@@ -68,7 +68,7 @@ const CartProduct = () => {
   // Tampilkan notifikasi (hanya untuk hapus)
   const showNotification = (
     message: string,
-    type: "success" | "error" = "success"
+    type: "success" | "error" = "success",
   ) => {
     const event = new CustomEvent("showNotification", {
       detail: { message, type },
@@ -95,13 +95,13 @@ const CartProduct = () => {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
+          errorData.message || `HTTP error! status: ${response.status}`,
         );
       }
 
@@ -120,7 +120,7 @@ const CartProduct = () => {
             ukuran_id: item.id_ukuran,
             warna: item.warna,
             ukuran: item.ukuran,
-          })
+          }),
         );
 
         setItems(transformedItems);
@@ -200,8 +200,8 @@ const CartProduct = () => {
     // Langsung update UI tanpa loading
     setItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity: newQty } : item
-      )
+        item.id === id ? { ...item, quantity: newQty } : item,
+      ),
     );
 
     try {
@@ -218,7 +218,7 @@ const CartProduct = () => {
             cart_item_id: parseInt(id),
             quantity: newQty,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -232,8 +232,8 @@ const CartProduct = () => {
       setError(err.message);
       setItems((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity } : item
-        )
+          item.id === id ? { ...item, quantity: item.quantity } : item,
+        ),
       );
     }
   };
@@ -253,7 +253,7 @@ const CartProduct = () => {
           body: JSON.stringify({
             cart_item_id: parseInt(id),
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -293,7 +293,7 @@ const CartProduct = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -308,7 +308,7 @@ const CartProduct = () => {
         setSelectAll(false);
         showNotification(
           "Semua produk berhasil dihapus dari keranjang.",
-          "success"
+          "success",
         );
       } else {
         throw new Error(data.message || "Gagal menghapus semua item");
@@ -327,7 +327,7 @@ const CartProduct = () => {
     }
 
     const selectedCartItems = items.filter((item) =>
-      selectedItems.has(item.id)
+      selectedItems.has(item.id),
     );
 
     // Arahkan ke halaman checkout sambil membawa data item yang dipilih

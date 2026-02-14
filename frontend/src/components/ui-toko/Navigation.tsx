@@ -262,7 +262,7 @@ export default function Navigation() {
         </div>
 
         {/* Bottom Fixed Bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center py-2 z-50">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex justify-around items-center py-2 ">
           <a href="/" className="flex flex-col items-center text-gray-600">
             <FiHome size={24} />
             <span className="text-xs mt-1">Home</span>
